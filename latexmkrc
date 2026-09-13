@@ -17,4 +17,4 @@ ensure_path('TEXINPUTS', 'lib//');
 
 @default_files = ('src/*.tex');
 
-$clean_ext = 'synctex.gz run.xml bbl xdv';
+$clean_ext = 'aux bbl bcf fls idx ind lof lot out run.xml synctex.gz toc xdv'

@@ -15,24 +15,10 @@ latexmk -C                             # segédfájlok és PDF-ek törlése
 
 ### Előkövetelmények
 
-- XeLaTeX
-- Fontok: TeX Gyre Pagella, TeX Gyre Heros, Latin Modern Mono.
-- Arch-on `texlive-langeuropean` más distron nem tudom.
+- Compiler: XeLaTeX
+- Betűtípusok: TeX Gyre Pagella, TeX Gyre Heros.
+- Arch Linuxon a `texlive-langeuropean` package, más distron ennek a megfelelője.
 - `pgfplots`, `tikz`, `mdframed`, `polyglossia`, `icomma`.
-
-## Konvenciók
-
-**Dobozok** `definition`, `theorem`, `proposition`, `lemma`, `corollary`,
-`example`, `procedure`, `remark`. Mind egyetlen, szakaszonként újrainduló
-számlálón futnak. A dobozok: `defbox` (kék, definíció), `thmbox` (barna, tétel
-és állítás), `exbox` (zöld, példa), `procbox` (lila, eljárás). A `proof` és a
-`solution` keret nélkül követi a hozzá tartozó dobozt, záró jelük `■`, illetve
-`◇`.
-
-**Ábrák** `notefig` környezetben TikZ vagy pgfplots.
-
-**Oldalhivatkozás** Minden blokk előtt `% [pN]`, amely a `scans/` alatti
-megfelelő oldalra utal.
 
 ## Digitalizálás pontossága
 
