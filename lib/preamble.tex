@@ -1,0 +1,109 @@
+% preamble.tex
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setdefaultlanguage{hungarian}
+\setmainfont{TeX Gyre Pagella}
+\setsansfont{TeX Gyre Heros}
+\setmonofont[Scale=0.92]{Latin Modern Mono}
+
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{bm}
+\numberwithin{equation}{section}
+\usepackage{icomma}
+
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage{microtype}
+\emergencystretch=2em
+\hbadness=2000
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=1.4em}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage[hidelinks,colorlinks=true,linkcolor=accent,urlcolor=accent,
+            bookmarks=true,bookmarksnumbered=true,bookmarksopen=true]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{mdframed}
+
+\usepackage{tikz}
+\usetikzlibrary{calc,arrows.meta,patterns,intersections,angles,quotes,
+                decorations.pathreplacing,decorations.markings}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{float}
+\usepackage{caption}
+
+\definecolor{accent}{HTML}{2B4C7E}
+\definecolor{defbg}{HTML}{EAF0F7}
+\definecolor{thmaccent}{HTML}{7A4D2B}
+\definecolor{thmbg}{HTML}{F6EFE7}
+\definecolor{exaccent}{HTML}{2F6B3D}
+\definecolor{exbg}{HTML}{EBF2EA}
+\definecolor{procaccent}{HTML}{6A3D82}
+\definecolor{procbg}{HTML}{F2ECF6}
+\definecolor{rulec}{HTML}{B8C4D6}
+\definecolor{missingc}{HTML}{A32020}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{accent}\raggedright}
+  {\thesection.}{0.6em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{accent!85!black}}
+  {\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.4em}{0.6em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\footnotesize\thepage}
+
+\newtheoremstyle{plainish}{0pt}{0pt}{}{0pt}{\bfseries}{.}{0.5em}{}
+\theoremstyle{plainish}
+\newtheorem{theorem}{Tétel}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Következmény}
+\newtheorem{proposition}[theorem]{Állítás}
+\newtheorem{definition}[theorem]{Definíció}
+\newtheorem{example}[theorem]{Példa}
+\newtheorem{procedure}[theorem]{Eljárás}
+\newtheorem*{remark}{Megjegyzés}
+
+\newcommand{\newnotebox}[2]{%
+  \newmdenv[
+    backgroundcolor=#2,
+    linewidth=0pt,
+    topline=false,bottomline=false,rightline=false,
+    leftline=true,linecolor=#1,
+    innertopmargin=7pt,innerbottommargin=7pt,
+    innerleftmargin=9pt,innerrightmargin=9pt,
+    skipabove=9pt,skipbelow=9pt,
+  ]}
+\newnotebox{accent}{defbg}{defbox}
+\newnotebox{thmaccent}{thmbg}{thmbox}
+\newnotebox{exaccent}{exbg}{exbox}
+\newnotebox{procaccent}{procbg}{procbox}
+
+\renewcommand{\qedsymbol}{$\blacksquare$}
+\newenvironment{solution}
+  {\renewcommand{\qedsymbol}{$\lozenge$}\begin{proof}[Megoldás]}
+  {\end{proof}}
+\newcommand{\noproof}{\par\vspace{-2pt}{\footnotesize\itshape\color{accent!70!black}(Bizonyítás nélkül.)}\par\vspace{2pt}}
+
+\newcommand{\missing}[1]{{\color{missingc}\bfseries[\,#1\,]}}
+\newcommand{\correction}[1]{\footnote{A kézírásos jegyzetben #1}}
+
+\captionsetup[figure]{
+  labelformat=empty,labelsep=none,
+  font={small,it},justification=centering,skip=6pt}
+\newcounter{notefig}[section]
+\renewcommand{\thenotefig}{\thesection.\arabic{notefig}}
+\newenvironment{notefig}[1]
+  {\refstepcounter{notefig}\def\notefigcaption{#1}%
+   \begin{figure}[H]\centering}
+  {\caption{\textbf{\thenotefig.\ ábra.}\ \notefigcaption}\end{figure}}
+
+\newcommand{\titleblock}[1]{%
+  \begin{center}
+    {\LARGE\bfseries\color{accent} #1}
+  \end{center}
+  \vspace{1.2em}}

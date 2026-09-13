@@ -1,0 +1,505 @@
+%  Komplex számok
+%
+%  JAVÍTOTT FORRÁSHIBÁK
+%   [p3] z^2 = r^2(cos 2φ + i sin φ)  ->  i sin 2φ
+%   [p4] a gyökformula második tagjából hiányzott a sin
+%   [p5] φ = -128√3 / -128 = √3  ->  tg φ = √3
+
+\documentclass[11pt]{article}
+\input{preamble}
+\input{macros}
+
+\begin{document}
+\titleblock{Komplex számok}
+
+% ===================================================================
+\section{Algebrai alak}
+
+% [p1]
+A valós számok közt az $x^{2}=-1$ egyenletnek nincs megoldása.
+
+\begin{defbox}
+\begin{definition}[Képzetes egység]
+Jelölje $\ii$ azt a számot, melyre teljesül, hogy
+\[
+\ii^{2}=-1 .
+\]
+\end{definition}
+\end{defbox}
+Ez az $\ii$ egy új, nem valós szám.
+
+\begin{defbox}
+\begin{definition}[Komplex szám]
+Legyen $a, b\in\R$. A
+\[
+z=a+b\ii
+\]
+alakú számokat \emph{komplex számoknak} hívjuk. A komplex számok halmaza: $\C$.
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+$z=5+2\ii$.
+\end{example}
+\end{exbox}
+
+\begin{defbox}
+\begin{definition}[Valós rész, képzetes rész, algebrai alak]
+A $z=a+b\ii$ komplex számban $a$ a \emph{valós rész} és $b$ a \emph{képzetes rész}. A $z=a+b\ii$ alakban megadott komplex számot a komplex szám \emph{algebrai alakjának} hívjuk.
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+$z=4-3\ii$, itt $a=4$ és $b=-3$.
+\end{example}
+\end{exbox}
+
+\begin{defbox}
+\begin{definition}[Konjugált]
+A $z=a+b\ii$ komplex szám \emph{konjugáltja}
+\[
+\bar z=a-b\ii .
+\]
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+$z=9+2\ii$, $\bar z=9-2\ii$.
+\end{example}
+\end{exbox}
+
+% ===================================================================
+\section{Műveletek komplex számokkal}
+
+% [p1]
+Legyen $z_{1}=a_{1}+b_{1}\ii$ és $z_{2}=a_{2}+b_{2}\ii$.
+
+\begin{thmbox}
+\begin{proposition}[Összeg, különbség, szorzat algebrai alakban]
+\begin{align}
+z_{1}+z_{2}&=(a_{1}+a_{2})+(b_{1}+b_{2})\ii, \label{eq:osszeg}\\
+z_{1}-z_{2}&=(a_{1}-a_{2})+(b_{1}-b_{2})\ii, \label{eq:kulonbseg}\\
+z_{1}z_{2}&=a_{1}a_{2}-b_{1}b_{2}+(a_{1}b_{2}+a_{2}b_{1})\ii. \label{eq:szorzat}
+\end{align}
+\end{proposition}
+\end{thmbox}
+\begin{proof}
+Az összeg és a különbség a tagok átrendezésével adódik:
+\[
+z_{1}+z_{2}=(a_{1}+b_{1}\ii)+(a_{2}+b_{2}\ii)=(a_{1}+a_{2})+(b_{1}+b_{2})\ii,
+\]
+\[
+z_{1}-z_{2}=(a_{1}+b_{1}\ii)-(a_{2}+b_{2}\ii)=(a_{1}-a_{2})+(b_{1}-b_{2})\ii .
+\]
+A szorzatnál a zárójelek felbontása után a $\ii^{2}$ tagot $-1$-gyel helyettesítjük:
+\[
+z_{1}z_{2}=(a_{1}+b_{1}\ii)(a_{2}+b_{2}\ii)
+=a_{1}a_{2}+a_{1}b_{2}\ii+a_{2}b_{1}\ii+b_{1}b_{2}\underbrace{\ii^{2}}_{-1}
+=a_{1}a_{2}-b_{1}b_{2}+(a_{1}b_{2}+a_{2}b_{1})\ii .
+\]
+\end{proof}
+
+% [p2]
+\begin{exbox}
+\begin{example}
+Legyen $z_{1}=4+3\ii$ és $z_{2}=8-5\ii$. Számítsuk ki az összeget, a különbséget és a szorzatot.
+\end{example}
+\end{exbox}
+\begin{solution}
+\[
+z_{1}+z_{2}=(4+3\ii)+(8-5\ii)=12-2\ii,
+\]
+\[
+z_{1}-z_{2}=(4+3\ii)-(8-5\ii)=-4+8\ii,
+\]
+\[
+z_{1}z_{2}=(4+3\ii)(8-5\ii)=32-20\ii+24\ii-15\underbrace{\ii^{2}}_{-1}=47+4\ii .
+\]
+\end{solution}
+
+A $\dfrac{z_{1}}{z_{2}}$ hányados algebrai alakját a nevező konjugáltjával való bővítés adja.
+
+\begin{thmbox}
+\begin{proposition}[Hányados algebrai alakban]
+Ha $z_{2}\neq 0$, akkor
+\begin{equation}\label{eq:hanyados}
+\frac{z_{1}}{z_{2}}=\frac{a_{1}a_{2}+b_{1}b_{2}}{a_{2}^{2}+b_{2}^{2}}
++\frac{a_{2}b_{1}-a_{1}b_{2}}{a_{2}^{2}+b_{2}^{2}}\,\ii .
+\end{equation}
+\end{proposition}
+\end{thmbox}
+\begin{proof}
+\begin{align*}
+\frac{z_{1}}{z_{2}}&=\frac{a_{1}+b_{1}\ii}{a_{2}+b_{2}\ii}
+=\frac{(a_{1}+b_{1}\ii)(a_{2}-b_{2}\ii)}{(a_{2}+b_{2}\ii)(a_{2}-b_{2}\ii)}
+=\frac{a_{1}a_{2}-a_{1}b_{2}\ii+a_{2}b_{1}\ii-b_{1}b_{2}\underbrace{\ii^{2}}_{-1}}
+{a_{2}^{2}-a_{2}b_{2}\ii+a_{2}b_{2}\ii-b_{2}^{2}\underbrace{\ii^{2}}_{-1}}\\[0.6em]
+&=\frac{a_{1}a_{2}+b_{1}b_{2}+(a_{2}b_{1}-a_{1}b_{2})\ii}{a_{2}^{2}+b_{2}^{2}},
+\end{align*}
+és a valós, illetve a képzetes részt szétírva adódik \eqref{eq:hanyados}.
+\end{proof}
+
+\begin{exbox}
+\begin{example}
+Írjuk algebrai alakba a $\dfrac{4+3\ii}{8-5\ii}$ hányadost.
+\end{example}
+\end{exbox}
+\begin{solution}
+\[
+\frac{4+3\ii}{8-5\ii}=\frac{(4+3\ii)(8+5\ii)}{(8-5\ii)(8+5\ii)}
+=\frac{32+20\ii+24\ii+15\underbrace{\ii^{2}}_{-1}}{64+40\ii-40\ii-25\underbrace{\ii^{2}}_{-1}}
+=\frac{17+44\ii}{89}=\frac{17}{89}+\frac{44}{89}\ii .
+\]
+\end{solution}
+
+% ===================================================================
+\section{Trigonometrikus alak}
+
+% [p2]
+\begin{defbox}
+\begin{definition}[Trigonometrikus alak]
+Legyen $z=a+b\ii$, továbbá
+\[
+a=r\cos\varphi,\qquad b=r\sin\varphi .
+\]
+Ekkor
+\[
+z=a+b\ii=r\cos\varphi+r\sin\varphi\cdot \ii=r(\cos\varphi+\ii\sin\varphi),
+\qquad 0\le\varphi<2\pi,
+\]
+és ezt a komplex szám \emph{trigonometrikus alakjának} nevezzük. Itt
+\[
+r=\sqrt{a^{2}+b^{2}},\qquad \tg\varphi=\frac{b}{a}.
+\]
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{A $z=a+b\ii$ szám trigonometrikus alakjának mennyiségei.}
+\begin{tikzpicture}[scale=1.25,>=Stealth]
+\draw[->] (-0.4,0) -- (2.9,0);
+\draw[->] (0,-0.4) -- (0,2.4);
+\coordinate (P) at (2.1,1.75);
+\draw[thick,accent] (0,0) -- (P);
+\draw[thmaccent,dashed] (P) -- (2.1,0);
+\draw[thmaccent,dashed] (P) -- (0,1.75);
+\draw[accent] (0.5,0) arc (0:39.8:0.5);
+\node[accent,font=\footnotesize] at (0.68,0.2) {$\varphi$};
+\node[accent,font=\footnotesize,above left] at (1.1,0.85) {$r$};
+\fill (P) circle (1.3pt) node[above right,font=\footnotesize] {$(a, b)$};
+\node[font=\footnotesize,below] at (1.05,-0.05) {$r\cos\varphi$};
+\node[font=\footnotesize,left] at (-0.05,0.9) {$r\sin\varphi$};
+\end{tikzpicture}
+\end{notefig}
+
+\begin{exbox}
+\begin{example}
+Írjuk trigonometrikus alakba a $z=a+b\ii$ alakban adott komplex számot.
+\begin{enumerate}[label=\alph*)]
+\item $z=2+2\ii$
+\item $z=1-\sqrt{3}\,\ii$
+\item $z=8\ii$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+a) Itt $a=2$, $b=2$, tehát $r=\sqrt{4+4}=\sqrt{8}$ és
+\[
+\tg\varphi=\frac{2}{2}=1 \quad\Longrightarrow\quad \varphi=\chosen{\frac{\pi}{4}}\ \text{v.}\ \frac{5\pi}{4},
+\]
+\[
+z=2+2\ii=\sqrt{8}\left(\cos\frac{\pi}{4}+\ii\sin\frac{\pi}{4}\right).
+\]
+
+\begin{notefig}{A $z=2+2\ii$ szám az $r$ hosszal és a $\varphi$ szöggel.}
+\begin{tikzpicture}[scale=0.9,>=Stealth]
+\draw[->] (-0.6,0) -- (1.9,0);
+\draw[->] (0,-0.6) -- (0,1.9);
+\coordinate (P) at (1.4,1.4);
+\draw[thick,accent] (0,0) -- (P);
+\draw[thmaccent,dashed] (P) -- (1.4,0);
+\draw[thmaccent,dashed] (P) -- (0,1.4);
+\draw[accent] (0.45,0) arc (0:45:0.45);
+\node[accent,font=\footnotesize] at (0.68,0.2) {$\varphi$};
+\node[accent,font=\footnotesize,above left] at (0.75,0.7) {$r$};
+\fill (P) circle (1.2pt);
+\node[font=\footnotesize,below] at (1.4,-0.08) {$2$};
+\node[font=\footnotesize,left] at (-0.08,1.4) {$2$};
+\end{tikzpicture}
+\end{notefig}
+
+% [p3]
+b) Itt $a=1$, $b=-\sqrt{3}$, tehát $r=\sqrt{1+3}=2$ és
+\[
+\tg\varphi=\frac{-\sqrt{3}}{1}=-\sqrt{3} \quad\Longrightarrow\quad
+\varphi=\frac{2\pi}{3}\ \text{v.}\ \chosen{\frac{5\pi}{3}},
+\]
+\[
+z=2\left(\cos\frac{5\pi}{3}+\ii\sin\frac{5\pi}{3}\right).
+\]
+
+\begin{notefig}{A $z=1-\sqrt{3}\,\ii$ szám a $\varphi=\frac{5\pi}{3}$ szöggel.}
+\begin{tikzpicture}[scale=0.9,>=Stealth]
+\draw[->] (-1.6,0) -- (1.9,0);
+\draw[->] (0,-2.2) -- (0,1.3);
+\coordinate (P) at (1.0,-1.732);
+\draw[thick,accent] (0,0) -- (P);
+\draw[accent] (0.5,0) arc (0:300:0.5);
+\node[accent,font=\footnotesize] at (0.32,0.72) {$\tfrac{5\pi}{3}$};
+\fill (P) circle (1.2pt);
+\node[font=\footnotesize,above] at (1.0,0.06) {$1$};
+\node[font=\footnotesize,left] at (-0.06,-1.732) {$-\sqrt{3}$};
+\end{tikzpicture}
+\end{notefig}
+
+c) Itt $a=0$, $b=8$, tehát $r=\sqrt{0^{2}+8^{2}}=8$, és
+\[
+\tg\varphi=\frac{8}{0}
+\]
+nem értelmezett. Így
+\[
+z=8\left(\cos\frac{\pi}{2}+\ii\sin\frac{\pi}{2}\right).
+\]
+
+\begin{notefig}{A $z=8\ii$ szám a $\varphi=\frac{\pi}{2}$ szöggel.}
+\begin{tikzpicture}[scale=0.9,>=Stealth]
+\draw[->] (-1.2,0) -- (1.6,0);
+\draw[->] (0,-0.6) -- (0,2.0);
+\coordinate (P) at (0,1.6);
+\draw[thick,accent] (0,0) -- (P);
+\draw[accent] (0.45,0) arc (0:90:0.45);
+\node[accent,font=\footnotesize] at (0.48,0.55) {$\tfrac{\pi}{2}$};
+\fill (P) circle (1.2pt) node[right,font=\footnotesize] {$(0, 8)$};
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+% ===================================================================
+\section{Műveletek trigonometrikus alakban adott komplex számokkal}
+
+% [p3]
+Legyen
+\[
+z_{1}=r_{1}(\cos\varphi_{1}+\ii\sin\varphi_{1}),\qquad
+z_{2}=r_{2}(\cos\varphi_{2}+\ii\sin\varphi_{2}).
+\]
+
+\begin{thmbox}
+\begin{proposition}[Szorzat trigonometrikus alakban]
+\begin{equation}\label{eq:polszorzat}
+z_{1}z_{2}=r_{1}r_{2}\bigl(\cos(\varphi_{1}+\varphi_{2})+\ii\sin(\varphi_{1}+\varphi_{2})\bigr).
+\end{equation}
+\end{proposition}
+\end{thmbox}
+\begin{proof}
+A zárójelek felbontása és a $\ii^{2}=-1$ helyettesítés után
+\[
+z_{1}z_{2}=r_{1}(\cos\varphi_{1}+\ii\sin\varphi_{1})\,r_{2}(\cos\varphi_{2}+\ii\sin\varphi_{2})
+\]
+\[
+=r_{1}r_{2}\Bigl(\cos\varphi_{1}\cos\varphi_{2}+\ii\sin\varphi_{1}\cos\varphi_{2}
++\ii\sin\varphi_{2}\cos\varphi_{1}+\underbrace{\ii^{2}}_{-1}\sin\varphi_{1}\sin\varphi_{2}\Bigr)
+\]
+\[
+=r_{1}r_{2}\Bigl(
+\underbrace{\cos\varphi_{1}\cos\varphi_{2}-\sin\varphi_{1}\sin\varphi_{2}}_{\cos(\varphi_{1}+\varphi_{2})}
++\ii\bigl(\underbrace{\sin\varphi_{1}\cos\varphi_{2}+\sin\varphi_{2}\cos\varphi_{1}}_{\sin(\varphi_{1}+\varphi_{2})}\bigr)\Bigr)
+\]
+\[
+=r_{1}r_{2}\bigl(\cos(\varphi_{1}+\varphi_{2})+\ii\sin(\varphi_{1}+\varphi_{2})\bigr).
+\]
+\end{proof}
+
+Így $z=r(\cos\varphi+\ii\sin\varphi)$ esetén
+\[
+z^{2}=r^{2}(\cos 2\varphi+\ii\sin 2\varphi),
+\]
+\[
+z^{3}=z^{2}\cdot z=r^{2}(\cos 2\varphi+\ii\sin 2\varphi)\,r(\cos\varphi+\ii\sin\varphi)
+=r^{3}(\cos 3\varphi+\ii\sin 3\varphi),
+\]
+\[
+\vdots
+\]
+
+\begin{thmbox}
+\begin{theorem}[Hatványozás pozitív egész kitevőre]
+Ha $z=r(\cos\varphi+\ii\sin\varphi)$ és $n\in\Z^{+}$, akkor
+\begin{equation}\label{eq:hatvany}
+z^{n}=r^{n}(\cos n\varphi+\ii\sin n\varphi).
+\end{equation}
+\end{theorem}
+\end{thmbox}
+
+% [p4]
+\begin{thmbox}
+\begin{proposition}[Hányados, reciprok, negatív kitevő]
+Megmutatható, hogy
+\begin{align}
+\frac{z_{1}}{z_{2}}&=\frac{r_{1}(\cos\varphi_{1}+\ii\sin\varphi_{1})}{r_{2}(\cos\varphi_{2}+\ii\sin\varphi_{2})}
+=\frac{r_{1}}{r_{2}}\bigl(\cos(\varphi_{1}-\varphi_{2})+\ii\sin(\varphi_{1}-\varphi_{2})\bigr),
+\label{eq:polhanyados}\\
+\frac{1}{z}&=\frac{1(\cos 0+\ii\sin 0)}{r(\cos\varphi+\ii\sin\varphi)}
+=\frac{1}{r}\bigl(\cos(-\varphi)+\ii\sin(-\varphi)\bigr),
+\label{eq:reciprok}
+\end{align}
+és általában $z=r(\cos\varphi+\ii\sin\varphi)$ esetén
+\begin{equation}\label{eq:negativkitevo}
+z^{-n}=r^{-n}\bigl(\cos(-n\varphi)+\ii\sin(-n\varphi)\bigr).
+\end{equation}
+\end{proposition}
+\end{thmbox}
+
+\begin{thmbox}
+\begin{theorem}[Hatványozás egész kitevőre]
+Összefoglalva $z=r(\cos\varphi+\ii\sin\varphi)$ esetén, ha $m\in\Z$, akkor
+\begin{equation}\label{eq:egeszhatvany}
+z^{m}=r^{m}(\cos m\varphi+\ii\sin m\varphi).
+\end{equation}
+\end{theorem}
+\end{thmbox}
+
+% ===================================================================
+\section{Gyökvonás}
+
+% [p4]
+\begin{defbox}
+\begin{definition}[$n$-edik gyök]
+A $z\in\C$ komplex számnak a $w\in\C$ szám \emph{$n$-edik gyöke}, ha
+\[
+w^{n}=z .
+\]
+\end{definition}
+\end{defbox}
+
+\begin{thmbox}
+\begin{theorem}[A komplex $n$-edik gyökök]
+A $z\neq 0$ komplex számnak $n$ db.\ $n$-edik gyöke van, és
+\begin{equation}\label{eq:gyok}
+z^{1/n}=r^{1/n}\left(\cos\frac{\varphi+k2\pi}{n}+\ii\sin\frac{\varphi+k2\pi}{n}\right),
+\qquad k=0, 1, \dots, n-1 .
+\end{equation}
+\end{theorem}
+\end{thmbox}
+\begin{proof}
+Legyen
+\[
+z=r(\cos\varphi+\ii\sin\varphi),\qquad w=\rho(\cos\alpha+\ii\sin\alpha).
+\]
+Így
+\[
+r(\cos\varphi+\ii\sin\varphi)=z=w^{n}=\rho^{n}(\cos n\alpha+\ii\sin n\alpha),
+\]
+ahonnan
+\[
+r=\rho^{n}\ \Longrightarrow\ \rho=r^{1/n},
+\]
+\[
+n\alpha=\varphi+k\cdot 2\pi\ \Longrightarrow\ \alpha=\frac{\varphi+k2\pi}{n},\qquad k\in\Z .
+\]
+Csak $k=0, 1, \dots, n-1$ esetén kapunk különböző komplex számokat, így a $z\neq 0$ komplex számnak $n$ db.\ $n$-edik gyöke van.
+\end{proof}
+
+% [p5]
+\begin{exbox}
+\begin{example}
+Adjuk meg algebrai alakban a $z=-128-128\sqrt{3}\,\ii$ szám negyedik gyökeit.
+\end{example}
+\end{exbox}
+\begin{solution}
+Itt $a=-128$ és $b=-128\sqrt{3}$, tehát
+\[
+r=\sqrt{(-128)^{2}+(-128\sqrt{3})^{2}}=256,
+\]
+\[
+\tg\varphi=\frac{-128\sqrt{3}}{-128}=\sqrt{3}\quad\Longrightarrow\quad
+\varphi=\frac{\pi}{3}\ \text{v.}\ \chosen{\frac{4\pi}{3}} .
+\]
+
+\begin{notefig}{A $z=-128-128\sqrt{3}\,\ii$ szám a $\varphi=\frac{4\pi}{3}$ szöggel.}
+\begin{tikzpicture}[scale=0.9,>=Stealth]
+\draw[->] (-2.0,0) -- (1.6,0);
+\draw[->] (0,-2.4) -- (0,1.4);
+\coordinate (P) at (-1.0,-1.732);
+\draw[thick,accent] (0,0) -- (P);
+\draw[accent] (0.5,0) arc (0:240:0.5);
+\node[accent,font=\footnotesize] at (0.32,0.72) {$\tfrac{4\pi}{3}$};
+\fill (P) circle (1.2pt);
+\node[font=\footnotesize,above] at (-1.0,0.06) {$-128$};
+\node[font=\footnotesize,left] at (-0.06,-1.9) {$-128\sqrt{3}$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent A \eqref{eq:gyok} formula szerint
+\[
+z^{1/4}=256^{1/4}\left(\cos\frac{\frac{4\pi}{3}+k2\pi}{4}+\ii\sin\frac{\frac{4\pi}{3}+k2\pi}{4}\right),
+\qquad k=0, 1, 2, 3 .
+\]
+Az egyes esetek:
+\begin{align*}
+k=0:\quad z_{1}&=256^{1/4}\left(\cos\frac{\pi}{3}+\ii\sin\frac{\pi}{3}\right)
+=4\left(\frac{1}{2}+\ii\,\frac{\sqrt{3}}{2}\right)=2+2\sqrt{3}\,\ii,\\
+k=1:\quad z_{2}&=256^{1/4}\left(\cos\frac{5\pi}{6}+\ii\sin\frac{5\pi}{6}\right)
+=4\left(-\frac{\sqrt{3}}{2}+\ii\cdot\frac{1}{2}\right)=-2\sqrt{3}+2\ii,\\
+k=2:\quad z_{3}&=256^{1/4}\left(\cos\frac{4\pi}{3}+\ii\sin\frac{4\pi}{3}\right)
+=4\left(-\frac{1}{2}+\ii\left(-\frac{\sqrt{3}}{2}\right)\right)=-2-2\sqrt{3}\,\ii,\\
+k=3:\quad z_{4}&=256^{1/4}\left(\cos\frac{11\pi}{6}+\ii\sin\frac{11\pi}{6}\right)
+=4\left(\frac{\sqrt{3}}{2}+\ii\left(-\frac{1}{2}\right)\right)=2\sqrt{3}-2\ii .
+\end{align*}
+\end{solution}
+
+\begin{exbox}
+\begin{example}
+Oldjuk meg a
+\[
+z^{2}+4z+13=0
+\]
+egyenletet.
+\end{example}
+\end{exbox}
+\begin{solution}
+A megoldóformulából
+\[
+z_{1,2}=\frac{-4\pm\sqrt{16-52}}{2}=\frac{-4\pm\sqrt{-36}}{2}.
+\]
+A $\sqrt{-36}$ meghatározásához vegyük észre, hogy itt $a=-36$ és $b=0$, tehát
+\[
+-36=36(\cos\pi+\ii\sin\pi),
+\]
+\[
+\sqrt{-36}=36^{1/2}\left(\cos\frac{\pi+k2\pi}{2}+\ii\sin\frac{\pi+k2\pi}{2}\right),\qquad k=0, 1 .
+\]
+
+\begin{notefig}{A $-36$ szám a $\varphi=\pi$ szöggel.}
+\begin{tikzpicture}[scale=0.9,>=Stealth]
+\draw[->] (-2.0,0) -- (1.6,0);
+\draw[->] (0,-1.0) -- (0,1.4);
+\coordinate (P) at (-1.4,0);
+\draw[thick,accent] (0,0) -- (P);
+\draw[accent] (0.5,0) arc (0:180:0.5);
+\node[accent,font=\footnotesize] at (0.1,0.68) {$\pi$};
+\fill (P) circle (1.2pt);
+\node[font=\footnotesize,below] at (-1.4,-0.08) {$-36$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent A két eset:
+\[
+k=0:\quad 36^{1/2}\left(\cos\frac{\pi}{2}+\ii\sin\frac{\pi}{2}\right)=6\ii,
+\]
+\[
+k=1:\quad 36^{1/2}\left(\cos\frac{3\pi}{2}+\ii\sin\frac{3\pi}{2}\right)=-6\ii .
+\]
+Ezekkel
+\[
+z_{1,2}=\frac{-4\pm(\pm 6\ii)}{2}=\frac{-4\pm 6\ii}{2}=
+\begin{cases}
+-2+3\ii,\\
+-2-3\ii .
+\end{cases}
+\]
+\end{solution}
+
+\end{document}
