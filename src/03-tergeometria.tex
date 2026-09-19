@@ -1,0 +1,873 @@
+% =====================================================================
+%  Térgeometria
+%
+%  JAVÍTOTT FORRÁSHIBÁK
+%   [p1] |v| = sqrt(v_1^2 + v_3^2 + v_3^2)  ->  v_2^2 a középső tag
+%   [p2] az 1. tulajdonságban u v = 0 aláhúzott (vektor) nullája  ->  skalár 0
+%   [p3] a 7. tulajdonság kifejtésének első tényezőjében u_3 j  ->  u_3 k
+%   [p5] a háromszög területénél sin γ  ->  sin φ (a jegyzet mindenhol φ)
+%   [p7] a = DA, b = DB, c = DC címkék  ->  AD, BD, CD (a koordináták
+%        D - A, D - B, D - C alakúak, és a Sarrus-séma ezeket használja)
+%   [p7] c első koordinátája 5  ->  -5, mert c = CD = D - C = (-5,-5,4);
+%        emiatt a vegyesszorzat 117 helyett 77, a térfogat 19,5 helyett 77/6
+%   [p11] PM = (6/7, 9/7, 3/7)  ->  (6/7, -9/7, 3/7); a távolság nem változik
+%
+%  KIEGÉSZÍTÉS
+%   [p2] az 5. tulajdonság levezetésében |v| cos φ előjeles összetevő, nem
+%        hossz; tompaszögnél negatív, és a vetület iránya u-val ellentétes
+%   [p9] az e_2, e_3 pár kitérő, egy tagmondattal arról, hogy a kitérő
+%        egyenesek nem illeszkednek közös síkra
+%
+%  JELZETT, DE NEM MÓDOSÍTOTT HIÁNYOK
+%   [p2] a 4. tulajdonság minden α, β valósra szól, a bizonyítás csak
+%        α, β > 0 esetre
+%   [p2,p3] a 6. tulajdonság bizonyítása a (v+w)_p = v_p + w_p állításra
+%        épül, ami ábrával indokolt, nem bizonyított
+%   [p4] a vektoriális szorzat definíciója a párhuzamos esetről hallgat,
+%        ahol sin φ = 0 és a 3. feltétel nem jelöl ki irányt
+%   [p5,p7] a Sarrus-séma emlékeztető, az első sorban bázisvektorokkal;
+%        a jegyzet nem tér ki arra, hogy ez nem determináns
+%   [p6] a vegyesszorzat csak (a x b)c alakban van definiálva, az
+%        a(b x c) alak egyenlősége nem szerepel
+%   [p10,p11] nincs képlet a pont-sík távolságra, sem egyenesek és síkok
+%        szögére; minden konkrét adatokkal, eljárásként történik
+% =====================================================================
+
+\documentclass[11pt]{article}
+\input{preamble}
+\input{macros}
+
+\begin{document}
+\titleblock{Térgeometria}
+
+% ===================================================================
+\section{Vektorok}
+
+% [p1]
+Legyen $\vect i$, $\vect j$, $\vect k$ a koordinátatengelyek irányába mutató egységvektor, azaz
+\[
+\abs{\vect i}=\abs{\vect j}=\abs{\vect k}=1 .
+\]
+A $P(v_{1}, v_{2}, v_{3})$ pont helyvektora
+\[
+\overrightarrow{OP}=\vect v=(v_{1}, v_{2}, v_{3}).
+\]
+
+\begin{notefig}{A $P$ pont helyvektora és a bázisvektorok.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\node[font=\footnotesize] at (2.4,0,0) {$x$};
+\node[font=\footnotesize] at (0,3.0,0) {$y$};
+\node[font=\footnotesize] at (0,0,2.55) {$z$};
+\draw[thick,thmaccent,->] (0,0,0) -- (1,0,0) node[below left,font=\footnotesize] {$\vect i$};
+\draw[thick,thmaccent,->] (0,0,0) -- (0,1,0) node[below,font=\footnotesize] {$\vect j$};
+\draw[thick,thmaccent,->] (0,0,0) -- (0,0,1) node[left,font=\footnotesize] {$\vect k$};
+\draw[thick,accent,->] (0,0,0) -- (0.9,1.7,1.5);
+\node[accent,font=\footnotesize,below right] at (0.5,0.95,0.83) {$\vect v$};
+\fill (0.9,1.7,1.5) circle (1.3pt);
+\node[font=\footnotesize,above right] at (0.9,1.7,1.5) {$P(v_{1}, v_{2}, v_{3})$};
+\node[font=\footnotesize,above left] at (0,0,0) {$O$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent A $\vect v$ hossza
+\[
+\abs{\vect v}=\sqrt{v_{1}^{2}+v_{2}^{2}+v_{3}^{2}},
+\]
+a $\vect v$ irányú egységvektor pedig
+\[
+\frac{\vect v}{\abs{\vect v}}\qquad (\vect v\neq\vect 0).
+\]
+
+A $P_{1}(x_{1}, y_{1}, z_{1})$ és $P_{2}(x_{2}, y_{2}, z_{2})$ pontokra
+\[
+\overrightarrow{P_{1}P_{2}}=(x_{2}-x_{1},\ y_{2}-y_{1},\ z_{2}-z_{1}).
+\]
+
+\begin{notefig}{Két pont és a köztük haladó vektor.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\fill (0.8,1.0,0.9) circle (1.3pt) node[below right,font=\footnotesize] {$P_{1}(x_{1}, y_{1}, z_{1})$};
+\fill (0.4,2.0,1.8) circle (1.3pt) node[above right,font=\footnotesize] {$P_{2}(x_{2}, y_{2}, z_{2})$};
+\draw[thick,accent,->] (0.8,1.0,0.9) -- (0.4,2.0,1.8);
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Műveletek térvektorokkal. Legyen $\vect u=(u_{1}, u_{2}, u_{3})$ és $\vect v=(v_{1}, v_{2}, v_{3})$. Ekkor
+\begin{align}
+\vect u+\vect v&=(u_{1}+v_{1},\ u_{2}+v_{2},\ u_{3}+v_{3}), \label{eq:osszeg}\\
+\vect u-\vect v&=(u_{1}-v_{1},\ u_{2}-v_{2},\ u_{3}-v_{3}), \label{eq:kulonbseg}
+\end{align}
+és $\lambda\in\R$ esetén
+\begin{equation}\label{eq:skalarszoros}
+\lambda\vect u=(\lambda u_{1},\ \lambda u_{2},\ \lambda u_{3}).
+\end{equation}
+
+\begin{notefig}{Az összeg a paralelogramma átlója.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\draw[thmaccent,dashed] (0.5,1.8,1.4) -- (1.3,2.6,1.0);
+\draw[thmaccent,dashed] (0.8,0.8,-0.4) -- (1.3,2.6,1.0);
+\draw[thick,accent,->] (0,0,0) -- (0.5,1.8,1.4);
+\node[accent,font=\footnotesize,left] at (0.5,1.8,1.4) {$\vect v$};
+\draw[thick,accent,->] (0,0,0) -- (0.8,0.8,-0.4);
+\node[accent,font=\footnotesize,below] at (0.8,0.8,-0.4) {$\vect u$};
+\draw[thick,exaccent,->] (0,0,0) -- (1.3,2.6,1.0);
+\node[exaccent,font=\footnotesize,right] at (1.3,2.6,1.0) {$\vect u+\vect v$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Feladat: határozzuk meg az $\vect u$ és $\vect v$ vektorok által bezárt szöget.
+
+% ===================================================================
+\section{Skaláris szorzat}
+
+% [p1]
+\begin{defbox}
+\begin{definition}[Skaláris szorzat]
+Az $\vect u$ és $\vect v$ vektorok \emph{skaláris szorzata}
+\[
+\vect u\vect v=\abs{\vect u}\abs{\vect v}\cos\varphi,
+\]
+ahol $\varphi$ a két vektor által bezárt szög, $0\le\varphi\le\pi$.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{A két vektor által bezárt $\varphi$ szög.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\draw[thick,accent,->] (0,0,0) -- (0.6,1.2,1.7) node[above,font=\footnotesize] {$\vect v$};
+\draw[thick,accent,->] (0,0,0) -- (0.9,2.0,0.2) node[right,font=\footnotesize] {$\vect u$};
+\node[font=\footnotesize] at (0.42,0.86,0.62) {$\varphi$};
+\end{tikzpicture}
+\end{notefig}
+
+% [p2]
+\begin{thmbox}
+\begin{theorem}[A skaláris szorzat tulajdonságai]
+\begin{enumerate}[label=\arabic*.]
+\item Ha $\vect u, \vect v\neq\vect 0$, akkor $\vect u\vect v=0$ pontosan akkor, ha $\vect u\perp\vect v$.
+\item $\vect u\vect v=\vect v\vect u$ (kommutativitás).
+\item $\vect u\vect u=\abs{\vect u}^{2}$.
+\item Minden $\alpha, \beta\in\R$ esetén $(\alpha\vect u)(\beta\vect v)=(\alpha\beta)(\vect u\vect v)$.
+\item A $\vect v$ vektor $\vect u$ vektorra vett vetülete
+\[
+\vect v_{p}=\frac{\vect u\vect v}{\abs{\vect u}^{2}}\,\vect u .
+\]
+\item Minden $\vect u, \vect v, \vect w$ térvektor esetén $\vect u(\vect v+\vect w)=\vect u\vect v+\vect u\vect w$ (disztributivitás).
+\item Ha $\vect u=(u_{1}, u_{2}, u_{3})$ és $\vect v=(v_{1}, v_{2}, v_{3})$, akkor
+\[
+\vect u\vect v=u_{1}v_{1}+u_{2}v_{2}+u_{3}v_{3}.
+\]
+\end{enumerate}
+\end{theorem}
+\end{thmbox}
+
+\begin{proof}[Az 1. tulajdonság bizonyítása]
+Ha $\vect u, \vect v\neq\vect 0$, akkor
+\[
+\vect u\vect v=0
+\iff \abs{\vect u}\abs{\vect v}\cos\varphi=0
+\iff \cos\varphi=0
+\iff \varphi=\frac{\pi}{2}
+\iff \vect u\perp\vect v .
+\]
+\end{proof}
+
+\begin{proof}[A 3. tulajdonság bizonyítása]
+\[
+\vect u\vect u=\abs{\vect u}\abs{\vect u}\cos 0=\abs{\vect u}^{2}.
+\]
+\end{proof}
+
+\begin{proof}[A 4. tulajdonság bizonyítása $\alpha, \beta>0$ esetén]
+\[
+(\alpha\vect u)(\beta\vect v)=\abs{\alpha\vect u}\cdot\abs{\beta\vect v}\cos\varphi
+=\alpha\abs{\vect u}\cdot\beta\abs{\vect v}\cos\varphi
+=(\alpha\beta)\bigl(\abs{\vect u}\abs{\vect v}\cos\varphi\bigr)=(\alpha\beta)(\vect u\vect v),
+\]
+hiszen $\alpha\vect u$ és $\beta\vect v$ által bezárt szög is $\varphi$.
+\end{proof}
+
+\begin{notefig}{Pozitív skalárral szorozva a bezárt szög nem változik.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\draw[thick,accent,->] (0,0,0) -- (0.5,1.0,1.4) node[above,font=\footnotesize] {$\vect v$};
+\draw[thick,thmaccent,->] (0,0,0) -- (0.75,1.5,2.1) node[above,font=\footnotesize] {$\beta\vect v$};
+\draw[thick,accent,->] (0,0,0) -- (0.8,1.6,0.2) node[below right,font=\footnotesize] {$\vect u$};
+\draw[thick,thmaccent,->] (0,0,0) -- (1.15,2.3,0.29) node[right,font=\footnotesize] {$\alpha\vect u$};
+\node[font=\footnotesize] at (0.35,0.72,0.56) {$\varphi$};
+\end{tikzpicture}
+\end{notefig}
+
+\begin{proof}[Az 5. tulajdonság levezetése]
+A $\vect v_{p}$ vetület az $\vect u$ irányába eső előjeles összetevő és az $\vect u$ irányában lévő egységvektor szorzata:
+\[
+\vect v_{p}=\bigl(\abs{\vect v}\cos\varphi\bigr)\cdot\frac{\vect u}{\abs{\vect u}}
+=\frac{\abs{\vect u}\abs{\vect v}\cos\varphi}{\abs{\vect u}^{2}}\,\vect u
+=\frac{\vect u\vect v}{\abs{\vect u}^{2}}\,\vect u .
+\]
+Itt $\abs{\vect v}\cos\varphi$ előjeles mennyiség, nem hossz: $\varphi<\tfrac{\pi}{2}$ esetén pozitív, $\varphi>\tfrac{\pi}{2}$ esetén negatív, és ilyenkor $\vect v_{p}$ az $\vect u$-val ellentétes irányba mutat.
+\end{proof}
+
+\begin{notefig}{A $\vect v$ vektor $\vect u$ irányú vetülete.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\draw[thick,accent,->] (0,0,0) -- (0.5,1.1,1.5) node[above,font=\footnotesize] {$\vect v$};
+\draw[thick,accent,->] (0,0,0) -- (1.0,2.2,0.2) node[right,font=\footnotesize] {$\vect u$};
+\draw[thick,exaccent,->] (0,0,0) -- (0.52,1.14,0.10);
+\node[exaccent,font=\footnotesize,below] at (0.52,1.14,0.10) {$\vect v_{p}$};
+\draw[thmaccent,dashed] (0.5,1.1,1.5) -- (0.52,1.14,0.10);
+\node[font=\footnotesize] at (0.28,0.62,0.50) {$\varphi$};
+\end{tikzpicture}
+\end{notefig}
+
+\begin{proof}[A 6. tulajdonság bizonyítása]
+Az 5. tulajdonság szerint
+\[
+\vect v_{p}=\frac{\vect u\vect v}{\abs{\vect u}^{2}}\,\vect u,\qquad
+\vect w_{p}=\frac{\vect u\vect w}{\abs{\vect u}^{2}}\,\vect u,\qquad
+(\vect v+\vect w)_{p}=\frac{\vect u(\vect v+\vect w)}{\abs{\vect u}^{2}}\,\vect u .
+\]
+Mindig teljesül, hogy $(\vect v+\vect w)_{p}=\vect v_{p}+\vect w_{p}$, ezért
+\[
+\frac{\vect u\vect v}{\abs{\vect u}^{2}}\,\vect u+\frac{\vect u\vect w}{\abs{\vect u}^{2}}\,\vect u
+=\frac{\vect u(\vect v+\vect w)}{\abs{\vect u}^{2}}\,\vect u,
+\]
+% [p3]
+azaz
+\[
+(\vect u\vect v+\vect u\vect w)\frac{\vect u}{\abs{\vect u}^{2}}
+=\vect u(\vect v+\vect w)\cdot\frac{\vect u}{\abs{\vect u}^{2}},
+\]
+ahonnan $\vect u\vect v+\vect u\vect w=\vect u(\vect v+\vect w)$, ha $\vect u\neq\vect 0$. A másik oldali disztributivitás is teljesül:
+\[
+(\vect u+\vect v)\vect w=\vect w(\vect u+\vect v)=\vect w\vect u+\vect w\vect v=\vect u\vect w+\vect v\vect w .
+\]
+\end{proof}
+
+\begin{notefig}{A vetületek összeadódnak.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\draw[thick,accent,->] (0,0,0) -- (0.4,0.9,1.8) node[above left,font=\footnotesize] {$\vect w$};
+\draw[thick,accent,->] (0,0,0) -- (0.7,1.6,0.9) node[above right,font=\footnotesize] {$\vect v$};
+\draw[thick,exaccent,->] (0,0,0) -- (1.1,2.5,2.7);
+\node[exaccent,font=\footnotesize,right] at (1.1,2.5,2.7) {$\vect v+\vect w$};
+\draw[thick,accent,->] (0,0,0) -- (1.2,2.7,0.1) node[right,font=\footnotesize] {$\vect u$};
+\draw[thmaccent,dashed] (0.7,1.6,0.9) -- (0.72,1.64,0.06);
+\draw[thmaccent,dashed] (0.4,0.9,1.8) -- (0.42,0.94,0.03);
+\node[thmaccent,font=\footnotesize,below] at (0.72,1.64,0.06) {$\vect v_{p}$};
+\node[thmaccent,font=\footnotesize,below] at (0.42,0.94,0.03) {$\vect w_{p}$};
+\end{tikzpicture}
+\end{notefig}
+
+\begin{proof}[A 7. tulajdonság bizonyítása]
+Legyen $\vect u=(u_{1}, u_{2}, u_{3})$ és $\vect v=(v_{1}, v_{2}, v_{3})$, azaz
+\[
+\vect u=u_{1}\vect i+u_{2}\vect j+u_{3}\vect k,\qquad
+\vect v=v_{1}\vect i+v_{2}\vect j+v_{3}\vect k .
+\]
+Ekkor
+\begin{align*}
+\vect u\vect v&=(u_{1}\vect i+u_{2}\vect j+u_{3}\vect k)(v_{1}\vect i+v_{2}\vect j+v_{3}\vect k)\\
+&=(u_{1}v_{1})(\vect i\vect i)+(u_{1}v_{2})(\vect i\vect j)+(u_{1}v_{3})(\vect i\vect k)
++(u_{2}v_{1})(\vect j\vect i)+(u_{2}v_{2})(\vect j\vect j)\\
+&\quad +(u_{2}v_{3})(\vect j\vect k)+(u_{3}v_{1})(\vect k\vect i)+(u_{3}v_{2})(\vect k\vect j)
++(u_{3}v_{3})(\vect k\vect k).
+\end{align*}
+Mivel $\vect i\perp\vect j$, $\vect i\perp\vect k$ és $\vect j\perp\vect k$, az 1. tulajdonság szerint
+\[
+\vect i\vect j=\vect j\vect i=0,\qquad \vect i\vect k=\vect k\vect i=0,\qquad
+\vect j\vect k=\vect k\vect j=0,
+\]
+a 3. tulajdonság szerint pedig
+\[
+\vect i\vect i=\abs{\vect i}^{2}=1,\qquad \vect j\vect j=\abs{\vect j}^{2}=1,\qquad
+\vect k\vect k=\abs{\vect k}^{2}=1 .
+\]
+Tehát $\vect u\vect v=u_{1}v_{1}+u_{2}v_{2}+u_{3}v_{3}$.
+\end{proof}
+
+% [p4]
+\begin{exbox}
+\begin{example}
+Határozzuk meg az $\vect a=(3, 4, 5)$ és $\vect b=(2, 1, 0)$ térvektorok által bezárt szöget.
+\end{example}
+\end{exbox}
+\begin{solution}
+A definíció szerint $\vect a\vect b=\abs{\vect a}\abs{\vect b}\cos\varphi$, ahonnan
+\[
+\cos\varphi=\frac{\vect a\vect b}{\abs{\vect a}\abs{\vect b}}
+=\frac{3\cdot 2+4\cdot 1+5\cdot 0}{\sqrt{9+16+25}\,\sqrt{4+1+0}}
+=\frac{10}{\sqrt{50}\cdot\sqrt{5}}=0,632,
+\]
+tehát $\varphi=50,77^{\circ}$.
+
+\begin{notefig}{Az $\vect a$ és $\vect b$ által bezárt szög.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\draw[thick,accent,->] (0,0,0) -- (0.5,1.0,1.6) node[above,font=\footnotesize] {$\vect b$};
+\draw[thick,accent,->] (0,0,0) -- (0.9,2.0,0.3) node[right,font=\footnotesize] {$\vect a$};
+\node[font=\footnotesize] at (0.40,0.80,0.60) {$\varphi$};
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+\begin{exbox}
+\begin{example}
+Bontsuk fel a $\vect v=(4, -1, 2)$ vektort az $\vect u=(-2, 3, 1)$ vektorral párhuzamos és rá merőleges vektorokra.
+\end{example}
+\end{exbox}
+\begin{solution}
+A felbontás $\vect v=\vect v_{p}+\vect v_{m}$ alakú, ahol
+\[
+\vect v_{p}=\frac{\vect u\vect v}{\abs{\vect u}^{2}}\,\vect u
+=\frac{-8-3+2}{4+9+1}\,(-2, 3, 1)
+=\frac{-9}{14}\,(-2, 3, 1)
+=\left(\frac{18}{14},\ -\frac{27}{14},\ -\frac{9}{14}\right),
+\]
+\[
+\vect v_{m}=\vect v-\vect v_{p}=(4, -1, 2)-\left(\frac{18}{14},\ -\frac{27}{14},\ -\frac{9}{14}\right)
+=\left(\frac{38}{14},\ \frac{13}{14},\ \frac{37}{14}\right).
+\]
+
+\begin{notefig}{A $\vect v$ felbontása $\vect u$-val párhuzamos és rá merőleges összetevőre.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\draw[thick,accent,->] (0,0,0) -- (0.5,1.1,1.6) node[above,font=\footnotesize] {$\vect v$};
+\draw[thick,exaccent,->] (0,0,0) -- (0.52,1.14,0.10) node[below,font=\footnotesize] {$\vect v_{p}$};
+\draw[thick,thmaccent,->] (0,0,0) -- (-0.02,-0.04,1.50) node[left,font=\footnotesize] {$\vect v_{m}$};
+\draw[thick,accent,->] (0,0,0) -- (1.0,2.2,0.2) node[right,font=\footnotesize] {$\vect u$};
+\draw[rulec,dashed] (0.5,1.1,1.6) -- (0.52,1.14,0.10);
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+% ===================================================================
+\section{Vektoriális szorzat}
+
+% [p4]
+\begin{defbox}
+\begin{definition}[Vektoriális szorzat]
+Az $\vect a, \vect b\neq\vect 0$ térvektorok \emph{vektoriális szorzata} az az $\vect a\times\vect b$-vel jelölt vektor, amire teljesül, hogy
+\begin{enumerate}[label=\arabic*.]
+\item $\abs{\vect a\times\vect b}=\abs{\vect a}\abs{\vect b}\sin\varphi$,
+\item $\vect a\times\vect b\perp\vect a$ és $\vect a\times\vect b\perp\vect b$,
+\item az $\vect a$, $\vect b$, $\vect a\times\vect b$ jobbsodrású rendszert alkot (jobbkéz-szabály).
+\end{enumerate}
+\end{definition}
+\end{defbox}
+
+% [p5]
+\begin{notefig}{A vektoriális szorzat iránya.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\draw[thick,accent,->] (0,0,0) -- (0.3,0.4,2.3);
+\node[accent,font=\footnotesize,above] at (0.3,0.4,2.3) {$\vect a\times\vect b$};
+\draw[thick,thmaccent,->] (0,0,0) -- (0.4,1.2,1.5) node[above right,font=\footnotesize] {$\vect b$};
+\draw[thick,thmaccent,->] (0,0,0) -- (1.0,2.3,0.2) node[right,font=\footnotesize] {$\vect a$};
+\node[font=\footnotesize] at (0.32,0.90,0.62) {$\varphi$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Kiszámítása. Legyen $\vect a=(a_{1}, a_{2}, a_{3})$ és $\vect b=(b_{1}, b_{2}, b_{3})$. Ekkor
+\begin{equation}\label{eq:vekt}
+\vect a\times\vect b=(a_{2}b_{3}-a_{3}b_{2})\vect i+(a_{3}b_{1}-a_{1}b_{3})\vect j+(a_{1}b_{2}-a_{2}b_{1})\vect k,
+\end{equation}
+amit a Sarrus-szabály szerinti séma ad meg.
+
+\begin{notefig}{A vektoriális szorzat Sarrus-sémája.}
+\begin{tikzpicture}[x=1.05cm,y=0.78cm,font=\footnotesize]
+\foreach \c in {0,1,2}{
+  \draw[accent] (\c,0) -- (\c+2,-2);
+  \draw[thmaccent] (\c,-2) -- (\c+2,0);
+}
+\draw[rulec] (2.5,0.5) -- (2.5,-2.5);
+\foreach \c/\t in {0/{\vect i},1/{\vect j},2/{\vect k},3/{\vect i},4/{\vect j}}
+  \node[fill=white,inner sep=2.5pt] at (\c,0) {$\t$};
+\foreach \c/\t in {0/{a_{1}},1/{a_{2}},2/{a_{3}},3/{a_{1}},4/{a_{2}}}
+  \node[fill=white,inner sep=2.5pt] at (\c,-1) {$\t$};
+\foreach \c/\t in {0/{b_{1}},1/{b_{2}},2/{b_{3}},3/{b_{1}},4/{b_{2}}}
+  \node[fill=white,inner sep=2.5pt] at (\c,-2) {$\t$};
+\node[accent,right] at (5.2,-0.5) {$\diagdown$\,: $\oplus$};
+\node[thmaccent,right] at (5.2,-1.5) {$\diagup$\,: $\ominus$};
+\end{tikzpicture}
+\end{notefig}
+
+\begin{exbox}
+\begin{example}
+Számítsuk ki az $\vect a=(3, -1, 2)$ és $\vect b=(5, 4, -1)$ vektorok vektoriális szorzatát.
+\end{example}
+\end{exbox}
+\begin{solution}
+\[
+\vect a\times\vect b=
+\begin{vmatrix}
+\vect i & \vect j & \vect k\\
+3 & -1 & 2\\
+5 & 4 & -1
+\end{vmatrix}
+=\vect i\,(1-8)+\vect j\,\bigl(10-(-3)\bigr)+\vect k\,\bigl(12-(-5)\bigr)=(-7, 13, 17).
+\]
+\end{solution}
+
+\begin{exbox}
+\begin{example}
+Határozzuk meg az $\vect a=(-1, 2, -3)$ és $\vect b=(4, 1, 2)$ vektorok által meghatározott háromszög területét.
+\end{example}
+\end{exbox}
+\begin{solution}
+\[
+\vect a\times\vect b=
+\begin{vmatrix}
+\vect i & \vect j & \vect k\\
+-1 & 2 & -3\\
+4 & 1 & 2
+\end{vmatrix}
+=\vect i\,\bigl(4-(-3)\bigr)+\vect j\,\bigl(-12-(-2)\bigr)+\vect k\,(-1-8)=(7, -10, -9),
+\]
+ezért
+\[
+t_{\triangle}=\frac{\abs{\vect a}\abs{\vect b}\sin\varphi}{2}=\frac{\abs{\vect a\times\vect b}}{2}
+=\frac{\sqrt{49+100+81}}{2}=\frac{\sqrt{230}}{2}.
+\]
+
+\begin{notefig}{Az $\vect a$ és $\vect b$ által meghatározott háromszög.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\draw[exbg,fill=exbg] (0,0,0) -- (0.4,1.0,1.7) -- (1.0,2.3,0.3) -- cycle;
+\draw[thick,accent,->] (0,0,0) -- (0.4,1.0,1.7) node[above,font=\footnotesize] {$\vect b$};
+\draw[thick,accent,->] (0,0,0) -- (1.0,2.3,0.3) node[right,font=\footnotesize] {$\vect a$};
+\draw[thmaccent] (0.4,1.0,1.7) -- (1.0,2.3,0.3);
+\node[font=\footnotesize] at (0.34,0.86,0.62) {$\varphi$};
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+% ===================================================================
+\section{Vegyesszorzat}
+
+% [p6]
+\begin{defbox}
+\begin{definition}[Vegyesszorzat]
+Az $\vect a$, $\vect b$ és $\vect c$ térvektorok \emph{vegyesszorzata}
+\[
+(\vect a\times\vect b)\vect c=\abs{\vect a\times\vect b}\abs{\vect c}\cos\varphi .
+\]
+Jelölés: $\vect a\vect b\vect c$.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{A vegyesszorzatban szereplő szög.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\node[font=\footnotesize] at (2.4,0,0) {$x$};
+\node[font=\footnotesize] at (0,3.0,0) {$y$};
+\node[font=\footnotesize] at (0,0,2.55) {$z$};
+\draw[thick,accent,->] (0,0,0) -- (0.9,0.2,2.0);
+\node[accent,font=\footnotesize,above left] at (0.9,0.2,2.0) {$\vect a\times\vect b$};
+\draw[thick,thmaccent,->] (0,0,0) -- (0.5,1.3,1.6) node[above right,font=\footnotesize] {$\vect c$};
+\draw[thick,thmaccent,->] (0,0,0) -- (1.0,2.3,0.3) node[right,font=\footnotesize] {$\vect a$};
+\draw[thick,thmaccent,->] (0,0,0) -- (0.9,0.9,0.9) node[below right,font=\footnotesize] {$\vect b$};
+\node[font=\footnotesize] at (0.6,0.75,1.45) {$\varphi$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Geometriai jelentés. Az $\abs{\vect a\times\vect b}$ az $\vect a$ és $\vect b$ vektorok által meghatározott paralelogramma területe. Az $\abs{\vect c}\cos\varphi$ pedig:
+\begin{itemize}
+\item ha $\varphi<\dfrac{\pi}{2}$, akkor az $\vect a$, $\vect b$ és $\vect c$ vektorok által meghatározott paralelepipedon magassága;
+\item ha $\dfrac{\pi}{2}\le\varphi\le\pi$, akkor a paralelepipedon magasságának $(-1)$-szerese.
+\end{itemize}
+
+\begin{notefig}{Az $\vect a$, $\vect b$ és $\vect c$ által kifeszített paralelepipedon.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\draw[thick,accent,->] (0,0,0) -- (0.2,0.3,2.1);
+\node[accent,font=\footnotesize,left] at (0.2,0.3,2.1) {$\vect a\times\vect b$};
+\coordinate (O) at (0,0,0);
+\coordinate (A) at (1.4,1.9,0.1);
+\coordinate (B) at (0.2,1.5,0.5);
+\coordinate (C) at (0.3,0.7,1.7);
+\draw[thmaccent] (O) -- (A) -- ($(A)+(B)$) -- (B) -- cycle;
+\draw[thmaccent] (C) -- ($(A)+(C)$) -- ($(A)+(B)+(C)$) -- ($(B)+(C)$) -- cycle;
+\draw[thmaccent] (O) -- (C);
+\draw[thmaccent] (A) -- ($(A)+(C)$);
+\draw[thmaccent] (B) -- ($(B)+(C)$);
+\draw[thmaccent] ($(A)+(B)$) -- ($(A)+(B)+(C)$);
+\draw[thick,accent,->] (O) -- (A) node[right,font=\footnotesize] {$\vect a$};
+\draw[thick,accent,->] (O) -- (B) node[right,font=\footnotesize] {$\vect b$};
+\draw[thick,accent,->] (O) -- (C) node[left,font=\footnotesize] {$\vect c$};
+\node[font=\footnotesize] at (0.18,0.42,0.72) {$\varphi$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Így
+\[
+\underbrace{\abs{\vect a\vect b\vect c}}_{\text{abszolút érték}}
+\]
+az $\vect a$, $\vect b$ és $\vect c$ vektorok által meghatározott paralelepipedon térfogata, az $\vect a\vect b\vect c$ pedig az úgynevezett előjeles térfogat. Az $\vect a$, $\vect b$ és $\vect c$ térvektorok által meghatározott tetraéder térfogata
+\begin{equation}\label{eq:tetra}
+V_{\text{tetr}}=\frac{\abs{\vect a\vect b\vect c}}{6}.
+\end{equation}
+
+\begin{notefig}{Az $\vect a$, $\vect b$ és $\vect c$ által kifeszített tetraéder.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\node[font=\footnotesize] at (2.4,0,0) {$x$};
+\node[font=\footnotesize] at (0,3.0,0) {$y$};
+\node[font=\footnotesize] at (0,0,2.55) {$z$};
+\coordinate (A) at (1.2,1.9,0.2);
+\coordinate (B) at (0.2,1.4,0.6);
+\coordinate (C) at (0.3,0.6,1.8);
+\draw[exbg,fill=exbg] (A) -- (B) -- (C) -- cycle;
+\draw[thmaccent] (A) -- (B) -- (C) -- cycle;
+\draw[thick,accent,->] (0,0,0) -- (A) node[right,font=\footnotesize] {$\vect a$};
+\draw[thick,accent,->] (0,0,0) -- (B) node[right,font=\footnotesize] {$\vect b$};
+\draw[thick,accent,->] (0,0,0) -- (C) node[left,font=\footnotesize] {$\vect c$};
+\end{tikzpicture}
+\end{notefig}
+
+% [p7]
+\noindent Kiszámítása. Legyen $\vect a=(a_{1}, a_{2}, a_{3})$, $\vect b=(b_{1}, b_{2}, b_{3})$ és $\vect c=(c_{1}, c_{2}, c_{3})$. Ekkor
+\[
+\vect a\times\vect b=(a_{2}b_{3}-a_{3}b_{2},\ a_{3}b_{1}-a_{1}b_{3},\ a_{1}b_{2}-a_{2}b_{1}),
+\]
+\[
+(\vect a\times\vect b)\vect c=(a_{2}b_{3}-a_{3}b_{2})c_{1}+(a_{3}b_{1}-a_{1}b_{3})c_{2}+(a_{1}b_{2}-a_{2}b_{1})c_{3},
+\]
+ami a Sarrus-szabállyal
+\begin{equation}\label{eq:vegyes}
+\vect a\vect b\vect c=a_{1}b_{2}c_{3}+a_{2}b_{3}c_{1}+a_{3}b_{1}c_{2}-a_{3}b_{2}c_{1}-a_{1}b_{3}c_{2}-a_{2}b_{1}c_{3}.
+\end{equation}
+
+\begin{notefig}{A vegyesszorzat Sarrus-sémája.}
+\begin{tikzpicture}[x=1.05cm,y=0.78cm,font=\footnotesize]
+\foreach \c in {0,1,2}{
+  \draw[accent] (\c,0) -- (\c+2,-2);
+  \draw[thmaccent] (\c,-2) -- (\c+2,0);
+}
+\draw[rulec] (2.5,0.5) -- (2.5,-2.5);
+\foreach \c/\t in {0/{a_{1}},1/{a_{2}},2/{a_{3}},3/{a_{1}},4/{a_{2}}}
+  \node[fill=white,inner sep=2.5pt] at (\c,0) {$\t$};
+\foreach \c/\t in {0/{b_{1}},1/{b_{2}},2/{b_{3}},3/{b_{1}},4/{b_{2}}}
+  \node[fill=white,inner sep=2.5pt] at (\c,-1) {$\t$};
+\foreach \c/\t in {0/{c_{1}},1/{c_{2}},2/{c_{3}},3/{c_{1}},4/{c_{2}}}
+  \node[fill=white,inner sep=2.5pt] at (\c,-2) {$\t$};
+\node[accent,right] at (5.2,-0.5) {$\diagdown$\,: $\oplus$};
+\node[thmaccent,right] at (5.2,-1.5) {$\diagup$\,: $\ominus$};
+\end{tikzpicture}
+\end{notefig}
+
+\begin{exbox}
+\begin{example}
+Határozzuk meg az $A(4, -1, 2)$, $B(5, 3, 2)$, $C(4, 7, -1)$ és $D(-1, 2, 3)$ csúcsú tetraéder térfogatát.
+\end{example}
+\end{exbox}
+\begin{solution}
+A $D$ csúcsból induló élvektorok
+\[
+\vect a=\overrightarrow{AD}=(-5, 3, 1),\qquad
+\vect b=\overrightarrow{BD}=(-6, -1, 1),\qquad
+\vect c=\overrightarrow{CD}=(-5, -5, 4).
+\]
+A Sarrus-szabállyal
+\[
+\vect a\vect b\vect c=20-15+30-5-25+72=77,
+\]
+így \eqref{eq:tetra} szerint
+\[
+V_{\text{tetr}}=\frac{\abs{\vect a\vect b\vect c}}{6}=\frac{77}{6}\approx 12,83 .
+\]
+
+\begin{notefig}{A tetraéder és a $D$ csúcsból induló élvektorok.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\coordinate (D) at (0.4,1.0,1.9);
+\coordinate (A) at (0.9,1.6,0.3);
+\coordinate (B) at (0.3,2.4,0.4);
+\coordinate (C) at (1.4,1.0,0.6);
+\draw[exbg,fill=exbg] (A) -- (B) -- (C) -- cycle;
+\draw[thmaccent] (A) -- (B) -- (C) -- cycle;
+\draw[thick,accent,->] (A) -- (D);
+\draw[thick,accent,->] (B) -- (D);
+\draw[thick,accent,->] (C) -- (D);
+\node[font=\footnotesize,above] at (D) {$D$};
+\node[font=\footnotesize,left] at (A) {$A$};
+\node[font=\footnotesize,below] at (B) {$B$};
+\node[font=\footnotesize,right] at (C) {$C$};
+\node[accent,font=\footnotesize] at (0.55,1.2,1.2) {$\vect a$};
+\node[accent,font=\footnotesize] at (0.30,1.8,1.3) {$\vect b$};
+\node[accent,font=\footnotesize] at (1.00,1.0,1.3) {$\vect c$};
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+% ===================================================================
+\section{Egyenesek térben}
+
+% [p7]
+Egy térbeli egyenest annak egy $P_{0}(x_{0}, y_{0}, z_{0})$ pontja és egy vele párhuzamos $\vect v=(v_{1}, v_{2}, v_{3})$ vektor, az úgynevezett \emph{irányvektor} határoz meg.
+
+\begin{notefig}{Az egyenes egy pontja és irányvektora.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+% Az egyenes: P_0 + s*v, ahol v = (0.6, 1.0, 0.8); a rajzolt szakasz s = -0.5..1.2.
+\draw[thmaccent,thick] (0.0,1.1,1.0) -- (1.02,2.8,2.36);
+\node[thmaccent,font=\footnotesize,right] at (1.02,2.8,2.36) {$e$};
+\fill (0.3,1.6,1.4) circle (1.3pt) node[above left,font=\footnotesize,fill=white,inner sep=1.5pt] {$P_{0}(x_{0}, y_{0}, z_{0})$};
+\draw[thick,accent,->] (0.3,1.6,1.4) -- (0.72,2.3,1.96);
+\node[accent,font=\footnotesize,below right] at (0.51,1.95,1.68) {$\vect v$};
+\draw[thick,accent,->] (0,0,0) -- (0.6,1.0,0.8);
+\node[accent,font=\footnotesize,below right] at (0.6,1.0,0.8) {$\vect v=(v_{1}, v_{2}, v_{3})$};
+\end{tikzpicture}
+\end{notefig}
+
+% [p8]
+\noindent Ekkor az egyenes tetszőleges $P(x, y, z)$ pontjára
+\[
+\overrightarrow{OP}=\overrightarrow{OP_{0}}+t\vect v,
+\]
+azaz
+\[
+(x, y, z)=(x_{0}, y_{0}, z_{0})+t(v_{1}, v_{2}, v_{3})=(x_{0}+tv_{1},\ y_{0}+tv_{2},\ z_{0}+tv_{3}),
+\]
+ahonnan az egyenes \emph{paraméteres egyenletrendszere}
+\begin{equation}\label{eq:parameteres}
+x=x_{0}+tv_{1},\qquad y=y_{0}+tv_{2},\qquad z=z_{0}+tv_{3},
+\end{equation}
+az \emph{egyenletrendszere} pedig
+\begin{equation}\label{eq:egyenletrendszer}
+t=\frac{x-x_{0}}{v_{1}}=\frac{y-y_{0}}{v_{2}}=\frac{z-z_{0}}{v_{3}}.
+\end{equation}
+
+\begin{notefig}{Az egyenes pontjai a $t$ paraméter függvényében.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\draw[thmaccent,thick] (0.1,0.3,0.4) -- (1.6,2.8,2.4);
+\fill (0.5,1.0,1.0) circle (1.3pt) node[left,font=\footnotesize] {$P_{0}$};
+\fill (1.2,2.2,1.9) circle (1.3pt) node[above left,font=\footnotesize] {$P(x, y, z)$};
+\draw[thick,accent,->] (0.5,1.0,1.0) -- (1.2,2.2,1.9);
+\node[accent,font=\footnotesize,below right] at (0.9,1.7,1.5) {$t\vect v$};
+\end{tikzpicture}
+\end{notefig}
+
+\begin{exbox}
+\begin{example}
+Határozzuk meg az $A(2, 4, -1)$ és $B(5, 3, 2)$ pontokon átmenő egyenes paraméteres egyenletrendszerét.
+\end{example}
+\end{exbox}
+\begin{solution}
+Irányvektornak $\vect v=\overrightarrow{AB}=(3, -1, 3)$ választható, pontnak pedig $P_{0}=A$. Így
+\[
+x=2+3t,\qquad y=4-t,\qquad z=-1+3t .
+\]
+
+\begin{notefig}{Az $A$ és $B$ pontokon átmenő egyenes.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\draw[thmaccent,thick] (0.2,0.5,0.5) -- (1.5,2.7,1.9);
+\fill (0.5,1.0,0.85) circle (1.3pt) node[below,font=\footnotesize] {$A$};
+\fill (1.1,2.0,1.5) circle (1.3pt) node[below right,font=\footnotesize] {$B$};
+\draw[thick,accent,->] (0.5,1.0,0.85) -- (1.1,2.0,1.5);
+\node[accent,font=\footnotesize,above left] at (0.8,1.5,1.2) {$\vect v$};
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+\begin{exbox}
+\begin{example}
+Adott a térben három egyenes paraméteres egyenletrendszere:
+\[
+e_{1}:\ \begin{aligned}[t] x&=2+t\\ y&=3-2t\\ z&=-1+2t \end{aligned}
+\qquad
+e_{2}:\ \begin{aligned}[t] x&=4-2t\\ y&=-1+4t\\ z&=-4t \end{aligned}
+\qquad
+e_{3}:\ \begin{aligned}[t] x&=4+t\\ y&=5+4t\\ z&=3+2t \end{aligned}
+\]
+Határozzuk meg a három egyenes egymáshoz viszonyított helyzetét (párhuzamos, metsző vagy kitérő).
+\end{example}
+\end{exbox}
+\begin{solution}
+Az irányvektorok
+\[
+\vect v_{1}=(1, -2, 2),\qquad \vect v_{2}=(-2, 4, -4),\qquad \vect v_{3}=(1, 4, 2).
+\]
+Mivel $\vect v_{2}=-2\vect v_{1}$, azaz $\vect v_{1}\parallel\vect v_{2}$, az $e_{1}$ és $e_{2}$ egyenesek párhuzamosak.
+
+% [p9]
+Az $e_{1}$ és $e_{3}$ egyenesek nem párhuzamosak. Metszők-e? Ha igen, akkor léteznek olyan $t_{1}$, $t_{3}$ paraméterértékek, hogy az $M(x, y, z)$ metszéspontban
+\[
+x:\quad 2+t_{1}=4+t_{3}\ \Longrightarrow\ t_{1}=2+t_{3},
+\]
+\[
+y:\quad 3-2t_{1}=5+4t_{3}\ \Longrightarrow\ 3-2(2+t_{3})=5+4t_{3}
+\ \Longrightarrow\ -1-2t_{3}=5+4t_{3}\ \Longrightarrow\ t_{3}=-1,\ t_{1}=1 .
+\]
+Teljesíti-e ez a $z$-hez tartozó egyenletet?
+\[
+-1+2\cdot 1\overset{?}{=}3+2\cdot(-1),\qquad 1=1 .
+\]
+Igen, tehát az $e_{1}$ és $e_{3}$ egyenesek metszők.
+
+Az $e_{2}$ és $e_{3}$ egyenesek nem párhuzamosak. Metszők-e?
+\[
+x:\quad 4-2t_{2}=4+t_{3}\ \Longrightarrow\ -2t_{2}=t_{3},
+\]
+\[
+y:\quad -1+4t_{2}=5+4t_{3}=5+4(-2t_{2})\ \Longrightarrow\ -1+4t_{2}=5-8t_{2}
+\ \Longrightarrow\ 12t_{2}=6,\ t_{2}=0,5,\ t_{3}=-1 .
+\]
+A $z$-hez tartozó egyenlet:
+\[
+-4\cdot 0,5\overset{?}{=}3+2\cdot(-1),\qquad -2\neq 1 .
+\]
+Nincs metszéspont. Mivel az $e_{2}$ és $e_{3}$ egyenesek nem párhuzamosak és nincs közös pontjuk, \emph{kitérők}, azaz nem illeszkednek közös síkra.
+\end{solution}
+
+% ===================================================================
+\section{Síkok}
+
+% [p9]
+Egy síkot úgy adunk meg, hogy megmondjuk egy $P_{0}(x_{0}, y_{0}, z_{0})$ pontját és egy rá merőleges $\vect n=(n_{1}, n_{2}, n_{3})$ úgynevezett \emph{normálvektorát}.
+
+\begin{notefig}{A sík egy pontja és normálvektora.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\draw[defbg,fill=defbg] (-0.2,0.2,0.6) -- (1.6,0.2,0.6) -- (1.6,2.4,0.6) -- (-0.2,2.4,0.6) -- cycle;
+\draw[thmaccent] (-0.2,0.2,0.6) -- (1.6,0.2,0.6) -- (1.6,2.4,0.6) -- (-0.2,2.4,0.6) -- cycle;
+\fill (0.5,0.9,0.6) circle (1.2pt) node[below left,font=\footnotesize] {$P_{0}$};
+\fill (1.0,1.7,0.6) circle (1.2pt) node[below right,font=\footnotesize] {$P$};
+\draw[thick,exaccent,->] (0.5,0.9,0.6) -- (1.0,1.7,0.6);
+\draw[thick,accent,->] (0.5,0.9,0.6) -- (0.5,0.9,1.9);
+\node[accent,font=\footnotesize,above] at (0.5,0.9,1.9) {$\vect n$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent A $P(x, y, z)$ pont akkor van rajta a síkon, ha $\overrightarrow{P_{0}P}\perp\vect n$, ami az 1. tulajdonság szerint pontosan akkor teljesül, ha $\overrightarrow{P_{0}P}\,\vect n=0$. Mivel
+\[
+\overrightarrow{P_{0}P}=(x-x_{0},\ y-y_{0},\ z-z_{0}),
+\]
+ez azt jelenti, hogy
+\begin{equation}\label{eq:sik0}
+n_{1}(x-x_{0})+n_{2}(y-y_{0})+n_{3}(z-z_{0})=0 .
+\end{equation}
+
+% [p10]
+\begin{thmbox}
+\begin{theorem}[A sík egyenlete]
+A $P_{0}(x_{0}, y_{0}, z_{0})$ ponton átmenő, $\vect n=(n_{1}, n_{2}, n_{3})$ normálvektorú sík egyenlete
+\begin{equation}\label{eq:sik}
+n_{1}x+n_{2}y+n_{3}z=n_{1}x_{0}+n_{2}y_{0}+n_{3}z_{0}.
+\end{equation}
+\end{theorem}
+\end{thmbox}
+
+\begin{exbox}
+\begin{example}
+Határozzuk meg a $P_{0}(3, -1, 2)$ ponton átmenő, az $x+2y+3z=4$ síkkal párhuzamos sík egyenletét.
+\end{example}
+\end{exbox}
+\begin{solution}
+Két sík pontosan akkor párhuzamos, ha normálvektoraik párhuzamosak, ezért $\vect n=(1, 2, 3)$ választható. A keresett sík egyenlete \eqref{eq:sik0} szerint
+\[
+1(x-3)+2\bigl(y-(-1)\bigr)+3(z-2)=0,
+\]
+azaz
+\[
+x+2y+3z=7 .
+\]
+\end{solution}
+
+\begin{exbox}
+\begin{example}
+Határozzuk meg az $A(2, 3, -1)$, $B(4, 5, 2)$ és $C(0, 3, 2)$ pontokon átmenő sík egyenletét.
+\end{example}
+\end{exbox}
+\begin{solution}
+Normálvektornak a két oldalvektor vektoriális szorzata választható. Mivel
+\[
+\overrightarrow{AB}=(2, 2, 3),\qquad \overrightarrow{AC}=(-2, 0, 3),
+\]
+ezért
+\[
+\vect n=\overrightarrow{AB}\times\overrightarrow{AC}=
+\begin{vmatrix}
+\vect i & \vect j & \vect k\\
+2 & 2 & 3\\
+-2 & 0 & 3
+\end{vmatrix}
+=(6-0)\vect i+(-6-6)\vect j+\bigl(0-(-4)\bigr)\vect k=(6, -12, 4).
+\]
+$P_{0}=A=(2, 3, -1)$ választással a sík egyenlete
+\[
+6(x-2)+(-12)(y-3)+4\bigl(z-(-1)\bigr)=0,
+\]
+azaz
+\[
+6x-12y+4z=-28 .
+\]
+
+\begin{notefig}{A három ponton átmenő sík és a normálvektora.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\draw[defbg,fill=defbg] (-0.2,0.2,0.6) -- (1.6,0.2,0.6) -- (1.6,2.4,0.6) -- (-0.2,2.4,0.6) -- cycle;
+\draw[thmaccent] (-0.2,0.2,0.6) -- (1.6,0.2,0.6) -- (1.6,2.4,0.6) -- (-0.2,2.4,0.6) -- cycle;
+\fill (0.4,0.8,0.6) circle (1.2pt) node[below left,font=\footnotesize] {$A$};
+\fill (1.2,1.5,0.6) circle (1.2pt) node[below right,font=\footnotesize] {$B$};
+\fill (0.3,1.9,0.6) circle (1.2pt) node[above right,font=\footnotesize] {$C$};
+\draw[thick,accent,->] (0.4,0.8,0.6) -- (1.2,1.5,0.6);
+\draw[thick,accent,->] (0.4,0.8,0.6) -- (0.3,1.9,0.6);
+\draw[thick,exaccent,->] (0.4,0.8,0.6) -- (0.4,0.8,1.9);
+\node[exaccent,font=\footnotesize,above] at (0.4,0.8,1.9) {$\vect n$};
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+\begin{exbox}
+\begin{example}
+Határozzuk meg a $P(3, 2, -1)$ pont és a $2x-3y+z=5$ sík távolságát.
+\end{example}
+\end{exbox}
+\begin{solution}
+% [p11]
+A $P$ ponton át az $S$ síkra merőleges $e$ egyenest állítunk, ennek az $S$ síkkal való metszete $M$, a keresett távolság pedig $d=\abs{\overrightarrow{PM}}$.
+
+\begin{notefig}{A pont és a sík távolsága a merőleges egyenes mentén.}
+\begin{tikzpicture}[axes3d,>=Stealth]
+\xyzframe
+\draw[defbg,fill=defbg] (-0.2,0.2,0.6) -- (1.6,0.2,0.6) -- (1.6,2.4,0.6) -- (-0.2,2.4,0.6) -- cycle;
+\draw[thmaccent] (-0.2,0.2,0.6) -- (1.6,0.2,0.6) -- (1.6,2.4,0.6) -- (-0.2,2.4,0.6) -- cycle;
+\node[thmaccent,font=\footnotesize,above right] at (1.6,2.4,0.6) {$S$};
+\fill (0.7,1.2,1.9) circle (1.3pt) node[above right,font=\footnotesize] {$P$};
+\fill (0.7,1.2,0.6) circle (1.3pt) node[below right,font=\footnotesize] {$M$};
+\draw[accent,thick] (0.7,1.2,2.3) -- (0.7,1.2,0.1);
+\node[accent,font=\footnotesize,below] at (0.7,1.2,0.1) {$e$};
+\draw[exaccent,thick,->] (0.7,1.2,1.9) -- (0.7,1.2,0.62);
+\node[exaccent,font=\footnotesize,left] at (0.7,1.2,1.3) {$d$};
+\end{tikzpicture}
+\end{notefig}
+
+Az $e$ egyenes irányvektora a sík normálvektora:
+\[
+\vect v=\vect n=(2, -3, 1),
+\]
+így az $e$ egyenes paraméteres egyenletrendszere
+\[
+x=3+2t,\qquad y=2-3t,\qquad z=-1+t .
+\]
+Az $M=S\cap e$ metszéspontot a sík egyenletébe helyettesítve kapjuk:
+\[
+2(3+2t)-3(2-3t)+(-1+t)=5,\qquad 14t=6,\qquad t=\frac{6}{14},
+\]
+ahonnan
+\[
+M=\left(\frac{27}{7},\ \frac{5}{7},\ -\frac{4}{7}\right).
+\]
+Ezzel
+\[
+\overrightarrow{PM}=\left(\frac{6}{7},\ -\frac{9}{7},\ \frac{3}{7}\right),\qquad
+d=\abs{\overrightarrow{PM}}=\sqrt{\frac{36}{49}+\frac{81}{49}+\frac{9}{49}}=\sqrt{\frac{126}{49}} .
+\]
+
+
+\end{solution}
+
+\end{document}

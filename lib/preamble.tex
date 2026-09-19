@@ -6,7 +6,7 @@
 \setdefaultlanguage{hungarian}
 \setmainfont{TeX Gyre Pagella}
 \setsansfont{TeX Gyre Heros}
-% Monospace betűkészlet nincs, nem kell.
+% Írógép betűkészlet nincs: a jegyzetekben nincs \texttt és \verb.
 
 \usepackage{amsmath,amssymb,amsthm,mathtools}
 \usepackage{bm}
@@ -48,6 +48,13 @@
   },
   smallplot/.style={funcplot, width=5.4cm, height=4.0cm},
 }
+% Térbeli ábrák közös nézete: z föl, y jobbra, x balra-le, kissé elforgatva.
+\tikzset{axes3d/.style={x={(-0.50cm,-0.42cm)}, y={(1.00cm,-0.10cm)}, z={(0cm,1.00cm)}}}
+\newcommand{\xyzframe}{%
+  \draw[->] (0,0,0) -- (2.1,0,0);
+  \draw[->] (0,0,0) -- (0,2.7,0);
+  \draw[->] (0,0,0) -- (0,0,2.3);}
+
 \usepackage{float}
 \usepackage{caption}
 
