@@ -1,14 +1,17 @@
-% preamble.tex
+% preamble.tex -- közös preambulum, XeLaTeX.
+% Makró-, környezet- és színnevek angolul, a szedett szöveg magyarul.
 
 \usepackage{fontspec}
 \usepackage{polyglossia}
 \setdefaultlanguage{hungarian}
 \setmainfont{TeX Gyre Pagella}
 \setsansfont{TeX Gyre Heros}
+% Monospace betűkészlet nincs, nem kell.
 
 \usepackage{amsmath,amssymb,amsthm,mathtools}
 \usepackage{bm}
 \numberwithin{equation}{section}
+% Tizedesvessző. Cserébe a felsorolásvessző után szóköz kell: $f(x, y)$.
 \usepackage{icomma}
 
 \usepackage[a4paper,margin=2.4cm]{geometry}
@@ -19,6 +22,7 @@
 \setlist{nosep,leftmargin=1.4em}
 \usepackage{xcolor}
 \usepackage{titlesec}
+% Nincs nyomtatott tartalomjegyzék, csak PDF-könyvjelzők.
 \usepackage[hidelinks,colorlinks=true,linkcolor=accent,urlcolor=accent,
             bookmarks=true,bookmarksnumbered=true,bookmarksopen=true]{hyperref}
 \usepackage{fancyhdr}
@@ -29,9 +33,25 @@
                 decorations.pathreplacing,decorations.markings}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
+\pgfplotsset{
+  funcplot/.style={
+    width=7.4cm, height=5.0cm,
+    axis lines=middle,
+    axis line style={-{Stealth[length=4pt]}},
+    xlabel={$x$}, ylabel={$y$},
+    xlabel style={at={(ticklabel* cs:1)},anchor=west},
+    ylabel style={at={(ticklabel* cs:1)},anchor=south},
+    tick label style={font=\scriptsize},
+    label style={font=\footnotesize},
+    every axis plot/.append style={thick,accent,samples=201},
+    clip mode=individual,
+  },
+  smallplot/.style={funcplot, width=5.4cm, height=4.0cm},
+}
 \usepackage{float}
 \usepackage{caption}
 
+% A négy háttér világossága közel egyenlő, az elkülönítést a színezet adja.
 \definecolor{accent}{HTML}{2B4C7E}
 \definecolor{defbg}{HTML}{EAF0F7}
 \definecolor{thmaccent}{HTML}{7A4D2B}
@@ -51,11 +71,13 @@
   {\thesubsection}{0.6em}{}
 \titlespacing*{\section}{0pt}{1.4em}{0.6em}
 
+% Nincs futófej, csak oldalszám.
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\headrulewidth}{0pt}
 \fancyfoot[C]{\footnotesize\thepage}
 
+% Egyetlen közös számláló, szakaszonként újraindulva.
 \newtheoremstyle{plainish}{0pt}{0pt}{}{0pt}{\bfseries}{.}{0.5em}{}
 \theoremstyle{plainish}
 \newtheorem{theorem}{Tétel}[section]
@@ -67,6 +89,7 @@
 \newtheorem{procedure}[theorem]{Eljárás}
 \newtheorem*{remark}{Megjegyzés}
 
+% linewidth=0pt: se keret, se vonal; a dobozokat csak a háttérszín különíti el.
 \newcommand{\newnotebox}[2]{%
   \newmdenv[
     backgroundcolor=#2,
@@ -83,14 +106,17 @@
 \newnotebox{procaccent}{procbg}{procbox}
 
 \renewcommand{\qedsymbol}{$\blacksquare$}
+% Megoldás: mint a bizonyítás, más zárójellel.
 \newenvironment{solution}
   {\renewcommand{\qedsymbol}{$\lozenge$}\begin{proof}[Megoldás]}
   {\end{proof}}
 \newcommand{\noproof}{\par\vspace{-2pt}{\footnotesize\itshape\color{accent!70!black}(Bizonyítás nélkül.)}\par\vspace{2pt}}
 
+% Olvashatatlan forrásrészlet jelölése; sosem kitalált tartalom.
 \newcommand{\missing}[1]{{\color{missingc}\bfseries[\,#1\,]}}
 \newcommand{\correction}[1]{\footnote{A kézírásos jegyzetben #1}}
 
+% Nem lebegő ábra: \begin{notefig}{felirat} ... \end{notefig}
 \captionsetup[figure]{
   labelformat=empty,labelsep=none,
   font={small,it},justification=centering,skip=6pt}

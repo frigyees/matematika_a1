@@ -7,8 +7,8 @@ tárgyakhoz, Sándor Csaba előadásjegyzetei alapján.
 
 ```sh
 latexmk                                # minden téma
-latexmk src/01-komplex-szamok.tex      # egyetlen téma
-latexmk -pvc src/01-komplex-szamok.tex # folyamatos újrafordítás
+latexmk src/02-komplex-szamok.tex      # egyetlen téma
+latexmk -pvc src/02-komplex-szamok.tex # folyamatos újrafordítás
 latexmk -c                             # segédfájlok törlése
 latexmk -C                             # segédfájlok és PDF-ek törlése
 ```
