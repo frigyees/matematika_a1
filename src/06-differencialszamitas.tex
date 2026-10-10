@@ -1,0 +1,1802 @@
+% =====================================================================
+%  Differenciálszámítás
+%
+%  JAVÍTOTT FORRÁSHIBÁK
+%   [p2] f'(x_0) = lim (f'(x_0+dx) - f(x_0))/dx  ->  f(x_0+dx) a számlálóban
+%   [p3] "Az, hogy f(x) az x_0-ban, az pontosan azt jelenti"  ->  "... az
+%        x_0-ban differenciálható, ..." (hiányzó szó)
+%   [p6] a ln x deriváltjának levezetése "3." sorszámmal áll, holott a
+%        táblázat 4. sorát igazolja  ->  4.
+%   [p7] összeg: g(x_0 + dy)  ->  g(x_0 + dx)
+%   [p7] szorzat: (g'(x_0+dx) - g'(x_0))/dx  ->  (g(x_0+dx) - g(x_0))/dx
+%   [p7] hányados: g'(x_0) != 0  ->  g(x_0) != 0
+%   [p17] "f'(x) x = x_0-ban monoton csökken, ha f''(x_0)."  ->  f''(x_0) < 0
+%   [p17] Megj.: "Ha f'(x_0) = 0 és f''(x_0), akkor"  ->  f''(x_0) = 0
+%   [p20] lim_{x->oo} x (ln x)^2 = 0  ->  +oo
+%   [p24] a nevezőben x_0(t_0)  ->  x(t_0)
+%   [p27] sqrt(1 + f'(a)) dx  ->  sqrt(1 + f'(a)^2) dx
+%   [p30] a sin x példában (1 + f''(pi/2)^2)^(3/2)  ->  f'(pi/2)
+%
+%  KIEGÉSZÍTÉS
+%   [p1-p20] öt szakaszcím: A derivált fogalma; Összetett függvény és
+%        inverz függvény deriváltja; Magasabb rendű deriváltak; Lokális
+%        szélsőérték; Teljes függvényvizsgálat. A forrás első címe a
+%        dokumentumcím.
+%   [p3-p25] a "Pl." rövidítések feladatmondattá alakítva; matematikai
+%        tartalom nem változott
+%
+%  FORMAI ELTÉRÉS
+%   A PDF 15., 22., 23-29. oldala a (15)-(21) oldalak ismételt vagy
+%   részleges fényképe; a szöveg a PDF 1-14., 16-21., 30-39. oldaláról
+%   készült. A [p5] deriválttáblázat három blokkja transzponálva,
+%   egymás alatt áll. A [p16], [p19], [p20] előjeltáblázatok feletti
+%   számegyenes-vázlatok elhagyva (a táblázat fejléce ugyanazt mutatja);
+%   a [p20] táblázat alatti szélsőérték-ívek a táblázat harmadik sorába
+%   kerültek.
+%
+%  JELZETT, DE NEM MÓDOSÍTOTT HIÁNYOK
+%   [p5] az (x^mu)' levezetése x^mu kiemelése és x-szel való osztás miatt
+%        x > 0-t igényel; a táblázat megszorítás nélkül közli
+%   [p6,p7] a szabályok (c f(x_0))', (f(x_0) g(x_0))' alakban állnak, ami
+%        szó szerint egy szám deriváltja
+%   [p9] a láncszabály bizonyítása Delta g-vel oszt, ami Delta x != 0
+%        mellett is lehet 0
+%   [p10] az inverz deriváltja x = f(f^-1(x)) deriválásából adódik, ami
+%        feltételezi f^-1 deriválhatóságát és f'(f^-1(x)) != 0-t
+%   [p12] a Rolle-bizonyítás 2. esete kimondatlanul f(a) = f(b)-t
+%        használja ahhoz, hogy a szélsőérték a nyílt intervallumba essen
+%   [p14] az erősebb alak f(a) = g(a) = 0-t követel, de megengedi, hogy
+%        a függvények a-ban ne legyenek értelmezve; a +-oo/+-oo alak,
+%        amit a [p15] és [p20] használ, kimondva nincs
+%   [p16] a monotonitási tétel és bizonyítása csak az f' >= 0 esetet
+%        tárgyalja
+%   [p17] a második derivált próbája elégséges feltételként, "ha"
+%        kötőszóval áll
+%   [p19] a h íve -> h' csökken -> h'' < 0 átmenet csak vázlatokkal
+%        indokolt
+%   [p24] a paraméteres derivált ẋ(t_0)-lal oszt, ẋ(t_0) != 0 kikötése
+%        nélkül (a ciklois t_0 = 0-ban ez nem teljesül)
+%   [p30] az u, v, R képletei "kiszámolható" jelzéssel, levezetés nélkül
+%        állnak
+% =====================================================================
+
+\documentclass[11pt]{article}
+\input{preamble}
+\input{macros}
+
+\pgfplotsset{
+  closeddot/.style={only marks, mark=*, mark size=1.5pt, accent},
+  opendot/.style={only marks, mark=*, mark size=1.5pt, accent, mark options={fill=white}},
+  tangent/.style={thick, thmaccent},
+  secant/.style={thick, exaccent},
+  asym/.style={rulec, dashed, thin},
+  sketch/.style={funcplot, xtick=\empty, ytick=\empty, xlabel={}, ylabel={}},
+}
+\tikzset{asym/.style={rulec, dashed, thin}}
+\usepackage{array}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+\newcommand{\LH}{\overset{\text{L'H}}{=}}
+\newcommand{\signtable}{\renewcommand{\arraystretch}{1.45}}
+
+\begin{document}
+\titleblock{Differenciálszámítás}
+
+% ===================================================================
+\needspace{9\baselineskip}
+\section{A derivált fogalma}
+
+% [p1]
+\noindent Feladat: határozzuk meg az $f(x)$ függvény $\bigl(x_{0}, f(x_{0})\bigr)$-ban vett érintőjét!
+
+\begin{notefig}{Az $f(x)$ függvény érintője az $\bigl(x_{0}, f(x_{0})\bigr)$ pontban.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=6.4cm, height=5cm, xmin=-1.6, xmax=3.6, ymin=-0.4, ymax=3.6,
+  xtick={1.5}, xticklabels={$x_{0}$}]
+\addplot[domain=-1.5:3.4]{0.18*x^2+0.3*x+0.6};
+\addplot[tangent, domain=-1.2:3.4]{1.455+0.84*(x-1.5)};
+\addplot[closeddot] coordinates {(1.5,1.455)};
+\node[font=\footnotesize,anchor=north west] at (axis cs:1.55,1.4) {$\bigl(x_{0}, f(x_{0})\bigr)$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Az $(x_{0}, y_{0})$ ponton átmenő $m$ meredekségű egyenes egyenlete:
+\begin{equation}\label{eq:pontmeredekseg}
+y-y_{0}=m(x-x_{0}).
+\end{equation}
+
+\begin{notefig}{Az $(x_{0}, y_{0})$ ponton átmenő, $m$ meredekségű egyenes.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=6cm, height=4.6cm, xmin=-0.8, xmax=3.4, ymin=-0.6, ymax=3.0]
+\addplot[domain=-0.5:3.0]{0.2+0.75*x};
+\addplot[closeddot] coordinates {(1.4,1.25)};
+\node[font=\footnotesize,anchor=north west] at (axis cs:1.45,1.2) {$(x_{0}, y_{0})$};
+\node[font=\footnotesize,anchor=west] at (axis cs:2.75,2.65) {meredekség: $m$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Az érintő egyenlete tehát $y-f(x_{0})=m(x-x_{0})$ alakú. Hogyan határozzuk meg $m$-et? Az érintő meredekségét közelítsük a szelő meredekségével:
+
+% [p2]
+\begin{notefig}{A szelő és az érintő.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=8cm, height=6.4cm, xmin=-1.6, xmax=3.6, ymin=-0.4, ymax=3.8,
+  xtick={1,2.3}, xticklabels={$x_{0}$,$x_{0}+\Delta x$}]
+\addplot[domain=-1.5:3.4]{0.18*x^2+0.3*x+0.6};
+\addplot[tangent, domain=-1.3:3.4]{1.08+0.66*(x-1)};
+\addplot[secant, domain=-1.0:3.2]{1.08+0.9478*(x-1)};
+\draw[thin] (axis cs:1,1.08) -- (axis cs:2.3,1.08) -- (axis cs:2.3,2.2422);
+\addplot[closeddot] coordinates {(1,1.08) (2.3,2.2422)};
+\node[font=\scriptsize,below] at (axis cs:1.65,1.08) {$\Delta x$};
+\node[font=\scriptsize,right] at (axis cs:2.3,1.66) {$\Delta y$};
+\node[font=\footnotesize,anchor=south east] at (axis cs:0.95,1.15) {$\bigl(x_{0}, f(x_{0})\bigr)$};
+\node[font=\footnotesize,anchor=south east] at (axis cs:2.2,2.75) {$\bigl(x_{0}+\Delta x, f(x_{0}+\Delta x)\bigr)$};
+\node[exaccent,font=\footnotesize,anchor=west] at (axis cs:3.2,3.17) {szelő};
+\node[thmaccent,font=\footnotesize,anchor=west] at (axis cs:3.4,2.66) {érintő};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\noindent A szelő meredeksége:
+\[
+\frac{\Delta y}{\Delta x}=\frac{f(x_{0}+\Delta x)-f(x_{0})}{\Delta x}\approx m,
+\qquad
+m=\lim_{\Delta x\to 0}\frac{f(x_{0}+\Delta x)-f(x_{0})}{\Delta x}.
+\]
+
+\begin{defbox}
+\begin{definition}[Differenciálhatóság egy pontban]
+Ha az $f(x)$-nek az $x_{0}$-ban létezik a
+\[
+\lim_{\Delta x\to 0}\frac{f(x_{0}+\Delta x)-f(x_{0})}{\Delta x}
+\]
+határértéke, akkor az $f(x)$ függvényt az $x_{0}$-ban \emph{differenciálhatónak} vagy \emph{deriválhatónak} mondjuk. Jelölés: $f'(x_{0})$.
+\end{definition}
+\end{defbox}
+Tehát
+\begin{equation}\label{eq:derivalt}
+f'(x_{0})=\lim_{\Delta x\to 0}\frac{f(x_{0}+\Delta x)-f(x_{0})}{\Delta x}.
+\end{equation}
+Ha $x=x_{0}+\Delta x$, akkor $\Delta x\to 0$ az $x\to x_{0}$-nak felel meg, ezért
+\[
+f'(x_{0})=\lim_{x\to x_{0}}\frac{f(x)-f(x_{0})}{x-x_{0}}.
+\]
+
+% [p3]
+\begin{exbox}
+\begin{example}
+Számítsuk ki az $f(x)=x^{2}$ függvény deriváltját az $x_{0}$ pontban.
+\end{example}
+\end{exbox}
+\begin{solution}
+\begin{align*}
+f'(x_{0})&=\lim_{\Delta x\to 0}\frac{f(x_{0}+\Delta x)-f(x_{0})}{\Delta x}
+=\lim_{\Delta x\to 0}\frac{(x_{0}+\Delta x)^{2}-x_{0}^{2}}{\Delta x}\\
+&=\lim_{\Delta x\to 0}\frac{x_{0}^{2}+2x_{0}\Delta x+(\Delta x)^{2}-x_{0}^{2}}{\Delta x}
+=\lim_{\Delta x\to 0}(2x_{0}+\Delta x)=2x_{0}.
+\end{align*}
+\end{solution}
+
+\begin{defbox}
+\begin{definition}[Differenciálható függvény]
+Ha az $f(x)$ függvény az értelmezési tartomány minden pontjában differenciálható, akkor az $f(x)$ függvény \emph{differenciálható} vagy \emph{deriválható függvény}. Jelölés:
+\[
+f'(x),\quad y',\quad \frac{\dd y}{\dd x},\quad \frac{\dd f}{\dd x}.
+\]
+\end{definition}
+\end{defbox}
+Például $f(x)=x^{2}$ esetén $f'(x)=2x$, $\forall x\in\R$.
+
+\begin{remark}
+Az, hogy $f(x)$ az $x_{0}$-ban differenciálható, az pontosan azt jelenti, hogy az $f(x)$ grafikonjához az $\bigl(x_{0}, f(x_{0})\bigr)$ pontban húzható érintő.
+\end{remark}
+
+\begin{exbox}
+\begin{example}
+Hol deriválható az $f(x)=\abs{x}$ függvény?
+\end{example}
+\end{exbox}
+\begin{solution}
+Az $x\neq 0$ pontokban húzható érintő.
+
+\begin{notefig}{Az $f(x)=\abs{x}$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=5.4cm, height=4cm, xmin=-2, xmax=2, ymin=-0.5, ymax=2]
+\addplot[domain=-1.8:1.8, samples=3]{abs(x)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+\begin{thmbox}
+\begin{proposition}[Az érintő egyenlete]
+Az $f(x)$ függvény grafikonjához az $\bigl(x_{0}, f(x_{0})\bigr)$ pontban húzott érintő egyenlete:
+\begin{equation}\label{eq:erinto}
+y-f(x_{0})=f'(x_{0})(x-x_{0}).
+\end{equation}
+\end{proposition}
+\end{thmbox}
+
+\begin{notefig}{Az érintő az $\bigl(x_{0}, f(x_{0})\bigr)$ pontban.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=6cm, height=4.6cm, xmin=-2.4, xmax=2.6, ymin=-1.0, ymax=3.2,
+  xtick={-0.6}, xticklabels={$x_{0}$}]
+\addplot[domain=-2.2:2.2]{0.35*(x+1.2)^2+0.35};
+\addplot[tangent, domain=-2.2:2.4]{0.476+0.42*(x+0.6)};
+\addplot[closeddot] coordinates {(-0.6,0.476)};
+\node[accent,font=\footnotesize,anchor=west] at (axis cs:2.0,2.9) {$f(x)$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% [p4]
+\begin{exbox}
+\begin{example}
+Húzzunk érintőt az $f(x)=x^{2}$ függvényhez az $x_{0}=3$ pontban!
+\end{example}
+\end{exbox}
+\begin{solution}
+\[
+f'(x_{0})=2x_{0},\qquad f(x_{0})=f(3)=3^{2}=9,\qquad f'(3)=2\cdot 3=6,
+\]
+így \eqref{eq:erinto} szerint
+\[
+y-f(x_{0})=f'(x_{0})(x-x_{0}),\qquad y-9=6(x-3),\qquad y=6x-9 .
+\]
+
+\begin{notefig}{Az $f(x)=x^{2}$ függvény és érintője a $(3, 9)$ pontban.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=5.6cm, height=5.6cm, xmin=-3.4, xmax=4.4, ymin=-1.5, ymax=14,
+  xtick={3}, ytick={9}]
+\addplot[domain=-3.2:3.7]{x^2};
+\addplot[tangent, domain=1.6:3.9]{6*x-9};
+\addplot[closeddot] coordinates {(3,9)};
+\node[font=\footnotesize,anchor=east] at (axis cs:2.9,9.6) {$(3, 9)$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+% [p5]
+\begin{thmbox}
+\begin{theorem}
+Ha $f(x)$ differenciálható az $x_{0}$-ban, akkor ott folytonos is.
+\end{theorem}
+\end{thmbox}
+\begin{proof}
+Ha $x\approx x_{0}$, akkor
+\[
+\frac{f(x)-f(x_{0})}{x-x_{0}}\approx f'(x_{0}),\quad\text{azaz}\quad f(x)-f(x_{0})\approx f'(x_{0})(x-x_{0}).
+\]
+Tehát $f(x)\approx f(x_{0})+f'(x_{0})(x-x_{0})$. Ha $x\to x_{0}$, akkor kapjuk, hogy $\displaystyle\lim_{x\to x_{0}}f(x)=f(x_{0})$.
+\end{proof}
+
+% ===================================================================
+\needspace{9\baselineskip}
+\section{Nevezetes függvények deriváltjai}
+
+% [p5]
+\begin{thmbox}
+\begin{theorem}[Nevezetes függvények deriváltjai]\leavevmode
+\begin{center}
+\renewcommand{\arraystretch}{2.1}
+\begin{tabular}{C{1.1cm}|C{2.0cm}C{2.0cm}C{2.0cm}C{2.0cm}C{2.0cm}}
+\hline
+ & 1. & 2. & 3. & 4. & 5.\\
+\hline
+$f(x)$ & $x^{\mu}$ & $a^{x}$ & $e^{x}$ & $\ln x$ & $\sh x$\\
+$f'(x)$ & $\mu x^{\mu-1}$ & $a^{x}\ln a$ & $e^{x}\ln e=e^{x}$ & $\dfrac{1}{x}$ & $\ch x$\\
+\hline
+\end{tabular}
+
+\vspace{0.8em}
+\begin{tabular}{C{1.1cm}|C{2.0cm}C{2.0cm}C{2.0cm}C{2.0cm}C{2.0cm}}
+\hline
+ & 6. & 7. & 8. & 9. & 10.\\
+\hline
+$f(x)$ & $\ch x$ & $\tgh x$ & $\sin x$ & $\cos x$ & $\tg x$\\
+$f'(x)$ & $\sh x$ & $\dfrac{1}{\ch^{2}x}$ & $\cos x$ & $-\sin x$ & $\dfrac{1}{\cos^{2}x}$\\
+\hline
+\end{tabular}
+
+\vspace{0.8em}
+\begin{tabular}{C{1.1cm}|C{1.82cm}C{1.82cm}C{1.82cm}C{1.82cm}C{1.82cm}C{1.82cm}}
+\hline
+ & 11. & 12. & 13. & 14. & 15. & 16.\\
+\hline
+$f(x)$ & $\arcsin x$ & $\arccos x$ & $\arctg x$ & $\arsh x$ & $\arch x$ & $\arth x$\\
+$f'(x)$ & $\dfrac{1}{\sqrt{1-x^{2}}}$ & $-\dfrac{1}{\sqrt{1-x^{2}}}$ & $\dfrac{1}{1+x^{2}}$
+  & $\dfrac{1}{\sqrt{1+x^{2}}}$ & $\dfrac{1}{\sqrt{x^{2}-1}}$ & $\dfrac{1}{1-x^{2}}$\\[-0.6em]
+ & & & & & {\footnotesize $x>1$} & {\footnotesize $-1<x<1$}\\
+\hline
+\end{tabular}
+\end{center}
+\end{theorem}
+\end{thmbox}
+
+\begin{proof}[Az 1., 2.\ és 4.\ sor igazolása]
+1. A $\displaystyle\lim_{z\to 0}\frac{(1+z)^{\mu}-1}{z}=\mu$ határértéket már láttuk. Legyen $z=\frac{\Delta x}{x}$; ha $\Delta x\to 0$, akkor $z\to 0$. Így
+\begin{align*}
+f'(x)&=\lim_{\Delta x\to 0}\frac{f(x+\Delta x)-f(x)}{\Delta x}
+=\lim_{\Delta x\to 0}\frac{(x+\Delta x)^{\mu}-x^{\mu}}{\Delta x}
+=\lim_{\Delta x\to 0}\frac{x^{\mu}\left(1+\frac{\Delta x}{x}\right)^{\mu}-x^{\mu}}{\Delta x}\\
+&=\lim_{\Delta x\to 0}\frac{x^{\mu}\left(\left(1+\frac{\Delta x}{x}\right)^{\mu}-1\right)}{\Delta x}
+=\lim_{\Delta x\to 0}x^{\mu-1}\cdot\frac{\left(1+\frac{\Delta x}{x}\right)^{\mu}-1}{\frac{\Delta x}{x}}\\
+&=\lim_{z\to 0}x^{\mu-1}\cdot\frac{(1+z)^{\mu}-1}{z}=\mu x^{\mu-1}.
+\end{align*}
+
+% [p6]
+2. Mivel $a^{\Delta x}=\left(e^{\ln a}\right)^{\Delta x}=e^{\Delta x\ln a}$, legyen $z=\Delta x\ln a$; ha $\Delta x\to 0$, akkor $z\to 0$. Láttuk, hogy $\displaystyle\lim_{z\to 0}\frac{e^{z}-1}{z}=1$. Így
+\begin{align*}
+f'(x)&=\lim_{\Delta x\to 0}\frac{a^{x+\Delta x}-a^{x}}{\Delta x}
+=\lim_{\Delta x\to 0}\frac{a^{x}a^{\Delta x}-a^{x}}{\Delta x}
+=\lim_{\Delta x\to 0}a^{x}\cdot\frac{a^{\Delta x}-1}{\Delta x}\\
+&=\lim_{\Delta x\to 0}a^{x}\cdot\frac{e^{\Delta x\ln a}-1}{\Delta x}\\
+&=\lim_{\Delta x\to 0}a^{x}\ln a\cdot\frac{e^{\Delta x\ln a}-1}{\Delta x\ln a}\\
+&=\lim_{z\to 0}a^{x}\ln a\cdot\frac{e^{z}-1}{z}=a^{x}\ln a .
+\end{align*}
+
+4. Láttuk, hogy $\displaystyle\lim_{z\to 0}\frac{\ln(1+z)}{z}=1$. Legyen $z=\frac{\Delta x}{x}$; ha $\Delta x\to 0$, akkor $z\to 0$. Így
+\begin{align*}
+f'(x)&=\lim_{\Delta x\to 0}\frac{\ln(x+\Delta x)-\ln x}{\Delta x}
+=\lim_{\Delta x\to 0}\frac{\ln\frac{x+\Delta x}{x}}{\Delta x}
+=\lim_{\Delta x\to 0}\frac{1}{x}\cdot\frac{\ln\left(1+\frac{\Delta x}{x}\right)}{\frac{\Delta x}{x}}\\
+&=\lim_{z\to 0}\frac{1}{x}\cdot\frac{\ln(1+z)}{z}=\frac{1}{x}. \qedhere
+\end{align*}
+\end{proof}
+
+% ===================================================================
+\needspace{9\baselineskip}
+\section{Műveletek függvényekkel és differenciálhatóság}
+
+% [p6]
+\begin{thmbox}
+\begin{theorem}[Konstansszoros]
+Legyen $c\in\R$. Tegyük fel, hogy $f(x)$ differenciálható $x_{0}$-ban. Ekkor $cf(x)$ is differenciálható $x_{0}$-ban, és
+\[
+\bigl(cf(x_{0})\bigr)'=cf'(x_{0}).
+\]
+\end{theorem}
+\end{thmbox}
+\begin{proof}
+\[
+\bigl(cf(x_{0})\bigr)'=\lim_{\Delta x\to 0}\frac{cf(x_{0}+\Delta x)-cf(x_{0})}{\Delta x}
+=\lim_{\Delta x\to 0}c\cdot\frac{f(x_{0}+\Delta x)-f(x_{0})}{\Delta x}=cf'(x_{0}). \qedhere
+\]
+\end{proof}
+
+% [p7]
+\begin{thmbox}
+\begin{theorem}[Összeg, különbség]
+Tegyük fel, hogy $f(x)$ és $g(x)$ differenciálható $x_{0}$-ban. Ekkor $f(x)\pm g(x)$ is differenciálható $x_{0}$-ban, és
+\[
+\bigl(f(x_{0})\pm g(x_{0})\bigr)'=f'(x_{0})\pm g'(x_{0}).
+\]
+\end{theorem}
+\end{thmbox}
+\begin{proof}
+A $+$ esetet bizonyítjuk:
+\begin{align*}
+\bigl(f(x_{0})+g(x_{0})\bigr)'&=\lim_{\Delta x\to 0}\frac{f(x_{0}+\Delta x)+g(x_{0}+\Delta x)-\bigl(f(x_{0})+g(x_{0})\bigr)}{\Delta x}\\
+&=\lim_{\Delta x\to 0}\left(\frac{f(x_{0}+\Delta x)-f(x_{0})}{\Delta x}+\frac{g(x_{0}+\Delta x)-g(x_{0})}{\Delta x}\right)=f'(x_{0})+g'(x_{0}). \qedhere
+\end{align*}
+\end{proof}
+
+\begin{thmbox}
+\begin{theorem}[Szorzat]
+Ha $f(x)$ és $g(x)$ is differenciálható $x_{0}$-ban, akkor $f(x)g(x)$ is differenciálható, és
+\[
+\bigl(f(x_{0})g(x_{0})\bigr)'=f'(x_{0})g(x_{0})+f(x_{0})g'(x_{0}).
+\]
+\end{theorem}
+\end{thmbox}
+\begin{proof}
+\begin{align*}
+\bigl(f(x_{0})g(x_{0})\bigr)'&=\lim_{\Delta x\to 0}\frac{f(x_{0}+\Delta x)g(x_{0}+\Delta x)-f(x_{0})g(x_{0})}{\Delta x}\\
+&=\lim_{\Delta x\to 0}\frac{f(x_{0}+\Delta x)g(x_{0}+\Delta x)-f(x_{0})g(x_{0}+\Delta x)}{\Delta x}\\
+&\qquad\qquad+\frac{f(x_{0})g(x_{0}+\Delta x)-f(x_{0})g(x_{0})}{\Delta x}\\
+&=\lim_{\Delta x\to 0}\frac{g(x_{0}+\Delta x)\bigl(f(x_{0}+\Delta x)-f(x_{0})\bigr)+f(x_{0})\bigl(g(x_{0}+\Delta x)-g(x_{0})\bigr)}{\Delta x}\\
+&=\lim_{\Delta x\to 0}\underset{\substack{\downarrow\ \text{folyt.}\\ g(x_{0})}}{g(x_{0}+\Delta x)}\cdot
+\underset{\substack{\downarrow\\ f'(x_{0})}}{\frac{f(x_{0}+\Delta x)-f(x_{0})}{\Delta x}}
++f(x_{0})\cdot\underset{\substack{\downarrow\\ g'(x_{0})}}{\frac{g(x_{0}+\Delta x)-g(x_{0})}{\Delta x}}\\
+&=f'(x_{0})g(x_{0})+f(x_{0})g'(x_{0}). \qedhere
+\end{align*}
+\end{proof}
+
+\begin{thmbox}
+\begin{theorem}[Hányados]
+Ha $f(x)$ és $g(x)$ differenciálható $x_{0}$-ban és $g(x_{0})\neq 0$, akkor $\dfrac{f(x)}{g(x)}$ is differenciálható $x_{0}$-ban, és
+\[
+\left(\frac{f(x_{0})}{g(x_{0})}\right)'=\frac{f'(x_{0})g(x_{0})-f(x_{0})g'(x_{0})}{g^{2}(x_{0})}.
+\]
+\end{theorem}
+\end{thmbox}
+\noproof
+
+% [p8]
+\begin{proof}[A táblázat 5--10.\ sorának igazolása]
+5. Mivel $\left(e^{-x}\right)'=\left(\left(\frac{1}{e}\right)^{x}\right)'=\left(\frac{1}{e}\right)^{x}\ln\frac{1}{e}=-\left(\frac{1}{e}\right)^{x}=-e^{-x}$,
+\begin{align*}
+(\sh x)'&=\left(\frac{e^{x}-e^{-x}}{2}\right)'=\frac{1}{2}\left(e^{x}-e^{-x}\right)'=\frac{1}{2}\left(\left(e^{x}\right)'-\left(e^{-x}\right)'\right)\\
+&=\frac{1}{2}\left(e^{x}-\left(-e^{-x}\right)\right)=\frac{e^{x}+e^{-x}}{2}=\ch x .
+\end{align*}
+
+6. Hasonlóan: $(\ch x)'=\sh x$.
+
+\begin{align*}
+7.\quad (\tgh x)'&=\left(\frac{\sh x}{\ch x}\right)'=\frac{(\sh x)'\ch x-\sh x(\ch x)'}{\ch^{2}x}\\
+&=\frac{\ch x\cdot\ch x-\sh x\cdot\sh x}{\ch^{2}x}=\frac{\ch^{2}x-\sh^{2}x}{\ch^{2}x}=\frac{1}{\ch^{2}x}.
+\end{align*}
+
+8. Legyen $\alpha=x+\Delta x$ és $\beta=x$. Mivel
+\begin{align*}
+\sin\alpha-\sin\beta&=\sin\left(\frac{\alpha+\beta}{2}+\frac{\alpha-\beta}{2}\right)-\sin\left(\frac{\alpha+\beta}{2}-\frac{\alpha-\beta}{2}\right)\\
+&=\sin\frac{\alpha+\beta}{2}\cos\frac{\alpha-\beta}{2}+\sin\frac{\alpha-\beta}{2}\cos\frac{\alpha+\beta}{2}\\
+&\quad-\left(\sin\frac{\alpha+\beta}{2}\cos\frac{\alpha-\beta}{2}-\sin\frac{\alpha-\beta}{2}\cos\frac{\alpha+\beta}{2}\right)\\
+&=2\sin\frac{\alpha-\beta}{2}\cos\frac{\alpha+\beta}{2},
+\end{align*}
+és láttuk, hogy $\displaystyle\lim_{z\to 0}\frac{\sin z}{z}=1$, ahol most $z=\frac{\Delta x}{2}$, ezért
+\begin{align*}
+(\sin x)'&=\lim_{\Delta x\to 0}\frac{\sin(x+\Delta x)-\sin x}{\Delta x}
+=\lim_{\Delta x\to 0}\frac{2\sin\frac{\Delta x}{2}\cos\frac{2x+\Delta x}{2}}{\Delta x}\\
+&=\lim_{\Delta x\to 0}\underset{\substack{\downarrow\\ \cos x}}{\cos\left(x+\frac{\Delta x}{2}\right)}\cdot
+\underset{\substack{\downarrow\\ 1}}{\frac{\sin\frac{\Delta x}{2}}{\frac{\Delta x}{2}}}=\cos x .
+\end{align*}
+
+9. Hasonlóan megmutatható: $(\cos x)'=-\sin x$.
+
+\begin{align*}
+10.\quad (\tg x)'&=\left(\frac{\sin x}{\cos x}\right)'=\frac{(\sin x)'\cos x-\sin x(\cos x)'}{\cos^{2}x}\\
+&=\frac{\cos x\cdot\cos x-\sin x\cdot(-\sin x)}{\cos^{2}x}=\frac{\cos^{2}x+\sin^{2}x}{\cos^{2}x}=\frac{1}{\cos^{2}x}. \qedhere
+\end{align*}
+\end{proof}
+
+% ===================================================================
+\needspace{9\baselineskip}
+\section{Összetett függvény és inverz függvény deriváltja}
+
+% [p9]
+\begin{defbox}
+\begin{definition}[Összetett függvény]
+$y=f\bigl(g(x)\bigr)$, ahol $f$ a \emph{külső függvény}, $g$ a \emph{belső függvény}.
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+Bontsuk külső és belső függvényre a következő összetett függvényeket.
+\end{example}
+\end{exbox}
+\begin{solution}
+\begin{align*}
+y&=(\sin x)^{3}: & f(x)&=x^{3}, & g(x)&=\sin x,\\
+y&=e^{x^{4}}: & f(x)&=e^{x}, & g(x)&=x^{4},\\
+y&=\cos(4x-\pi): & f(x)&=\cos x, & g(x)&=4x-\pi,\\
+y&=\ln(6x^{2}+5x): & f(x)&=\ln x, & g(x)&=6x^{2}+5x .
+\end{align*}
+\end{solution}
+
+\begin{thmbox}
+\begin{theorem}[Láncszabály, az összetett függvény deriválási szabálya]
+Tegyük fel, hogy $f(x)$ deriválható $g(x_{0})$-ban és $g(x)$ deriválható $x_{0}$-ban. Ekkor $y=f\bigl(g(x)\bigr)$ is differenciálható $x_{0}$-ban, és
+\begin{equation}\label{eq:lanc}
+\Bigl(f\bigl(g(x_{0})\bigr)\Bigr)'=f'\bigl(g(x_{0})\bigr)\cdot g'(x_{0}).
+\end{equation}
+\end{theorem}
+\end{thmbox}
+\begin{proof}
+Legyen $g(x_{0}+\Delta x)-g(x_{0})=\Delta g$. Ha $\Delta x\to 0$, akkor $\Delta g\to 0$. Így
+\begin{align*}
+\Bigl(f\bigl(g(x_{0})\bigr)\Bigr)'&=\lim_{\Delta x\to 0}\frac{f\bigl(g(x_{0}+\Delta x)\bigr)-f\bigl(g(x_{0})\bigr)}{\Delta x}
+=\lim_{\Delta x\to 0}\frac{f\bigl(g(x_{0})+\Delta g\bigr)-f\bigl(g(x_{0})\bigr)}{\Delta x}\\
+&=\lim_{\substack{\Delta x\to 0\\ (\Delta g\to 0)}}
+\underbrace{\frac{f\bigl(g(x_{0})+\Delta g\bigr)-f\bigl(g(x_{0})\bigr)}{\Delta g}}_{\to f'(g(x_{0}))}\cdot
+\underbrace{\frac{g(x_{0}+\Delta x)-g(x_{0})}{\Delta x}}_{\to g'(x_{0})}
+=f'\bigl(g(x_{0})\bigr)\cdot g'(x_{0}). \qedhere
+\end{align*}
+\end{proof}
+
+\begin{exbox}
+\begin{example}
+Deriváljuk a következő függvényeket a láncszabállyal.
+\begin{enumerate}[label=\arabic*., itemsep=2pt]
+\item $y=10^{x^{2}}$
+\item $y=\ln(x^{2}+5x)$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. $f(x)=10^{x}$, $f'(x)=10^{x}\ln 10$, $g(x)=x^{2}$, $g'(x)=2x$, így
+\[
+y'=10^{x^{2}}\ln 10\cdot 2x .
+\]
+
+% [p10]
+2. $f(x)=\ln x$, $f'(x)=\frac{1}{x}$, $g(x)=x^{2}+5x$, $g'(x)=2x+5$, így
+\[
+y'=\frac{1}{x^{2}+5x}\cdot(2x+5).
+\]
+\end{solution}
+
+\noindent Alkalmazás: tudjuk, hogy $x=f\bigl(f^{-1}(x)\bigr)$. Mindkét oldalt deriválva
+\[
+1=f'\bigl(f^{-1}(x)\bigr)\cdot\bigl(f^{-1}(x)\bigr)',
+\]
+ahonnan
+\begin{equation}\label{eq:inverz}
+\bigl(f^{-1}(x)\bigr)'=\frac{1}{f'\bigl(f^{-1}(x)\bigr)}.
+\end{equation}
+
+\begin{proof}[A táblázat 11.\ sorának igazolása]
+Ha $f^{-1}(x)=\arcsin x$, akkor $f(x)=\sin x$ és $f'(x)=\cos x$, így \eqref{eq:inverz} szerint
+\[
+\bigl(f^{-1}(x)\bigr)'=\frac{1}{f'\bigl(f^{-1}(x)\bigr)}=\frac{1}{\cos(\arcsin x)}=\frac{1}{\sqrt{1-x^{2}}}.
+\]
+Itt $-\frac{\pi}{2}\le\arcsin x\le\frac{\pi}{2}$ és $\sin(\arcsin x)=x$, ha $-1\le x\le 1$. Mivel $-\frac{\pi}{2}\le z\le\frac{\pi}{2}$ esetén $\cos z\ge 0$, és $\cos^{2}z+\sin^{2}z=1$,
+\[
+0\le\cos(\arcsin x)=\sqrt{\cos^{2}(\arcsin x)}=\sqrt{1-\sin^{2}(\arcsin x)}=\sqrt{1-x^{2}} . \qedhere
+\]
+\end{proof}
+
+\begin{notefig}{Az $\arcsin x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=5.2cm, height=5.2cm, xmin=-1.6, xmax=1.6, ymin=-1.9, ymax=1.9,
+  xtick={-1,1}, ytick={-1.5708,1.5708}, yticklabels={$-\frac{\pi}{2}$,$\frac{\pi}{2}$}]
+\addplot[domain=-1:1, samples=301]{rad(asin(x))};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{exbox}
+\begin{example}
+Deriváljuk a következő függvényeket.
+\begin{enumerate}[label=\arabic*., itemsep=4pt]
+\item $y=3x^{2}+5x+7$
+\item $y=(x^{2}+3)\arctg x$
+\item $y=\dfrac{\ln x}{10^{x}}$
+\item $y=\ln(x^{2}+1)$
+\item $y=10^{\sqrt{x}}\sin 2x$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+\begin{align*}
+1.\quad y&=3x^{2}+5x+7 & &\Longrightarrow & y'&=6x+5,\\
+2.\quad y&=(x^{2}+3)\arctg x & &\Longrightarrow & y'&=2x\arctg x+(x^{2}+3)\cdot\frac{1}{1+x^{2}},\\
+3.\quad y&=\frac{\ln x}{10^{x}} & &\Longrightarrow & y'&=\frac{\frac{1}{x}\cdot 10^{x}-\ln x\cdot 10^{x}\ln 10}{\left(10^{x}\right)^{2}}.
+\end{align*}
+
+% [p11]
+4. $y=\ln(x^{2}+1)=f\bigl(g(x)\bigr)$, ahol $f(x)=\ln x$, $f'(x)=\frac{1}{x}$, $g(x)=x^{2}+1$, $g'(x)=2x$, így
+\[
+y'=\frac{1}{x^{2}+1}\cdot 2x=\frac{2x}{x^{2}+1}.
+\]
+
+5.
+\[
+y'=\left(10^{\sqrt{x}}\right)'\sin 2x+10^{\sqrt{x}}(\sin 2x)'
+=10^{\sqrt{x}}\ln 10\cdot\frac{1}{2}x^{-1/2}\sin 2x+10^{\sqrt{x}}\cos 2x\cdot 2 .
+\]
+\end{solution}
+
+\begin{exbox}
+\begin{example}
+Határozzuk meg azon $x_{0}$ pontokat, melyekben az $f(x)=\dfrac{x}{1+x^{2}}$ függvény érintője vízszintes!
+\end{example}
+\end{exbox}
+\begin{solution}
+\[
+f'(x)=\frac{1\cdot(1+x^{2})-x\cdot 2x}{(1+x^{2})^{2}}=\frac{1-x^{2}}{(1+x^{2})^{2}}=0
+\ \Longrightarrow\ 1=x^{2}\ \Longrightarrow\ x=\pm 1 .
+\]
+\end{solution}
+
+% ===================================================================
+\needspace{9\baselineskip}
+\section{Középértéktételek}
+
+% [p11]
+\begin{thmbox}
+\begin{theorem}[Rolle-tétel]
+Legyen $f(x)$ olyan függvény, ami
+\begin{enumerate}[label=\alph*)]
+\item folytonos $[a, b]$-ben,
+\item differenciálható $]a, b[$-ben,
+\item $f(a)=f(b)$.
+\end{enumerate}
+Ekkor létezik $c\in\,]a, b[$, hogy $f'(c)=0$. Azaz létezik $c\in\,]a, b[$, hogy ott vízszintes az érintő.
+\end{theorem}
+\end{thmbox}
+
+\begin{notefig}{A Rolle-tétel: vízszintes érintő a $c$ pontban.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=6cm, height=4.4cm, xmin=-0.2, xmax=4.0, ymin=-0.4, ymax=2.8,
+  xtick={0.6,3.4}, xticklabels={$a$,$b$}]
+\addplot[domain=0.6:3.4]{2.2-0.5*(x-2)^2};
+\addplot[closeddot] coordinates {(0.6,1.22) (3.4,1.22)};
+\addplot[tangent, domain=1.0:3.0, samples=2]{2.2};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% [p12]
+\begin{proof}
+Tudjuk, hogy zárt intervallumon folytonos függvénynek van legnagyobb és legkisebb értéke ott: $M$ és $m$. Lehetőségek:
+\begin{enumerate}[label=\arabic*.]
+\item $M=m\Longrightarrow f(x)=$ konstans $\Longrightarrow f'(c)=0$ minden $c\in\,]a, b[$-re.
+\item $M>m\Longrightarrow$ létezik $c\in\,]a, b[$, hogy $f(x)$-nek $c$-ben minimuma vagy maximuma van.
+\end{enumerate}
+Tegyük fel, hogy $c$-ben maximuma van (a minimum hasonlóan kezelhető). Állítás: $f'(c)=0$.
+\begin{align*}
+f'(c)=\lim_{\Delta x\to 0}\frac{f(c+\Delta x)-f(c)}{\Delta x}
+&=\lim_{\Delta x\to 0+}\frac{\overset{\le 0}{\overbrace{f(c+\Delta x)-f(c)}}}{\Delta x}\le 0,\\
+&=\lim_{\Delta x\to 0-}\frac{\overset{\le 0}{\overbrace{f(c+\Delta x)-f(c)}}}{\underset{<0}{\underbrace{\Delta x}}}\ge 0,
+\end{align*}
+ezért $f'(c)=0$.
+\end{proof}
+
+\noindent Ennek általánosítása:
+
+\needspace{12\baselineskip}
+\begin{thmbox}
+\begin{theorem}[Lagrange-tétel]
+Tegyük fel, hogy az $f(x)$ függvényre teljesül, hogy
+\begin{enumerate}[label=\alph*)]
+\item folytonos $[a, b]$-ben,
+\item deriválható $]a, b[$-ben.
+\end{enumerate}
+Ekkor létezik $c\in\,]a, b[$, hogy
+\begin{equation}\label{eq:lagrange}
+f'(c)=\frac{f(b)-f(a)}{b-a}.
+\end{equation}
+\end{theorem}
+\end{thmbox}
+
+\begin{notefig}{A Lagrange-tétel: létezik a szelővel párhuzamos érintő, a szelő meredeksége $\frac{f(b)-f(a)}{b-a}$.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=8cm, height=6cm, xmin=-0.2, xmax=4.2, ymin=-0.4, ymax=3.4,
+  xtick={0.4,1.602,3.6}, xticklabels={$a$,$c$,$b$}]
+\addplot[domain=0.4:3.6]{0.6+1.2*sqrt(x)};
+\addplot[secant, domain=0.4:3.6, samples=2]{1.359+0.4744*(x-0.4)};
+\addplot[tangent, domain=0.3:3.0, samples=2]{2.119+0.4744*(x-1.602)};
+\draw[asym] (axis cs:1.602,0) -- (axis cs:1.602,2.119);
+\addplot[closeddot] coordinates {(0.4,1.359) (3.6,2.877) (1.602,2.119)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% [p13]
+\begin{remark}
+Ha $f(b)=f(a)$, akkor a Rolle-tételt kapjuk.
+\end{remark}
+
+\begin{proof}[A Lagrange-tétel bizonyítása]
+Legyen
+\[
+g(x)=f(x)-\frac{f(b)-f(a)}{b-a}(x-a).
+\]
+Ekkor
+\begin{enumerate}[label=\arabic*.]
+\item $g(x)$ folytonos $[a, b]$-ben,
+\item $g(x)$ deriválható $]a, b[$-ben,
+\item \leavevmode\vspace{-\baselineskip}
+\begin{align*}
+g(b)&=f(b)-\frac{f(b)-f(a)}{b-a}(b-a)=f(b)-\bigl(f(b)-f(a)\bigr)=f(a),\\
+g(a)&=f(a)-\frac{f(b)-f(a)}{b-a}(a-a)=f(a),
+\end{align*}
+tehát $g(b)=g(a)$.
+\end{enumerate}
+Így $g(x)$-re alkalmazhatjuk a Rolle-tételt: létezik $c\in\,]a, b[$, hogy $g'(c)=0$. Mivel
+\[
+g'(x)=f'(x)-\frac{f(b)-f(a)}{b-a}\cdot 1,
+\]
+ezért
+\[
+0=g'(c)=f'(c)-\frac{f(b)-f(a)}{b-a}\ \Longrightarrow\ f'(c)=\frac{f(b)-f(a)}{b-a}. \qedhere
+\]
+\end{proof}
+
+% ===================================================================
+\needspace{9\baselineskip}
+\section{L'Hospital-szabály}
+
+% [p13]
+A $\displaystyle\lim_{x\to a}\frac{f(x)}{g(x)}$ határérték kiszámításánál a $\dfrac{0}{0}$ vagy a $\dfrac{\pm\infty}{\pm\infty}$ alakra vezetők a problémásak.
+
+\needspace{8\baselineskip}
+\begin{thmbox}
+\begin{theorem}[L'Hospital-szabály első alakja]
+Tegyük fel, hogy $f(x)$ és $g(x)$ folytonos az $x=a$ helyen, és $f(a)=g(a)=0$. Ha $f'(a)$ és $g'(a)$ létezik és $g'(a)\neq 0$, akkor
+\[
+\lim_{x\to a}\frac{f(x)}{g(x)}=\frac{f'(a)}{g'(a)}.
+\]
+\end{theorem}
+\end{thmbox}
+\begin{proof}
+\[
+\lim_{x\to a}\frac{f(x)}{g(x)}=\lim_{x\to a}\frac{f(x)-f(a)}{g(x)-g(a)}
+=\lim_{x\to a}\frac{\frac{f(x)-f(a)}{x-a}}{\frac{g(x)-g(a)}{x-a}}=\frac{f'(a)}{g'(a)}. \qedhere
+\]
+\end{proof}
+
+% [p14]
+\begin{exbox}
+\begin{example}
+Számítsuk ki a következő határértékeket.
+\begin{enumerate}[label=\arabic*., itemsep=6pt]
+\item $\displaystyle\lim_{x\to 1}\frac{\ln x}{x-1}$
+\item $\displaystyle\lim_{x\to 0}\frac{\sin 2x}{3x}$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+\begin{align*}
+1.\quad \lim_{x\to 1}\frac{\ln x}{x-1}&=\frac{\ln 1}{1-1}=\frac{0}{0}\LH\frac{\frac{1}{1}}{1}=1,
+\qquad (\ln x)'=\frac{1}{x},\ (x-1)'=1,\\[0.4em]
+2.\quad \lim_{x\to 0}\frac{\sin 2x}{3x}&=\frac{\sin 0}{3\cdot 0}=\frac{0}{0}\LH\frac{2\cdot\cos(2\cdot 0)}{3}=\frac{2}{3}.
+\end{align*}
+\end{solution}
+
+\begin{thmbox}
+\begin{theorem}[L'Hospital-szabály erősebb alakja]
+Legyen $f(a)=0$, $g(a)=0$, valamint $f(x)$ és $g(x)$ egyaránt differenciálható valamely $a$-t tartalmazó $I$ nyílt intervallumban, kivéve esetleg $a$-t, továbbá $g'(x)\neq 0$, ha $x\in I$, $x\neq a$. Ekkor
+\[
+\lim_{x\to a}\frac{f(x)}{g(x)}=\lim_{x\to a}\frac{f'(x)}{g'(x)},
+\]
+feltéve, hogy a jobboldali határérték létezik.
+\end{theorem}
+\end{thmbox}
+
+\begin{procbox}
+\begin{procedure}[A L'Hospital-szabály alkalmazása]
+A $\displaystyle\lim_{x\to a}\frac{f(x)}{g(x)}=\frac{0}{0}$ vagy $\dfrac{\pm\infty}{\pm\infty}$ határértéket úgy kapjuk meg, hogy $f(x)$-et és $g(x)$-et újra és újra deriváljuk, amíg nem $\dfrac{0}{0}$ vagy $\dfrac{\pm\infty}{\pm\infty}$ határértéket kapunk. Az $a$ lehet $\pm\infty$ is.
+\end{procedure}
+\end{procbox}
+
+\needspace{12\baselineskip}
+\begin{exbox}
+\begin{example}
+Számítsuk ki a következő határértékeket.
+\begin{enumerate}[label=\arabic*., itemsep=6pt]
+\item $\displaystyle\lim_{x\to 0}\frac{\ln(1+x)}{x}$
+\item $\displaystyle\lim_{x\to 0}\frac{e^{x}-1-x}{x^{2}+x^{3}}$
+\item $\displaystyle\lim_{x\to 1}\left(\frac{1}{\ln x}-\frac{1}{x-1}\right)$
+\item $\displaystyle\lim_{x\to 0+}x^{x}$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+\begin{align*}
+1.\quad \lim_{x\to 0}\frac{\ln(1+x)}{x}&=\frac{\ln 1}{0}=\frac{0}{0}\LH\lim_{x\to 0}\frac{\frac{1}{1+x}}{1}=1,\\[0.4em]
+2.\quad \lim_{x\to 0}\frac{e^{x}-1-x}{x^{2}+x^{3}}&=\frac{e^{0}-1-0}{0^{2}+0^{3}}=\frac{0}{0}
+\LH\lim_{x\to 0}\frac{e^{x}-1}{2x+3x^{2}}=\frac{e^{0}-1}{2\cdot 0+3\cdot 0^{2}}=\frac{0}{0}\\
+&\LH\lim_{x\to 0}\frac{e^{x}}{2+6x}=\frac{e^{0}}{2+6\cdot 0}=\frac{1}{2},\\[0.4em]
+3.\quad \lim_{x\to 1}\left(\frac{1}{\ln x}-\frac{1}{x-1}\right)&=\lim_{x\to 1}\frac{x-1-\ln x}{(x-1)\ln x}
+=\frac{1-1-\ln 1}{(1-1)\ln 1}=\frac{0}{0}\\
+&=\lim_{x\to 1}\frac{1-\frac{1}{x}}{\ln x+(x-1)\frac{1}{x}}=\frac{1-1}{\ln 1+(1-1)\cdot 1}=\frac{0}{0}\\
+&\LH\lim_{x\to 1}\frac{\frac{1}{x^{2}}}{\frac{1}{x}+\frac{1}{x}+(x-1)\left(-\frac{1}{x^{2}}\right)}=\frac{1}{2}.
+\end{align*}
+
+% [p15]
+4. Mivel $x^{x}=\left(e^{\ln x}\right)^{x}=e^{x\ln x}$ és
+\[
+\lim_{x\to 0+}x\ln x=\lim_{x\to 0+}\frac{\ln x}{\frac{1}{x}}=\frac{-\infty}{+\infty}\LH\lim_{x\to 0+}\frac{\frac{1}{x}}{-\frac{1}{x^{2}}}=\lim_{x\to 0+}(-x)=0,
+\]
+ezért
+\[
+\lim_{x\to 0+}x^{x}=\lim_{x\to 0+}e^{x\ln x}=e^{0}=1 .
+\]
+\end{solution}
+
+% ===================================================================
+\needspace{9\baselineskip}
+\section{Függvényvizsgálat}
+
+% [p15]
+Cél: az $f(x)$ függvény alakhelyes grafikonjának elkészítése.
+
+\needspace{9\baselineskip}
+\subsection{Magasabb rendű deriváltak}
+
+\begin{defbox}
+\begin{definition}[Magasabb rendű deriváltak]
+Ha az $f(x)$ függvény deriváltja, az $f'(x)$ újra deriválható, akkor azt az $f(x)$ függvény \emph{második deriváltjának} hívjuk:
+\[
+f''(x)=\bigl(f'(x)\bigr)'.
+\]
+Harmadik derivált: $f'''(x)=\bigl(f''(x)\bigr)'$. Negyedik derivált: $f^{(4)}(x)=\bigl(f'''(x)\bigr)'$.
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+Számítsuk ki az $f(x)=\sin x$ függvény magasabb rendű deriváltjait.
+\end{example}
+\end{exbox}
+\begin{solution}
+\[
+f'(x)=\cos x,\quad f''(x)=-\sin x,\quad f'''(x)=-\cos x,\quad f^{(4)}(x)=\sin x,\quad\dots,\quad f^{(2024)}(x)=\sin x .
+\]
+\end{solution}
+
+\needspace{9\baselineskip}
+\subsection{Monotonitás}
+
+\begin{defbox}
+\begin{definition}[Monotonitás]
+Az $f(x)$ függvény \emph{monoton nő} (\emph{csökken}) az $I$ intervallumon, ha $x_{1}<x_{2}$, $x_{1}, x_{2}\in I$ esetén $f(x_{1})\le f(x_{2})$ $\bigl(f(x_{1})\ge f(x_{2})\bigr)$.
+\end{definition}
+\end{defbox}
+
+% [p16]
+\begin{thmbox}
+\begin{theorem}
+Ha $f(x)$ deriválható az $I$ intervallumon és $f'(x)\ge 0$ $\bigl(f'(x)\le 0\bigr)$, akkor monoton nő ott.
+\end{theorem}
+\end{thmbox}
+\begin{proof}
+Legyen $x_{1}<x_{2}$, $x_{1}, x_{2}\in I$. Ekkor alkalmazható a Lagrange-féle középértéktétel az $f(x)$ függvényre, mert $f(x)$
+\begin{enumerate}[label=\arabic*.]
+\item deriválható $[x_{1}, x_{2}]$-ben, és így
+\item folytonos $[x_{1}, x_{2}]$-ben.
+\end{enumerate}
+Tehát létezik egy $x_{1}<c<x_{2}$, hogy
+\[
+f'(c)=\frac{f(x_{2})-f(x_{1})}{x_{2}-x_{1}}.
+\]
+Mivel $f'(c)\ge 0$, ezért $f(x_{2})-f(x_{1})\ge 0$, azaz $f(x_{2})\ge f(x_{1})$.
+\end{proof}
+
+\begin{exbox}
+\begin{example}
+Hol monoton nő, illetve csökken az $f(x)=x^{3}-3x$ függvény?
+\end{example}
+\end{exbox}
+\begin{solution}
+\[
+f'(x)=3x^{2}-3=0\ \Longrightarrow\ 3x^{2}=3\ \Longrightarrow\ x^{2}=1\ \Longrightarrow\ x=\pm 1 .
+\]
+\begin{center}
+\signtable
+\begin{tabular}{c|ccccc}
+\hline
+ & $x<-1$ & $x=-1$ & $-1<x<1$ & $x=1$ & $x>1$\\
+\hline
+$f'(x)$ & $+$ & & $-$ & & $+$\\
+$f(x)$ & nő & & csökken & & nő\\
+\hline
+\end{tabular}
+\end{center}
+Gyökök:
+\[
+x^{3}-3x=0,\qquad x(x^{2}-3)=0,\qquad x_{1}=0,\ x_{2}=-\sqrt{3},\ x_{3}=\sqrt{3}.
+\]
+
+\begin{notefig}{Az $f(x)=x^{3}-3x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=7cm, height=6cm, xmin=-2.4, xmax=2.4, ymin=-3.2, ymax=3.2,
+  xtick={-1.7321,-1,1,1.7321}, xticklabels={$-\sqrt{3}$,$-1$,$1$,$\sqrt{3}$}, ytick={-2,2}]
+\addplot[domain=-2.15:2.15]{x^3-3*x};
+\addplot[closeddot] coordinates {(-1,2) (1,-2)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+\needspace{9\baselineskip}
+\subsection{Lokális szélsőérték}
+
+% [p17]
+\begin{defbox}
+\begin{definition}[Lokális szélsőérték]
+Az $f(x)$ függvénynek az $x_{0}$-ban \emph{lokális maximuma} (\emph{minimuma}) van, ha létezik egy $x_{0}$-t tartalmazó $I$ nyílt intervallum, hogy minden $x\in I$ esetén $f(x)\le f(x_{0})$ $\bigl(f(x)\ge f(x_{0})\bigr)$.
+\end{definition}
+\end{defbox}
+
+\noindent Hogyan dönthető el, hogy $f(x)$-nek $x_{0}$-ban lokális maximuma van? Ekkor
+\begin{center}
+\signtable
+\begin{tabular}{c|ccc}
+\hline
+ & $x<x_{0}$ & $x=x_{0}$ & $x>x_{0}$\\
+\hline
+$f(x)$ & nő & lok.\ max. & csökken\\
+$f'(x)$ & $+$ & & $-$\\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{notefig}{Lokális maximum az $x_{0}$ helyen, és a deriváltfüggvény az $x_{0}$ körül.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=5.4cm, height=4.4cm, xmin=-0.6, xmax=3.0, ymin=-1.0, ymax=2.2,
+  xtick={1.2}, xticklabels={$x_{0}$}, title={\footnotesize $f(x)$}]
+\addplot[domain=0.0:2.4]{1.5-1.4*(x-1.2)^2};
+\end{axis}
+\end{tikzpicture}\hspace{1.5em}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=5.4cm, height=4.4cm, xmin=-0.6, xmax=3.0, ymin=-1.6, ymax=1.8,
+  xtick={1.2}, xticklabels={$x_{0}$}, title={\footnotesize $f'(x)$}]
+\addplot[domain=0.1:2.4, samples=2]{-1.2*(x-1.2)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Az $f'(x)$ az $x=x_{0}$-ban monoton csökken, ha $f''(x_{0})<0$.
+
+\begin{thmbox}
+\begin{theorem}
+Az $f(x)$ függvénynek az $x_{0}$-ban lokális maximuma (minimuma) van, ha $f'(x_{0})=0$ és $f''(x_{0})<0$ $\bigl(f''(x_{0})>0\bigr)$.
+\end{theorem}
+\end{thmbox}
+
+\begin{remark}
+Ha $f'(x_{0})=0$ és $f''(x_{0})=0$, akkor lehet, hogy $f(x)$-nek $x_{0}$-ban lokális maximuma vagy minimuma van, de az is lehet, hogy nincs szélsőértéke.
+\end{remark}
+
+\begin{exbox}
+\begin{example}
+Határozzuk meg az $f(x)=2x^{3}-3x^{2}$ függvény lokális szélsőértékeit.
+\end{example}
+\end{exbox}
+\begin{solution}
+\[
+f'(x)=6x^{2}-6x=0\ \Longrightarrow\ 6x(x-1)=0\ \Longrightarrow\ x_{1}=0,\ x_{2}=1,\qquad f'(0)=0,\ f'(1)=0,
+\]
+\[
+f''(x)=12x-6,
+\]
+\[
+f''(0)=12\cdot 0-6=-6<0\ \Longrightarrow\ x_{1}=0\text{-ban lok.\ max.\ van},
+\]
+\[
+f''(1)=12\cdot 1-6=6>0\ \Longrightarrow\ x_{2}=1\text{-ben lok.\ min.\ van}.
+\]
+\end{solution}
+
+\needspace{9\baselineskip}
+\subsection{Konvexitás}
+
+% [p18]
+\begin{defbox}
+\begin{definition}[Konvexitás]
+Az $f(x)$ függvény az $I$ intervallumon \emph{konvex} (\emph{konkáv}), ha bármely $I$-ben lévő szelő a görbe felett (alatt) van.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{Konvex függvény: a szelő a görbe felett halad.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=5.6cm, height=4.6cm, xmin=-1.0, xmax=3.4, ymin=-0.4, ymax=3.4]
+\addplot[domain=-0.6:3.0]{0.45*(x-0.8)^2+0.6};
+\addplot[secant, domain=0.1:2.6, samples=2]{0.8205+0.45*(x-0.1)};
+\addplot[closeddot] coordinates {(0.1,0.8205) (2.6,1.998)};
+\node[accent,font=\footnotesize,anchor=west] at (axis cs:2.6,3.0) {$f(x)$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Feladat: döntsük el, hogy hol konvex az $f(x)$ függvény grafikonja!
+
+\begin{notefig}{A szelő $P_{f}$ és a görbe $P_{a}$ pontja ugyanazon $x=a+(b-a)z$ abszcisszánál.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=7cm, height=5.2cm, xmin=-0.2, xmax=3.8, ymin=-0.3, ymax=2.0,
+  xtick={0.6,1.9,3.0}, xticklabels={$a$,$x$,$b$}]
+\addplot[domain=0.2:3.5]{0.35*(x-1.6)^2+0.6};
+\addplot[secant, domain=0.6:3.0, samples=2]{0.95+0.14*(x-0.6)};
+\addplot[closeddot] coordinates {(0.6,0.95) (3.0,1.286) (1.9,1.132) (1.9,0.6315)};
+\draw[asym] (axis cs:1.9,0) -- (axis cs:1.9,1.132);
+\node[font=\scriptsize,anchor=south] at (axis cs:1.9,1.16) {$P_{f}$};
+\node[font=\scriptsize,anchor=north west] at (axis cs:1.92,0.62) {$P_{a}$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Itt
+\[
+P_{f}\Bigl(x, f(a)+\bigl(f(b)-f(a)\bigr)z\Bigr),\qquad P_{a}\Bigl(x, f\bigl(a+(b-a)z\bigr)\Bigr).
+\]
+A szelő meredeksége $\dfrac{f(b)-f(a)}{b-a}$, a szelő egyenesének egyenlete
+\[
+y-f(a)=\frac{f(b)-f(a)}{b-a}(x-a),\qquad x=a+(b-a)z,\quad 0\le z\le 1 .
+\]
+Az egyenes $x=a+(b-a)z$ abszcisszájú pontjának második koordinátája:
+\[
+y=f(a)+\frac{f(b)-f(a)}{b-a}\bigl(a+(b-a)z-a\bigr)=f(a)+\frac{f(b)-f(a)}{b-a}(b-a)z=f(a)+\bigl(f(b)-f(a)\bigr)z .
+\]
+Legyen $h(z)$ a $P_{f}$ és $P_{a}$ pontok második koordinátáinak különbsége:
+\begin{align*}
+h(z)&=f(a)+\bigl(f(b)-f(a)\bigr)z-f\bigl(a+(b-a)z\bigr)\ge 0,\\
+h(0)&=f(a)+\bigl(f(b)-f(a)\bigr)\cdot 0-f\bigl(a+(b-a)\cdot 0\bigr)=f(a)-f(a)=0,\\
+h(1)&=f(a)+\bigl(f(b)-f(a)\bigr)\cdot 1-f\bigl(a+(b-a)\cdot 1\bigr)=f(b)-f(b)=0 .
+\end{align*}
+
+% [p19]
+\noindent Az $f(x)$ konvex, ha $h(z)$ alakja a bal oldali ábrán látható. Ez teljesül, ha $h'(z)$ alakja a jobb oldali ábrán látható.
+
+\begin{notefig}{A $h(z)$ és a $h'(z)$ függvény alakja konvex $f$ esetén.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=5cm, height=4cm, xmin=-0.15, xmax=1.3, ymin=-0.25, ymax=0.55,
+  xtick={1}, xticklabels={$1$}, title={\footnotesize $h(z)$}]
+\addplot[domain=0:1]{1.6*x*(1-x)};
+\end{axis}
+\end{tikzpicture}\hspace{1.5em}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=5cm, height=4cm, xmin=-0.15, xmax=1.3, ymin=-1.0, ymax=1.0,
+  xtick={1}, xticklabels={$1$}, title={\footnotesize $h'(z)$}]
+\addplot[domain=0:1]{0.8*cos(deg(pi*x))};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Ez teljesül, ha $h''(z)<0$ minden $0\le z\le 1$ esetén. Mivel
+\[
+h'(z)=f(b)-f(a)-f'\bigl(a+(b-a)z\bigr)(b-a),\qquad h''(z)=-f''\bigl(a+(b-a)z\bigr)(b-a)^{2},
+\]
+ezért $h''(z)<0$, ha $f''(x)>0$.
+
+\begin{thmbox}
+\begin{theorem}
+Az $f(x)$ függvény konvex (konkáv) az $I$ intervallumon, ha $f''(x)>0$ $\bigl(f''(x)<0\bigr)$ minden $x\in I$ esetén.
+\end{theorem}
+\end{thmbox}
+
+\begin{defbox}
+\begin{definition}[Inflexiós pont]
+Az $f(x)$ függvénynek az $x_{0}$ \emph{inflexiós pontja}, ha $x_{0}$ konvex részt konkávtól választ el.
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+Vizsgáljuk meg az $f(x)=e^{-x^{2}}$ függvény konvexitását.
+\end{example}
+\end{exbox}
+\begin{solution}
+\[
+f'(x)=-2xe^{-x^{2}},\qquad
+f''(x)=-2e^{-x^{2}}-2x(-2x)e^{-x^{2}}=e^{-x^{2}}(4x^{2}-2)=0,
+\]
+\[
+4x^{2}-2=0\ \Longrightarrow\ x^{2}=\frac{2}{4}\ \Longrightarrow\ x=\pm\frac{\sqrt{2}}{2}.
+\]
+\begin{center}
+\signtable
+\begin{tabular}{c|ccccc}
+\hline
+ & $x<-\frac{\sqrt{2}}{2}$ & $x=-\frac{\sqrt{2}}{2}$ & $-\frac{\sqrt{2}}{2}<x<\frac{\sqrt{2}}{2}$ & $x=\frac{\sqrt{2}}{2}$ & $x>\frac{\sqrt{2}}{2}$\\
+\hline
+$f''(x)$ & $+$ & $0$ & $-$ & $0$ & $+$\\
+$f(x)$ & konvex & infl.\ p. & konkáv & infl.\ p. & konvex\\
+\hline
+\end{tabular}
+\end{center}
+\end{solution}
+
+\needspace{20\baselineskip}
+\subsection{Teljes függvényvizsgálat}
+
+% [p20]
+\needspace{15\baselineskip}
+\begin{procbox}
+\begin{procedure}[Teljes függvényvizsgálat menete]\leavevmode
+\begin{enumerate}[label=\arabic*.]
+\item értelmezési tartomány;
+\item zérushelyek;
+\item monotonitás;
+\item szélsőértékek;
+\item konvexitás;
+\item inflexiós pontok;
+\item páros vagy páratlan;
+\item periodikusság;
+\item határértékek a szakadási helyeken és az értelmezési tartomány szélein;
+\item értékkészlet.
+\end{enumerate}
+\end{procedure}
+\end{procbox}
+
+\begin{exbox}
+\begin{example}
+Végezzük el az $f(x)=x(\ln x)^{2}$ függvény vizsgálatát.
+\end{example}
+\end{exbox}
+\begin{solution}
+$\ET=\R^{+}$. Zérushely:
+\[
+f(x)=0\ \Longrightarrow\ x(\ln x)^{2}=0\ \Longrightarrow\ \ln x=0\ \Longrightarrow\ x=1 .
+\]
+Monotonitás:
+\[
+f'(x)=(\ln x)^{2}+x(2\ln x)\cdot\frac{1}{x}=(\ln x)^{2}+2\ln x=\ln x\cdot(2+\ln x)=0
+\]
+\[
+\Longrightarrow\ \ln x=0\ \Longrightarrow\ x=1,\qquad\text{illetve}\qquad \ln x=-2\ \Longrightarrow\ x=e^{-2}=\frac{1}{e^{2}}.
+\]
+\begin{center}
+\signtable
+\begin{tabular}{c|ccccc}
+\hline
+ & $0<x<e^{-2}$ & $x=e^{-2}$ & $e^{-2}<x<1$ & $x=1$ & $x>1$\\
+\hline
+$f'(x)$ & $+$ & $0$ & $-$ & $0$ & $+$\\
+$f(x)$ & nő & lok.\ max. & csökken & lok.\ min. & nő\\
+ & & {\Large$\frown$} & & {\Large$\smile$} & \\
+\hline
+\end{tabular}
+\end{center}
+Konvexitás:
+\[
+f''(x)=2\ln x\cdot\frac{1}{x}+\frac{2}{x}=\frac{2}{x}(1+\ln x)=0\ \Longrightarrow\ \ln x=-1\ \Longrightarrow\ x=e^{-1}.
+\]
+\begin{center}
+\signtable
+\begin{tabular}{c|ccc}
+\hline
+ & $0<x<e^{-1}$ & $x=e^{-1}$ & $x>e^{-1}$\\
+\hline
+$f''(x)$ & $-$ & $0$ & $+$\\
+$f(x)$ & konkáv & infl.\ p. & konvex\\
+\hline
+\end{tabular}
+\end{center}
+Határértékek:
+\[
+\lim_{x\to\infty}x(\ln x)^{2}=+\infty,
+\]
+\begin{align*}
+\lim_{x\to 0+}x(\ln x)^{2}&=\lim_{x\to 0+}\frac{(\ln x)^{2}}{\frac{1}{x}}=\frac{+\infty}{+\infty}
+\LH\lim_{x\to 0+}\frac{2\ln x\cdot\frac{1}{x}}{-\frac{1}{x^{2}}}\\
+&=\lim_{x\to 0+}\frac{2\ln x}{-\frac{1}{x}}=\frac{-\infty}{-\infty}
+\LH\lim_{x\to 0+}\frac{\frac{2}{x}}{\frac{1}{x^{2}}}=\lim_{x\to 0+}2x=0 .
+\end{align*}
+
+% [p21]
+\begin{notefig}{Az $f(x)=x(\ln x)^{2}$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=10cm, height=5.6cm, xmin=-0.1, xmax=2.2, ymin=-0.25, ymax=1.5,
+  xtick={1}, ytick=\empty]
+\addplot[domain=0.0005:2.1, samples=400]{x*(ln(x))^2};
+\draw (axis cs:0.1353,0.03) -- (axis cs:0.1353,-0.03);
+\draw (axis cs:0.3679,0.03) -- (axis cs:0.3679,-0.03);
+\node[font=\scriptsize,below] at (axis cs:0.1353,-0.03) {$e^{-2}$};
+\node[font=\scriptsize,below] at (axis cs:0.3679,-0.03) {$e^{-1}$};
+\addplot[opendot] coordinates {(0,0)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+% ===================================================================
+\needspace{9\baselineskip}
+\section{Globális szélsőértékek keresése zárt intervallumon}
+
+% [p21]
+\begin{defbox}
+\begin{definition}[Kritikus pont]
+Az $f(x)$ függvény \emph{kritikus pontja} az $x_{0}$, ha vagy ott az $f(x)$ nem deriválható, vagy $f'(x_{0})=0$.
+\end{definition}
+\end{defbox}
+
+\begin{defbox}
+\begin{definition}[Globális szélsőérték]
+Az $f(x)$ függvény \emph{globális maximuma} (\emph{minimuma}) az $I$ zárt intervallumon az $f(x_{0})$ érték, ha minden $x\in I$ esetén $f(x)\le f(x_{0})$ $\bigl(f(x)\ge f(x_{0})\bigr)$.
+\end{definition}
+\end{defbox}
+
+\noindent Az $f(x)$ függvény $I$-ben vett globális szélsőértékei a következő helyeken lehetnek:
+\begin{enumerate}[label=\arabic*.]
+\item kritikus pontokban,
+\item az $I$ végpontjaiban.
+\end{enumerate}
+
+\begin{exbox}
+\begin{example}
+Határozzuk meg a következő függvények globális szélsőértékeit.
+\begin{enumerate}[label=\arabic*., itemsep=2pt]
+\item $f(x)=x^{2}+3x+1$, $-10\le x\le 10$
+\item $f(x)=e^{-\abs{x}}$, $-2\le x\le 3$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. Kritikus pontok:
+\[
+f'(x)=2x+3=0\ \Longrightarrow\ x=-1,5,\qquad f(-1,5)=(-1,5)^{2}+3(-1,5)+1=-1,25\quad\text{min.}
+\]
+Végpontok:
+\[
+f(-10)=(-10)^{2}+3(-10)+1=71,\qquad f(10)=10^{2}+3\cdot 10+1=131\quad\text{max.}
+\]
+
+% [p22]
+2. Itt
+\[
+f(x)=\begin{cases} e^{-x}, & 0\le x\le 3,\\ e^{x}, & -2\le x<0 .\end{cases}
+\]
+
+\begin{notefig}{Az $f(x)=e^{-\abs{x}}$ függvény a $[-2, 3]$ intervallumon.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=7cm, height=4cm, xmin=-2.6, xmax=3.6, ymin=-0.2, ymax=1.4,
+  xtick={-2,3}, ytick={1}]
+\addplot[domain=-2:0]{exp(x)};
+\addplot[domain=0:3]{exp(-x)};
+\addplot[closeddot] coordinates {(-2,0.1353) (3,0.0498) (0,1)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Az $f(x)$ deriválható $-2\le x\le 3$-ban, kivéve $x=0$-t, és
+\[
+f'(x)=\begin{cases} -e^{-x}, & 0<x<3,\\ e^{x}, & -2<x<0\end{cases}\ \Longrightarrow\ f'(x)\neq 0 .
+\]
+Kritikus pont: $x=0$, $f(0)=e^{-\abs{0}}=1$ max. Végpontok:
+\[
+f(-2)=e^{-\abs{-2}}=e^{-2},\qquad f(3)=e^{-\abs{3}}=e^{-3}\quad\text{min.}
+\]
+\end{solution}
+
+% ===================================================================
+\needspace{9\baselineskip}
+\section{Szöveges szélsőérték-feladatok}
+
+% [p22]
+\begin{exbox}
+\begin{example}
+Egy $1$ m élhosszúságú négyzet alakú kartonból készítsük el a legnagyobb térfogatú, felül nyitott dobozt!
+\end{example}
+\end{exbox}
+\begin{solution}
+A sarkokból $x$ oldalú négyzeteket vágunk ki, $0\le x\le\frac{1}{2}$.
+
+\begin{notefig}{A kartonlap kivágása és a hajtogatott doboz.}
+\begin{tikzpicture}[scale=2.6,>=Stealth]
+\draw[thick] (0,0) rectangle (1,1);
+\foreach \p in {(0,0),(0.78,0),(0,0.78),(0.78,0.78)} \draw \p rectangle ++(0.22,0.22);
+\draw[asym] (0.22,0.22) rectangle (0.78,0.78);
+\draw[decorate,decoration={brace,amplitude=3pt}] (0,1.04) -- (1,1.04) node[midway,above=3pt,font=\footnotesize] {$1$};
+\node[font=\footnotesize,right] at (1.0,0.89) {$x$};
+\node[font=\footnotesize,right] at (1.0,0.11) {$x$};
+\draw[decorate,decoration={brace,amplitude=3pt}] (1.18,0.78) -- (1.18,0.22) node[midway,right=3pt,font=\footnotesize] {$1-2x$};
+\end{tikzpicture}\hspace{3em}
+\begin{tikzpicture}[scale=2.2]
+\coordinate (A) at (0,0); \coordinate (B) at (1,0); \coordinate (C) at (1.35,0.3); \coordinate (D) at (0.35,0.3);
+\coordinate (h) at (0,0.32);
+\draw[thick] (A) -- (B) -- (C);
+\draw[asym] (C) -- (D) -- (A);
+\draw[thick] ($(A)+(h)$) -- ($(B)+(h)$) -- ($(C)+(h)$) -- ($(D)+(h)$) -- cycle;
+\draw[thick] (A) -- ($(A)+(h)$); \draw[thick] (B) -- ($(B)+(h)$); \draw[thick] (C) -- ($(C)+(h)$);
+\draw[asym] (D) -- ($(D)+(h)$);
+\node[font=\footnotesize,left] at ($(A)!0.5!($(A)+(h)$)$) {$x$};
+\node[font=\footnotesize,below] at ($(A)!0.5!(B)$) {$1-2x$};
+\node[font=\footnotesize,right] at ($(B)!0.5!(C)$) {$1-2x$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent A térfogat
+\[
+V(x)=(1-2x)^{2}x=(1-4x+4x^{2})x=4x^{3}-4x^{2}+x,
+\]
+ennek a maximumát keressük.
+\[
+V'(x)=12x^{2}-8x+1=0,\qquad x_{1,2}=\frac{8\pm\sqrt{64-48}}{24}=\frac{8\pm 4}{24}=
+\begin{cases}\frac{1}{2},\\[2pt] \frac{1}{6}.\end{cases}
+\]
+\[
+V\left(\frac{1}{6}\right)=\left(1-2\cdot\frac{1}{6}\right)^{2}\cdot\frac{1}{6}=\frac{4}{54}\quad\text{max.},\qquad V(0)=0,\qquad V\left(\frac{1}{2}\right)=0 .
+\]
+\end{solution}
+
+% [p23]
+\begin{exbox}
+\begin{example}
+$v_{0}$ kezdősebességgel kilövünk egy ágyúból egy ágyúgolyót. Milyen szögben lőjük ki, hogy a legmesszebbre repüljön?
+\end{example}
+\end{exbox}
+\begin{solution}
+\begin{notefig}{A kezdősebesség felbontása.}
+\begin{tikzpicture}[>=Stealth, scale=1.3]
+\draw[->] (-0.3,0) -- (2.8,0);
+\draw[->] (0,-0.3) -- (0,1.8);
+\draw[thick,accent,->] (0,0) -- (35:2.2) node[above right,font=\footnotesize] {$v_{0}$};
+\draw[thick,thmaccent,->] (0,0) -- ({2.2*cos(35)},0);
+\draw[thick,thmaccent,->] (0,0) -- (0,{2.2*sin(35)});
+\draw[asym] ({2.2*cos(35)},0) -- (35:2.2) -- (0,{2.2*sin(35)});
+\node[font=\footnotesize,below] at ({1.1*cos(35)},0) {$v_{0}\cos\alpha$};
+\node[font=\footnotesize,left] at (0,{1.1*sin(35)}) {$v_{0}\sin\alpha$};
+\draw (0.5,0) arc (0:35:0.5);
+\node[font=\footnotesize] at (17:0.72) {$\alpha$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Mennyi ideig repül a golyó? A földet érésig a felfelé megtett út: $v_{0}\sin\alpha\cdot t-\frac{g}{2}t^{2}$. Földet érés:
+\[
+v_{0}\sin\alpha\cdot t-\frac{g}{2}t^{2}=0,\qquad v_{0}\sin\alpha\cdot t=\frac{g}{2}t^{2},\qquad t=\frac{2v_{0}\sin\alpha}{g}.
+\]
+Tehát a golyó $\dfrac{2v_{0}\sin\alpha}{g}$ ideig repül. Az addig vízszintes irányban megtett út:
+\[
+s=\frac{2v_{0}\sin\alpha}{g}\cdot v_{0}\cos\alpha .
+\]
+Az
+\[
+s(\alpha)=\frac{2v_{0}^{2}}{g}\sin\alpha\cos\alpha
+\]
+maximumát keressük, ha $0\le\alpha\le\frac{\pi}{2}$.
+\[
+s'(\alpha)=\frac{\dd s}{\dd\alpha}=\frac{2v_{0}^{2}}{g}\bigl(\cos\alpha\cdot\cos\alpha+\sin\alpha\cdot(-\sin\alpha)\bigr)=0,
+\]
+\[
+\cos^{2}\alpha-\sin^{2}\alpha=0,\quad \sin\alpha, \cos\alpha\ge 0
+\ \Longrightarrow\ \sin\alpha=\cos\alpha\ \Longrightarrow\ \tg\alpha=1\ \Longrightarrow\ \alpha=\frac{\pi}{4}=45^{\circ}.
+\]
+$\Bigl(s(\alpha)=\dfrac{v_{0}^{2}}{g}\sin 2\alpha$, $0\le\alpha\le\frac{\pi}{2}$, maximuma $2\alpha=\frac{\pi}{2}$-nél van, $\alpha=\frac{\pi}{4}$.$\Bigr)$
+\end{solution}
+
+\begin{exbox}
+\begin{example}
+Merőlegesen kanyarodó folyosó: mekkora létrát lehet átvinni?
+\end{example}
+\end{exbox}
+\begin{solution}
+\begin{notefig}{A folyosó és az $\alpha$ szöggel elforgatott létra.}
+\begin{tikzpicture}[scale=1.35,>=Stealth]
+\draw[thick] (-2.6,0) -- (1,0) -- (1,2.6);
+\draw[thick] (-2.6,1) -- (0,1) -- (0,2.6);
+\draw[<->] (1.25,0) -- (1.25,1) node[midway,right,font=\footnotesize] {$1$};
+\draw[<->] (0,2.85) -- (1,2.85) node[midway,above,font=\footnotesize] {$1$};
+\end{tikzpicture}\hspace{3em}
+\begin{tikzpicture}[scale=1.35]
+\draw[thick] (-2.6,0) -- (1,0) -- (1,2.6);
+\draw[thick] (-2.6,1) -- (0,1) -- (0,2.6);
+\coordinate (L) at ({-1/tan(40)},0);
+\coordinate (K) at (0,1);
+\coordinate (U) at (1,{1+tan(40)});
+\draw[very thick,accent] (L) -- (U);
+\draw (L) ++(0.42,0) arc (0:40:0.42);
+\node[font=\scriptsize] at ($(L)+(20:0.66)$) {$\alpha$};
+\draw (K) ++(0.42,0) arc (0:40:0.42);
+\node[font=\scriptsize] at ($(K)+(20:0.66)$) {$\alpha$};
+\draw[asym] (0,0) -- (K);
+\node[accent,font=\footnotesize,above left] at ($(L)!0.5!(K)$) {$l_{1}(\alpha)$};
+\node[accent,font=\footnotesize,left] at ($(K)!0.6!(U)$) {$l_{2}(\alpha)$};
+\node[font=\scriptsize,right] at (0,0.5) {$1$};
+\node[font=\scriptsize,below] at (0.5,1) {$1$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Az $\alpha$ szög esetén elforgatott létra hossza $\le l_{1}(\alpha)+l_{2}(\alpha)$, ahol
+\[
+l_{1}(\alpha)\sin\alpha=1\ \Longrightarrow\ l_{1}(\alpha)=\frac{1}{\sin\alpha},\qquad
+l_{2}(\alpha)\cos\alpha=1\ \Longrightarrow\ l_{2}(\alpha)=\frac{1}{\cos\alpha}.
+\]
+Keressük az
+\[
+l(\alpha)=l_{1}(\alpha)+l_{2}(\alpha)=\frac{1}{\sin\alpha}+\frac{1}{\cos\alpha},\qquad 0<\alpha<\frac{\pi}{2}
+\]
+minimumát!
+
+% [p24]
+\[
+l'(\alpha)=\frac{0-\cos\alpha}{\sin^{2}\alpha}+\frac{0-(-\sin\alpha)}{\cos^{2}\alpha}=\frac{-\cos^{3}\alpha+\sin^{3}\alpha}{\sin^{2}\alpha\cos^{2}\alpha}=0 .
+\]
+Mivel $0<\alpha<\frac{\pi}{2}\Longrightarrow\sin\alpha>0$, $\cos\alpha>0$,
+\[
+-\cos^{3}\alpha+\sin^{3}\alpha=0,\qquad \sin^{3}\alpha=\cos^{3}\alpha,\qquad \sin\alpha=\cos\alpha,\qquad \tg\alpha=1\ \Longrightarrow\ \alpha=\frac{\pi}{4}.
+\]
+\begin{center}
+\signtable
+\begin{tabular}{c|ccc}
+\hline
+ & $0<\alpha<\frac{\pi}{4}$ & $\alpha=\frac{\pi}{4}$ & $\frac{\pi}{4}<\alpha<\frac{\pi}{2}$\\
+\hline
+$l'(\alpha)$ & $-$ & $0$ & $+$\\
+$l(\alpha)$ & csökken & min. & nő\\
+\hline
+\end{tabular}
+\end{center}
+\[
+\min l(\alpha)=\frac{1}{\sin\frac{\pi}{4}}+\frac{1}{\cos\frac{\pi}{4}}=\frac{1}{\frac{\sqrt{2}}{2}}+\frac{1}{\frac{\sqrt{2}}{2}}=\frac{2}{\sqrt{2}}+\frac{2}{\sqrt{2}}=\sqrt{2}+\sqrt{2}=2\sqrt{2}.
+\]
+A legfeljebb $2\sqrt{2}$ hosszú létra vihető át.
+\end{solution}
+
+% ===================================================================
+\needspace{9\baselineskip}
+\section{Paraméteresen adott görbe deriváltja}
+
+% [p24]
+\begin{notefig}{Az $\bigl(x(t), y(t)\bigr)$ görbe érintője az $\bigl(x(t_{0}), y(t_{0})\bigr)$ pontban: $m=?$}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=7cm, height=4.8cm, xmin=-2.4, xmax=3.0, ymin=-0.6, ymax=2.8]
+\addplot[domain=-2.2:2.6]{1+0.6*sin(deg(1.5*x))+0.1*x^2};
+\addplot[tangent, domain=-1.4:1.0, samples=2]{0.748+0.75*(x+0.3)};
+\addplot[closeddot] coordinates {(-0.3,0.748)};
+\node[font=\footnotesize,anchor=north west] at (axis cs:-0.2,0.7) {$\bigl(x(t_{0}), y(t_{0})\bigr)$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{notefig}{A szelő a $t_{0}$ és a $t_{0}+\Delta t$ paraméterű pontok között.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=7cm, height=4.8cm, xmin=-2.4, xmax=3.0, ymin=-0.6, ymax=2.8]
+\addplot[domain=-2.2:2.6]{1+0.6*sin(deg(1.5*x))+0.1*x^2};
+\addplot[secant, domain=-1.2:1.4, samples=2]{0.748+0.8422*(x+0.3)};
+\draw[thin] (axis cs:-0.3,0.748) -- (axis cs:0.6,0.748) -- (axis cs:0.6,1.506);
+\addplot[closeddot] coordinates {(-0.3,0.748) (0.6,1.506)};
+\node[font=\scriptsize,below] at (axis cs:0.15,0.748) {$\Delta x$};
+\node[font=\scriptsize,right] at (axis cs:0.6,1.1) {$\Delta y$};
+\node[font=\footnotesize,anchor=north east] at (axis cs:-0.35,0.7) {$\bigl(x(t_{0}), y(t_{0})\bigr)$};
+\node[font=\footnotesize,anchor=south west] at (axis cs:0.65,1.55) {$\bigl(x(t_{0}+\Delta t), y(t_{0}+\Delta t)\bigr)$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\[
+m\approx\frac{\Delta y}{\Delta x}=\frac{y(t_{0}+\Delta t)-y(t_{0})}{x(t_{0}+\Delta t)-x(t_{0})}
+=\frac{\frac{y(t_{0}+\Delta t)-y(t_{0})}{\Delta t}}{\frac{x(t_{0}+\Delta t)-x(t_{0})}{\Delta t}}\approx\frac{\dot y(t_{0})}{\dot x(t_{0})}.
+\]
+
+% [p25]
+\begin{thmbox}
+\begin{proposition}[Paraméteresen adott görbe deriváltja]
+\[
+m=y'=\frac{\dot y}{\dot x}=\frac{\dd y}{\dd x}=\frac{\frac{\dd y}{\dd t}}{\frac{\dd x}{\dd t}},
+\]
+ahol $\dot x$ az $x(t)$ $t$ szerinti deriváltja.
+\end{proposition}
+\end{thmbox}
+
+\begin{exbox}
+\begin{example}
+Határozzuk meg a következő görbék érintőjének meredekségét a megadott $t_{0}$ pontban.
+\begin{enumerate}[label=\arabic*., itemsep=2pt]
+\item $x=t$, $y=t^{2}+1$, $t_{0}=1$
+\item ciklois: $x=R(t-\sin t)$, $y=R(1-\cos t)$, $t_{0}=\frac{\pi}{4}$
+\item asztrois: $x=\cos^{3}t$, $y=\sin^{3}t$, $0\le t\le 2\pi$, $t_{0}=\frac{\pi}{3}$; írjuk fel az érintő egyenletét is
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. $m=y'=\dfrac{\dot y}{\dot x}=\dfrac{2t}{1}$, így $m=\dfrac{2\cdot 1}{1}=2$.
+
+2.
+
+\[
+y'=\frac{\dot y}{\dot x}=\frac{R\sin t}{R(1-\cos t)},
+\]
+\[
+y'\left(\frac{\pi}{4}\right)=\frac{R\sin\frac{\pi}{4}}{R\left(1-\cos\frac{\pi}{4}\right)}
+=\frac{\frac{\sqrt{2}}{2}}{1-\frac{\sqrt{2}}{2}}
+=\frac{\frac{\sqrt{2}}{2}\left(1+\frac{\sqrt{2}}{2}\right)}{\left(1-\frac{\sqrt{2}}{2}\right)\left(1+\frac{\sqrt{2}}{2}\right)}
+=\frac{\frac{\sqrt{2}}{2}+\frac{1}{2}}{\frac{1}{2}}=\sqrt{2}+1 .
+\]
+
+\begin{notefig}{A ciklois egy íve.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=7cm, height=3.4cm, axis equal image,
+  xmin=-0.5, xmax=7.2, ymin=-0.3, ymax=2.5,
+  xtick={6.2832}, xticklabels={$2R\pi$}, ytick=\empty]
+\addplot[domain=0:2*pi, samples=200, variable=t]({t-sin(deg(t))},{1-cos(deg(t))});
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+3.
+
+\[
+x(t_{0})=\cos^{3}\frac{\pi}{3}=\frac{1}{8},\qquad y(t_{0})=\sin^{3}\frac{\pi}{3}=\left(\frac{\sqrt{3}}{2}\right)^{3}=\frac{3\sqrt{3}}{8},
+\]
+\[
+m=\frac{\dot y}{\dot x}=\frac{3\sin^{2}t\cos t}{3\cos^{2}t(-\sin t)}=-\tg t,\qquad m\left(\frac{\pi}{3}\right)=-\tg\frac{\pi}{3}=-\sqrt{3}.
+\]
+Az érintő:
+\[
+y-\frac{3\sqrt{3}}{8}=-\sqrt{3}\left(x-\frac{1}{8}\right)=-\sqrt{3}x+\frac{\sqrt{3}}{8}
+\ \Longrightarrow\ y=-\sqrt{3}x+\frac{4\sqrt{3}}{8},\qquad y=-\sqrt{3}x+\frac{\sqrt{3}}{2}.
+\]
+
+\begin{notefig}{Az asztrois.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=5cm, height=5cm, axis equal image,
+  xmin=-1.4, xmax=1.4, ymin=-1.4, ymax=1.4, xtick={-1,1}, ytick={-1,1}]
+\addplot[domain=0:2*pi, samples=300, variable=t]({cos(deg(t))^3},{sin(deg(t))^3});
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+% ===================================================================
+\needspace{9\baselineskip}
+\section{Görbék pontbeli érintkezése, görbület, simulókör}
+
+% [p26]
+\begin{defbox}
+\begin{definition}[Érintkezés]
+Azt mondjuk, hogy az $f(x)$ és $g(x)$ görbék \emph{$n$-edrendben érintkeznek} az $x=a$ helyen, ha
+\[
+f(a)=g(a),\quad f'(a)=g'(a),\quad f''(a)=g''(a),\quad\dots,\quad f^{(n)}(a)=g^{(n)}(a),
+\]
+de $f^{(n+1)}(a)\neq g^{(n+1)}(a)$.
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+Hányadrendben érintkeznek a következő görbék?
+\begin{enumerate}[label=\arabic*., itemsep=2pt]
+\item $f(x)=x^{2}-x$, $g(x)=x$, $a=2$
+\item $f(x)=x^{2}$, $g(x)=x^{3}$, $a=0$
+\item $f(x)=x^{2}$, $g(x)=\sin^{2}x$, $a=0$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+\begin{align*}
+1.\quad f(2)&=2^{2}-2=2=g(2)=2,\qquad f'(x)=2x-1,\ g'(x)=1,\\
+f'(2)&=2\cdot 2-1=3\neq g'(2)=1,
+\end{align*}
+tehát $0$-adrendben érintkeznek. A $0$-adrendű érintkezés: metszés.
+
+\begin{notefig}{Az $x^{2}-x$ és az $x$ görbe $0$-adrendű érintkezése: metszés.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=5.6cm, height=5cm, xmin=-1.0, xmax=3.0, ymin=-0.8, ymax=4.0,
+  xtick={2}, ytick={2}]
+\addplot[domain=-0.9:2.7]{x^2-x};
+\addplot[thmaccent, domain=-0.7:3.0, samples=2]{x};
+\addplot[closeddot] coordinates {(2,2) (0,0)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{align*}
+2.\quad f(0)&=0^{2}=0=g(0)=0^{3}=0,\\
+f'(x)&=2x,\ g'(x)=3x^{2}, & f'(0)&=2\cdot 0=0,\ g'(0)=3\cdot 0^{2}=0,\\
+f''(x)&=2,\ g''(x)=6x, & f''(0)&=2\neq g''(0)=6\cdot 0=0,
+\end{align*}
+tehát elsőrendű érintkezés. Legalább elsőrendű érintkezés: közös érintő.
+
+\begin{notefig}{Az $x^{2}$ és az $x^{3}$ görbe elsőrendű érintkezése: közös érintő.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=5.6cm, height=5cm, xmin=-1.6, xmax=1.6, ymin=-1.6, ymax=2.2,
+  xtick=\empty, ytick=\empty]
+\addplot[domain=-1.4:1.4]{x^2};
+\addplot[thmaccent, domain=-1.15:1.28]{x^3};
+\node[accent,font=\footnotesize] at (axis cs:-1.2,1.9) {$x^{2}$};
+\node[thmaccent,font=\footnotesize] at (axis cs:-0.75,-1.35) {$x^{3}$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% [p27]
+\begin{align*}
+3.\quad f(0)&=0^{2}=0=g(0)=\sin^{2}0=0,\\
+f'(x)&=2x,\ g'(x)=2\sin x\cos x=\sin 2x, & f'(0)&=2\cdot 0=0=g'(0)=\sin 0=0,\\
+f''(x)&=2,\ g''(x)=2\cos 2x, & f''(0)&=2=g''(0)=2\cos 0=2,\\
+f'''(x)&=0,\ g'''(x)=-4\sin 2x, & f'''(0)&=0=g'''(0)=-4\sin 0=0,\\
+f^{(4)}(x)&=0,\ g^{(4)}(x)=-8\cos 2x, & f^{(4)}(0)&=0\neq g^{(4)}(0)=-8\cos 0=-8,
+\end{align*}
+tehát harmadrendű érintkezés.
+\end{solution}
+
+\noindent Az $f(x)$ görbe $x=a$ pontbeli görbülete az érintő elfordulását mutatja az ívhosszra vonatkoztatva.
+
+\begin{defbox}
+\begin{definition}[Görbület]
+Az $a$-beli \emph{görbület}
+\[
+G=G(a)=\lim_{\Delta x\to 0}\frac{\Delta\alpha}{\Delta s},
+\]
+ahol $\Delta\alpha$ az $a$ és $a+\Delta x$ pontbeli érintők szöge, $\Delta s$ a két pont közti ívhossz.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{Az érintő $\Delta\alpha$ elfordulása és a $\Delta s$ ívhossz.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=7cm, height=7cm, axis equal image, xmin=-0.4, xmax=2.6, ymin=-0.2, ymax=2.8,
+  xtick={1,1.6}, xticklabels={$a$,$a+\Delta x$}]
+\addplot[domain=-0.2:2.4]{0.3*x^2+0.2*x+0.6};
+\addplot[tangent, domain=0.2:2.4, samples=2]{1.1+0.8*(x-1)};
+\addplot[tangent, domain=0.6:2.3, samples=2]{1.688+1.16*(x-1.6)};
+\addplot[very thick, exaccent, domain=1:1.6]{0.3*x^2+0.2*x+0.6};
+\addplot[closeddot] coordinates {(1,1.1) (1.6,1.688)};
+\draw[thin] (axis cs:1.3,1.34) ++(38.66:2.2cm) arc[start angle=38.66, end angle=49.24, radius=2.2cm];
+\node[font=\scriptsize,anchor=west] at (axis cs:2.2,2.12) {$\Delta\alpha$};
+\node[exaccent,font=\scriptsize,anchor=north west] at (axis cs:1.35,1.3) {ívhossz $=\Delta s$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Kiszámítása:
+\[
+G\approx\frac{\Delta\alpha}{\Delta s}=\frac{\frac{\Delta\alpha}{\Delta x}}{\frac{\Delta s}{\Delta x}}.
+\]
+
+\begin{notefig}{Az ívhossz közelítése a $\Delta x$, $\Delta y$ befogójú háromszög átfogójával.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=6cm, height=4.6cm, xmin=-0.3, xmax=2.6, ymin=-0.2, ymax=2.4,
+  xtick={1,1.7}, xticklabels={$a$,$a+\Delta x$}]
+\addplot[domain=0:2.4]{0.4+1.6*x-0.32*x^2};
+\addplot[very thick, exaccent, domain=1:1.7]{0.4+1.6*x-0.32*x^2};
+\draw[thin] (axis cs:1,1.68) -- (axis cs:1.7,1.68) -- (axis cs:1.7,2.2952);
+\node[font=\scriptsize,below] at (axis cs:1.35,1.68) {$\Delta x$};
+\node[font=\scriptsize,right] at (axis cs:1.7,1.99) {$\Delta y$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\[
+(\Delta s)^{2}\approx(\Delta x)^{2}+(\Delta y)^{2},
+\]
+\[
+\Delta s\approx\sqrt{(\Delta x)^{2}+(\Delta y)^{2}}=\sqrt{(\Delta x)^{2}\left(1+\left(\frac{\Delta y}{\Delta x}\right)^{2}\right)}
+=\sqrt{1+\left(\frac{\Delta y}{\Delta x}\right)^{2}}\,\Delta x\approx\sqrt{1+f'(a)^{2}}\cdot\Delta x,
+\]
+\[
+\Longrightarrow\ \frac{\Delta s}{\Delta x}\approx\sqrt{1+f'(a)^{2}}.
+\]
+
+% [p28]
+\noindent Mivel $f'(a)=m=\tg\alpha$, ezért $\alpha=\alpha(a)=\arctg f'(a)$, és
+\[
+\frac{\Delta\alpha}{\Delta x}\approx\alpha'(a)=\frac{1}{1+f'(a)^{2}}\cdot f''(a)=\frac{f''(a)}{1+f'(a)^{2}},
+\]
+\[
+G\approx\frac{\frac{\Delta\alpha}{\Delta x}}{\frac{\Delta s}{\Delta x}}\approx\frac{\frac{f''(a)}{1+f'(a)^{2}}}{\sqrt{1+f'(a)^{2}}}=\frac{f''(a)}{\bigl(1+f'(a)^{2}\bigr)^{3/2}}.
+\]
+
+\begin{thmbox}
+\begin{proposition}[A görbület képlete]
+\begin{equation}\label{eq:gorbulet}
+G(x)=\frac{f''(x)}{\bigl(1+f'(x)^{2}\bigr)^{3/2}}.
+\end{equation}
+\end{proposition}
+\end{thmbox}
+
+\begin{remark}\leavevmode
+\begin{enumerate}[label=\arabic*.]
+\item Ha két görbe legalább másodrendben érintkezik $x=a$-ban, akkor a görbületük megegyezik ott.
+\item $G(x)\equiv 0\iff f''(x)\equiv 0\iff f'(x)=m$, $m\in\R\iff f(x)=mx+b$, azaz $G(x)\equiv 0$ pontosan akkor teljesül, ha $f(x)$ grafikonja egy egyenes.
+\end{enumerate}
+\end{remark}
+
+\begin{exbox}
+\begin{example}
+Számítsuk ki a görbületet.
+\begin{enumerate}[label=\arabic*., itemsep=2pt]
+\item $f(x)=x^{2}$, $a=1$
+\item az $R$ sugarú kör felső félköre
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. $f(1)=1$, $f'(x)=2x$, $f'(1)=2$, $f''(x)=2$, $f''(1)=2$, így
+\[
+G(1)=\frac{f''(1)}{\bigl(1+f'(1)^{2}\bigr)^{3/2}}=\frac{2}{(1+2^{2})^{3/2}}=\frac{2}{5^{3/2}}.
+\]
+
+2.
+
+\[
+x^{2}+y^{2}=R^{2},\qquad y^{2}=R^{2}-x^{2},\qquad f(x)=y=\sqrt{R^{2}-x^{2}}=(R^{2}-x^{2})^{1/2},
+\]
+\[
+f'(x)=\frac{1}{2}(R^{2}-x^{2})^{-1/2}\cdot(-2x)=-\frac{x}{\sqrt{R^{2}-x^{2}}}.
+\]
+
+\begin{notefig}{Az $R$ sugarú kör felső félköre.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=6cm, height=3.8cm, axis equal image,
+  xmin=-1.6, xmax=1.6, ymin=-0.3, ymax=1.5, xtick={-1.2,1.2}, xticklabels={$-R$,$R$},
+  ytick=\empty]
+\addplot[domain=-1.2:1.2, samples=301]{sqrt(1.44-x^2)};
+\node[accent,font=\footnotesize,anchor=west] at (axis cs:0.75,1.12) {$f(x)$};
+\node[font=\scriptsize,anchor=south east] at (axis cs:0,1.2) {$R$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% [p29]
+\begin{align*}
+f''(x)&=-\frac{1\cdot\sqrt{R^{2}-x^{2}}-x\cdot\frac{1}{2}(R^{2}-x^{2})^{-1/2}\cdot(-2x)}{R^{2}-x^{2}}
+=-\frac{\sqrt{R^{2}-x^{2}}+\frac{x^{2}}{\sqrt{R^{2}-x^{2}}}}{R^{2}-x^{2}}\\
+&=-\frac{\frac{R^{2}-x^{2}+x^{2}}{\sqrt{R^{2}-x^{2}}}}{R^{2}-x^{2}}
+=-\frac{R^{2}}{(R^{2}-x^{2})^{3/2}},
+\end{align*}
+\begin{align*}
+G(x)&=\frac{f''(x)}{\bigl(1+f'(x)^{2}\bigr)^{3/2}}
+=\frac{-\frac{R^{2}}{(R^{2}-x^{2})^{3/2}}}{\left(1+\left(-\frac{x}{\sqrt{R^{2}-x^{2}}}\right)^{2}\right)^{3/2}}\\
+&=\frac{-\frac{R^{2}}{(R^{2}-x^{2})^{3/2}}}{\Bigl(\underbrace{1+\frac{x^{2}}{R^{2}-x^{2}}}_{\frac{R^{2}-x^{2}+x^{2}}{R^{2}-x^{2}}=\frac{R^{2}}{R^{2}-x^{2}}}\Bigr)^{3/2}}
+=-\frac{\frac{R^{2}}{(R^{2}-x^{2})^{3/2}}}{\frac{R^{3}}{(R^{2}-x^{2})^{3/2}}}=-\frac{1}{R}.
+\end{align*}
+\end{solution}
+
+\begin{defbox}
+\begin{definition}[Simulókör]
+Adott egy $f(x)$ függvény és egy $x=a$ pont. Azt az $(u, v)$ középpontú $R$ sugarú kört, azaz az
+\[
+(x-u)^{2}+(y-v)^{2}=R^{2}
+\]
+egyenletű kört, amihez tartozó függvény legalább másodrendben érintkezik az $f(x)$ görbével az $x=a$-ban, az $f(x)$ függvény \emph{simulókörének} mondjuk.
+\end{definition}
+\end{defbox}
+
+\noindent Másképp: $P_{0}$ közelében választok $P_{1}$, $P_{2}$ pontokat, ezeken keresztül kört húzok. Ha $P_{1}, P_{2}\to P_{0}$, akkor a körök határhelyzete a simulókör.
+
+\begin{notefig}{A $P_{1}$, $P_{0}$, $P_{2}$ pontokon átmenő kör.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=6cm, height=5.6cm, axis equal image, xmin=0.0, xmax=4.0, ymin=-0.7, ymax=2.5,
+  xtick={2}, xticklabels={$a$}]
+\addplot[domain=0.4:3.6]{2-0.4*(x-2)^2};
+\addplot[thmaccent, domain=0:2*pi, samples=200, variable=t]({2+1.25*cos(deg(t))},{0.75+1.25*sin(deg(t))});
+\addplot[closeddot] coordinates {(1.6,1.936) (2,2) (2.4,1.936)};
+\node[font=\scriptsize,anchor=south] at (axis cs:2,2.02) {$P_{0}$};
+\node[font=\scriptsize,anchor=south east] at (axis cs:1.6,1.95) {$P_{1}$};
+\node[font=\scriptsize,anchor=south west] at (axis cs:2.4,1.95) {$P_{2}$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% [p30]
+\begin{remark}
+Ha $P_{0}$ közelében egy $P_{1}$ görbepontot választok és meghúzom a $P_{0}P_{1}$ egyenest, majd $P_{1}$-gyel $P_{0}$-hoz tartunk, akkor az így kapott egyenesek határhelyzete az érintő.
+\end{remark}
+
+\begin{notefig}{A $P_{0}P_{1}$ egyenes.}
+\begin{tikzpicture}
+\begin{axis}[sketch, width=5.6cm, height=4.2cm, xmin=-0.6, xmax=3.0, ymin=-0.3, ymax=2.6,
+  xtick={1.2}, xticklabels={$a$}]
+\addplot[domain=-0.4:2.6]{0.25*x^2+0.2*x+0.6};
+\addplot[secant, domain=0.4:2.6, samples=2]{1.2+0.85*(x-1.2)};
+\addplot[closeddot] coordinates {(1.2,1.2) (1.8,1.71)};
+\node[font=\scriptsize,anchor=south east] at (axis cs:1.2,1.25) {$P_{0}$};
+\node[font=\scriptsize,anchor=south east] at (axis cs:1.8,1.76) {$P_{1}$};
+\node[accent,font=\footnotesize,anchor=west] at (axis cs:2.5,2.67) {$f(x)$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{thmbox}
+\begin{proposition}[A simulókör középpontja és sugara]
+Kiszámolható:
+\[
+u=a-\frac{1+f'(a)^{2}}{f''(a)}f'(a),\qquad v=f(a)+\frac{1+f'(a)^{2}}{f''(a)},\qquad R=\abs{\frac{1}{G(a)}}.
+\]
+Tehát a simulókör sugara a görbület reciprokának abszolút értéke.
+\end{proposition}
+\end{thmbox}
+
+\begin{exbox}
+\begin{example}
+Határozzuk meg az $f(x)=\sin x$ függvény simulókörét az $a=\frac{\pi}{2}$ pontban.
+\end{example}
+\end{exbox}
+\begin{solution}
+\[
+f\left(\frac{\pi}{2}\right)=\sin\frac{\pi}{2}=1,\qquad f'(x)=\cos x,\quad f'\left(\frac{\pi}{2}\right)=\cos\frac{\pi}{2}=0,
+\]
+\[
+f''(x)=-\sin x,\quad f''\left(\frac{\pi}{2}\right)=-\sin\frac{\pi}{2}=-1,
+\]
+\[
+G=\frac{f''\left(\frac{\pi}{2}\right)}{\left(1+f'\left(\frac{\pi}{2}\right)^{2}\right)^{3/2}}=\frac{-1}{(1+0^{2})^{3/2}}=-1\ \Longrightarrow\ R=\abs{\frac{1}{-1}}=1,
+\]
+\[
+u=\frac{\pi}{2}-\frac{1+0^{2}}{-1}\cdot 0=\frac{\pi}{2},\qquad v=1+\frac{1+0^{2}}{-1}=0 .
+\]
+A simulókör:
+\[
+\left(x-\frac{\pi}{2}\right)^{2}+y^{2}=1 .
+\]
+
+\begin{notefig}{A $\sin x$ függvény simulóköre az $a=\frac{\pi}{2}$ pontban.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=7cm, height=5cm, axis equal image,
+  xmin=-0.4, xmax=3.7, ymin=-1.3, ymax=1.5,
+  xtick={1.5708,3.1416}, xticklabels={$\frac{\pi}{2}$,$\pi$}, ytick={1}]
+\addplot[domain=-0.2:3.5]{sin(deg(x))};
+\addplot[thmaccent, domain=0:2*pi, samples=200, variable=t]({1.5708+cos(deg(t))},{sin(deg(t))});
+\addplot[closeddot] coordinates {(1.5708,0) (1.5708,1)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+\end{document}

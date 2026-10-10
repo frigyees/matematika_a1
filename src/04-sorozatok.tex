@@ -1,0 +1,509 @@
+% =====================================================================
+%  Sorozatok
+%
+%  JAVÍTOTT FORRÁSHIBÁK
+%   [p4] a gyökös állításban a polinom fokszáma és a határérték indexe
+%        is n volt (p(x) = b_n x^n + ..., majd lim gyök_n p(n))
+%        ->  a fokszám k, az együtthatók b_k, ..., b_0
+%   [p5] lim n!/n^n = 6  ->  0
+%
+%  KIEGÉSZÍTÉS
+%   [p6] a_10, a_100 és a_1000 számértéke; a forrásban az egyenlőségjel
+%        után üresen maradtak
+%   [p1-p5] öt szakaszcím: A sorozat fogalma, Monotonitás, Korlátosság,
+%        Határérték, Végtelenbe tartó sorozatok. Ezek a forrásban cím
+%        nélkül,
+%        folytatólagosan következnek; csak a Sorozatok, a Műveletek
+%        konvergens sorozatokkal és az (1+1/n)^n cím a forrásé.
+%   [p3,p4] a "Pl." rövidítések feladatmondattá alakítva; matematikai
+%        tartalom nem változott
+%
+%  JELZETT, DE NEM MÓDOSÍTOTT HIÁNYOK
+%   [p5] az erősorrend indoklás nélkül áll, és a (n^10 + 10^n)/n!
+%        példa n^10/n! -> 0 lépése egyik felsorolt hányadossal sem
+%        azonos
+%   [p1] a táblázat az üres halmaz jelével jelöli a nem monoton esetet;
+%        ezt a jelölést a jegyzet sehol nem vezeti be
+%   [p3,p5] a konvergencia véges határértéket követel, így a +végtelenbe
+%        tartó sorozat divergens, noha van határértéke; a jegyzet erre
+%        nem tér ki
+%   [p4] a gyök_n c = c^(1/n) -> c^0 = 1 zárójeles indoklás a
+%        határértéket megjegyzés nélkül viszi be a kitevőbe
+%   [p6] az (1+1/n)^n monotonitása és konvergenciája "megmutatható"
+%        jelzéssel, bizonyítás nélkül szerepel
+%   [p6] az (1+a_n)^(b_n) szabály bizonyítás nélkül áll, és nem szól
+%        arról az esetről, amikor az a_n b_n szorzatnak nincs
+%        határértéke
+% =====================================================================
+
+\documentclass[11pt]{article}
+\input{preamble}
+\input{macros}
+
+\begin{document}
+\titleblock{Sorozatok}
+
+% ===================================================================
+\section{A sorozat fogalma}
+
+% [p1]
+Az $a_{n}$ sorozat elemei $a_{1}, a_{2}, \dots, a_{n}, \dots$, ahol $a_{n}\in\R$.
+
+\noindent Sorozat megadása:
+\begin{enumerate}[label=\arabic*., itemsep=3pt]
+\item \textbf{Képlettel:} pl.\ $a_{n}=n^{2}$: $a_{1}=1^{2}=1$, $a_{2}=2^{2}=4$, $a_{3}=3^{2}=9,\dots$
+\item \textbf{Rekurzióval:} pl.\ Fibonacci számok: $a_{1}=1$, $a_{2}=1$,
+\[
+a_{n}=a_{n-1}+a_{n-2}\quad\text{ha } n\ge 3 .
+\]
+\item \textbf{Szavakkal:} pl.\ $a_{n}$ az $n$-edik prímszám.
+\end{enumerate}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{@{}clcp{2.6cm}c@{}}
+\hline
+$a_{n}$ & első néhány tag & monotonitás & korlátosság & határérték\\
+\hline
+$\dfrac{1}{n}$
+  & $1,\ \frac{1}{2},\ \frac{1}{3},\ \frac{1}{4},\ \frac{1}{5},\dots$
+  & csökken & korlátos & $0$\\
+$\dfrac{n}{n+1}$
+  & $\frac{1}{2},\ \frac{2}{3},\ \frac{3}{4},\ \frac{4}{5},\ \frac{5}{6},\dots$
+  & nő & korlátos & $1$\\
+$(-1)^{n}$
+  & $-1,\ 1,\ -1,\ 1,\ -1,\dots$
+  & $\emptyset$ & korlátos & divergens\\
+$n^{2}$
+  & $1,\ 4,\ 9,\ 16,\ 25,\dots$
+  & nő & alulról korlátos & divergens\\
+$(-2)^{n}$
+  & $-2,\ 4,\ -8,\ 16,\ -32,\dots$
+  & $\emptyset$ & {\raggedright se alulról, se felülről nem korlátos\par} & divergens\\
+\hline
+\end{tabular}
+\end{center}
+
+% ===================================================================
+\section{Monotonitás}
+
+% [p1]
+\begin{defbox}
+\begin{definition}[Monoton sorozat]
+Az $a_{n}$ sorozat \emph{monoton nő} (\emph{csökken}), ha
+\[
+a_{1}\le a_{2}\le a_{3}\le\dots\le\boxed{a_{n}\le a_{n+1}}\le\dots
+\]
+\[
+\Bigl(a_{1}\ge a_{2}\ge a_{3}\ge\dots\ge\boxed{a_{n}\ge a_{n+1}}\ge\dots\Bigr).
+\]
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+Vizsgáljuk meg a következő sorozatok monotonitását.
+\begin{enumerate}[label=\arabic*., itemsep=6pt]
+\item $a_{n}=\dfrac{1}{n}$
+\item $a_{n}=\dfrac{n}{n+1}$
+\item $a_{n}=\dfrac{n}{2^{n}}$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. Az $a_{n}=\dfrac{1}{n}$ sorozat monoton csökken: $a_{n}=\dfrac{1}{n}$, $a_{n+1}=\dfrac{1}{n+1}$, és
+\[
+\frac{1}{n}\ge\frac{1}{n+1}\quad\checkmark
+\]
+
+% [p2]
+2. Az $a_{n}=\dfrac{n}{n+1}$ sorozat monoton nő: $a_{n}=\dfrac{n}{n+1}$,
+$a_{n+1}=\dfrac{n+1}{(n+1)+1}=\dfrac{n+1}{n+2}$, és
+\[
+a_{n}\le a_{n+1}
+\iff \frac{n}{n+1}\le\frac{n+1}{n+2}\qquad \Big/\cdot (n+1)(n+2)
+\]
+\[
+n(n+2)\le (n+1)^{2}
+\]
+\[
+n^{2}+2n\le n^{2}+2n+1\quad\checkmark
+\]
+
+3. Az $a_{n}=\dfrac{n}{2^{n}}$ sorozat első néhány tagja
+\[
+a_{1}=\frac{1}{2^{1}}=0,5,\quad
+a_{2}=\frac{2}{2^{2}}=0,5,\quad
+a_{3}=\frac{3}{2^{3}}=0,375,\quad
+a_{4}=\frac{4}{2^{4}}=0,25 .
+\]
+A sorozat monoton csökken: $a_{n}=\dfrac{n}{2^{n}}$, $a_{n+1}=\dfrac{n+1}{2^{n+1}}$, és
+\[
+a_{n}\ge a_{n+1}
+\iff \frac{n}{2^{n}}\ge\frac{n+1}{2^{n+1}}\qquad \Big/\cdot 2^{n+1}
+\]
+\[
+2^{n+1}\cdot n\ge (n+1)2^{n}\qquad \Big/ :2^{n}
+\]
+\[
+2n\ge n+1
+\]
+\[
+n\ge 1\quad\checkmark
+\]
+\end{solution}
+
+% ===================================================================
+\section{Korlátosság}
+
+% [p2]
+\begin{defbox}
+\begin{definition}[Korlátos sorozat]
+Az $a_{n}$ sorozat \emph{felülről} (\emph{alulról}) \emph{korlátos}, ha létezik olyan $L$ ($K$) valós szám, hogy $a_{n}\le L$ ($a_{n}\ge K$) teljesül minden $n$-re. Ha $a_{n}$ alulról és felülről is korlátos, akkor \emph{korlátosnak} mondjuk.
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+Vizsgáljuk meg a következő sorozatok korlátosságát.
+\begin{enumerate}[label=\arabic*., itemsep=6pt]
+\item $a_{n}=\dfrac{1}{n}$
+\item $a_{n}=\dfrac{n}{n+1}$
+\item $a_{n}=n^{2}$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. $0<\dfrac{1}{n}\le 1$, tehát korlátos.
+
+2. $0<\dfrac{n}{n+1}<1$, tehát korlátos.
+
+3. $1\le n^{2}$, tehát alulról korlátos, de felülről nem.
+\end{solution}
+
+% ===================================================================
+\section{Határérték}
+
+% [p2]
+\begin{defbox}
+\begin{definition}[Határérték]
+Az $a_{n}$ sorozat \emph{határértéke} az $A\in\R$ szám, ha a sorozat tagjai az $A$ számot közelítik meg. Precízen: minden $\varepsilon>0$ esetén létezik olyan $N_{0}$, hogy ha $n\ge N_{0}$, akkor
+\[
+\abs{a_{n}-A}<\varepsilon .
+\]
+\end{definition}
+\end{defbox}
+
+% [p3]
+\begin{defbox}
+\begin{definition}[Konvergencia, divergencia]
+Ha létezik véges határértéke az $a_{n}$ sorozatnak, akkor $a_{n}$-t \emph{konvergensnek} mondjuk, egyébként az $a_{n}$ \emph{divergens}. Jelölés:
+\[
+\lim_{n\to\infty}a_{n}=A .
+\]
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+Vizsgáljuk meg a következő sorozatok határértékét.
+\begin{enumerate}[label=\arabic*., itemsep=6pt]
+\item $a_{n}=\dfrac{1}{n}$
+\item $a_{n}=\dfrac{n}{n+1}$
+\item $\displaystyle\lim_{n\to\infty}\frac{2n+5}{3n+7}$
+\item $\displaystyle\lim_{n\to\infty}n^{2}$
+\item $\displaystyle\lim_{n\to\infty}\frac{4n^{2}+5n+7}{3n^{2}-6n+2}$
+\item $\displaystyle\lim_{n\to\infty}\frac{4^{n+1}+1}{4^{n}+2^{n}}$
+\item $\displaystyle\lim_{n\to\infty}\frac{3n+8}{\sqrt{n^{2}+2n-1}}$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. $a_{1000}=\dfrac{1}{1000}=0,001$, $a_{1000000}=\dfrac{1}{1000000}=0,000001\approx 0$, tehát
+\[
+\lim_{n\to\infty}\frac{1}{n}=0 .
+\]
+
+2. $a_{1000}=\dfrac{1000}{1001}=0,999\ldots$, $a_{1000000}=\dfrac{1000000}{1000001}=0,999999\ldots\approx 1$, tehát
+\[
+\lim_{n\to\infty}\frac{n}{n+1}
+=\lim_{n\to\infty}\frac{\frac{n}{n}}{\frac{n}{n}+\frac{1}{n}}
+=\lim_{n\to\infty}\frac{1}{1+\underset{\downarrow\,0}{\frac{1}{n}}}=1 .
+\]
+
+\begin{align*}
+3.\quad \lim_{n\to\infty}\frac{2n+5}{3n+7}
+&=\lim_{n\to\infty}\frac{\frac{2n}{n}+\frac{5}{n}}{\frac{3n}{n}+\frac{7}{n}}
+=\lim_{n\to\infty}\frac{2+\underset{\downarrow\,0}{\frac{5}{n}}}
+{3+\underset{\downarrow\,0}{\frac{7}{n}}}=\frac{2}{3}.
+\end{align*}
+
+4. $\displaystyle\lim_{n\to\infty}n^{2}$ nem létezik (divergens).
+
+\begin{align*}
+5.\quad \lim_{n\to\infty}\frac{4n^{2}+5n+7}{3n^{2}-6n+2}
+&=\lim_{n\to\infty}\frac{\frac{4n^{2}}{n^{2}}+\frac{5n}{n^{2}}+\frac{7}{n^{2}}}
+{\frac{3n^{2}}{n^{2}}-\frac{6n}{n^{2}}+\frac{2}{n^{2}}}\\[0.4em]
+&=\lim_{n\to\infty}\frac{4+\underset{\downarrow\,0}{\frac{5}{n}}+\underset{\downarrow\,0}{\frac{7}{n^{2}}}}
+{3-\underset{\downarrow\,0}{\frac{6}{n}}+\underset{\downarrow\,0}{\frac{2}{n^{2}}}}=\frac{4}{3}.
+\end{align*}
+
+\begin{align*}
+6.\quad \lim_{n\to\infty}\frac{4^{n+1}+1}{4^{n}+2^{n}}
+&=\lim_{n\to\infty}\frac{\frac{4^{n+1}}{4^{n}}+\frac{1}{4^{n}}}
+{\frac{4^{n}}{4^{n}}+\frac{2^{n}}{4^{n}}}
+=\lim_{n\to\infty}\frac{4+\underset{\downarrow\,0}{\frac{1}{4^{n}}}}
+{1+\underset{\downarrow\,0}{\frac{1}{2^{n}}}}=4 .
+\end{align*}
+
+\begin{align*}
+7.\quad \lim_{n\to\infty}\frac{3n+8}{\sqrt{n^{2}+2n-1}}
+&=\lim_{n\to\infty}\frac{\frac{3n}{n}+\frac{8}{n}}{\frac{\sqrt{n^{2}+2n-1}}{n}}
+=\lim_{n\to\infty}\frac{3+\underset{\downarrow\,0}{\frac{8}{n}}}
+{\sqrt{1+\underset{\downarrow\,0}{\frac{2}{n}}-\underset{\downarrow\,0}{\frac{1}{n^{2}}}}}
+=\frac{3}{\sqrt{1}}=3,
+\end{align*}
+ahol felhasználtuk, hogy
+\[
+\frac{\sqrt{n^{2}+2n-1}}{n}=\sqrt{\frac{n^{2}+2n-1}{n^{2}}}.
+\]
+\end{solution}
+
+% ===================================================================
+\section{Műveletek konvergens sorozatokkal}
+
+% [p4]
+Ha $a_{n}$ és $b_{n}$ sorozatok, akkor $a_{n}+b_{n}$, $a_{n}-b_{n}$, $a_{n}b_{n}$ és $\dfrac{a_{n}}{b_{n}}$ (ha $b_{n}\neq 0$) is egy sorozat.
+
+\begin{thmbox}
+\begin{theorem}[Határértékek és műveletek]
+Tegyük fel, hogy $\displaystyle\lim_{n\to\infty}a_{n}=A$ és $\displaystyle\lim_{n\to\infty}b_{n}=B$. Ekkor
+\begin{enumerate}[label=\arabic*.]
+\item $\displaystyle\lim_{n\to\infty}(a_{n}+b_{n})=A+B$,
+\item $\displaystyle\lim_{n\to\infty}(a_{n}-b_{n})=A-B$,
+\item $\displaystyle\lim_{n\to\infty}a_{n}b_{n}=A\cdot B$,
+\item ha $B\neq 0$, akkor $\displaystyle\lim_{n\to\infty}\frac{a_{n}}{b_{n}}=\frac{A}{B}$,
+\item ha $c\in\R$, akkor $\displaystyle\lim_{n\to\infty}ca_{n}=cA$.
+\end{enumerate}
+\end{theorem}
+\end{thmbox}
+
+\begin{exbox}
+\begin{example}
+Számítsuk ki a
+\[
+\lim_{n\to\infty}\left(\frac{2n+3}{14-n}+\frac{2^{n}}{2^{n}+1}\right)
+\]
+határértéket.
+\end{example}
+\end{exbox}
+\begin{solution}
+A két tag határértéke külön-külön
+\[
+\lim_{n\to\infty}\frac{2n+3}{14-n}
+=\lim_{n\to\infty}\frac{\frac{2n}{n}+\frac{3}{n}}{\frac{14}{n}-\frac{n}{n}}
+=\lim_{n\to\infty}\frac{2+\underset{\downarrow\,0}{\frac{3}{n}}}
+{\underset{\downarrow\,0}{\frac{14}{n}}-1}=\frac{2}{-1}=-2,
+\]
+\[
+\lim_{n\to\infty}\frac{2^{n}}{2^{n}+1}
+=\lim_{n\to\infty}\frac{\frac{2^{n}}{2^{n}}}{\frac{2^{n}}{2^{n}}+\frac{1}{2^{n}}}
+=\lim_{n\to\infty}\frac{1}{1+\underset{\downarrow\,0}{\frac{1}{2^{n}}}}=1 .
+\]
+A tétel 1.\ pontja szerint a keresett határérték $-2+1=-1$.
+\end{solution}
+
+% ===================================================================
+\section{Nevezetes határértékek}
+
+% [p4]
+\begin{thmbox}
+\begin{theorem}[Nevezetes határértékek]\leavevmode
+\begin{enumerate}[label=\arabic*.]
+\item Ha $\abs{q}<1$, akkor $\displaystyle\lim_{n\to\infty}q^{n}=0$.
+\item Ha $c>0$, akkor $\displaystyle\lim_{n\to\infty}\sqrt[n]{c}=1$.
+\item $\displaystyle\lim_{n\to\infty}\sqrt[n]{n}=1$.
+\end{enumerate}
+\end{theorem}
+\end{thmbox}
+A 2.\ pont úgy is megkapható, hogy
+\[
+\lim_{n\to\infty}\sqrt[n]{c}=\lim_{n\to\infty}c^{\frac{1}{n}}=c^{0}=1 .
+\]
+Sőt, ha
+\[
+p(x)=b_{k}x^{k}+b_{k-1}x^{k-1}+\dots+b_{1}x+b_{0},\qquad b_{k}>0
+\]
+egy $k$-adfokú polinom, akkor
+\begin{equation}\label{eq:polgyok}
+\lim_{n\to\infty}\sqrt[n]{p(n)}=1 .
+\end{equation}
+
+% [p5]
+\begin{exbox}
+\begin{example}
+Számítsuk ki a $\displaystyle\lim_{n\to\infty}\sqrt[n]{2n^{3}-3n^{2}+7n-1}$ határértéket.
+\end{example}
+\end{exbox}
+\begin{solution}
+A \eqref{eq:polgyok} szerint
+\[
+\lim_{n\to\infty}\sqrt[n]{2n^{3}-3n^{2}+7n-1}=1 .
+\]
+\end{solution}
+
+% ===================================================================
+\section{Végtelenbe tartó sorozatok}
+
+% [p5]
+\begin{defbox}
+\begin{definition}[Végtelen határérték]
+Az $a_{n}$ sorozat \emph{határértéke} $+\infty$, ha minden $K$ esetén létezik olyan $N_{0}$, hogy $a_{n}\ge K$, ha $n\ge N_{0}$.
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+Számítsuk ki a következő határértékeket.
+\begin{enumerate}[label=\arabic*., itemsep=6pt]
+\item $\displaystyle\lim_{n\to\infty}n^{2}$
+\item $\displaystyle\lim_{n\to\infty}\bigl(-n^{3}+n^{2}\bigr)$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. $\displaystyle\lim_{n\to\infty}n^{2}=+\infty$.
+
+2. $\displaystyle\lim_{n\to\infty}\bigl(-n^{3}+n^{2}\bigr)=\lim_{n\to\infty}n^{2}(-n+1)=-\infty$.
+\end{solution}
+
+\begin{thmbox}
+\begin{theorem}[Nevezetes $+\infty$-be tartó sorozatok]
+\[
+\lim_{n\to\infty}n=+\infty,\qquad
+\lim_{n\to\infty}n^{2}=+\infty,\qquad
+\lim_{n\to\infty}2^{n}=+\infty,
+\]
+\[
+\lim_{n\to\infty}\log_{2}n=+\infty,\qquad
+\lim_{n\to\infty}n!=+\infty,\qquad
+\lim_{n\to\infty}n^{n}=+\infty .
+\]
+\end{theorem}
+\end{thmbox}
+
+\begin{thmbox}
+\begin{theorem}[Erősorrend]
+\[
+\log_{2}n\ll n\ll n^{2}\ll 2^{n}\ll n!\ll n^{n},
+\]
+ami azt jelenti, hogy
+\[
+\lim_{n\to\infty}\frac{\log_{2}n}{n}=0,\qquad
+\lim_{n\to\infty}\frac{n}{n^{2}}=0,\qquad
+\lim_{n\to\infty}\frac{n^{2}}{2^{n}}=0,
+\]
+\[
+\lim_{n\to\infty}\frac{2^{n}}{n!}=0,\qquad
+\lim_{n\to\infty}\frac{n!}{n^{n}}=0 .
+\]
+\end{theorem}
+\end{thmbox}
+
+\begin{exbox}
+\begin{example}
+Számítsuk ki a következő határértékeket.
+\begin{enumerate}[label=\arabic*., itemsep=6pt]
+\item $\displaystyle\lim_{n\to\infty}\frac{n^{3}+n}{3^{n}}$
+\item $\displaystyle\lim_{n\to\infty}\frac{n^{10}+10^{n}}{n!}$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. $\displaystyle\lim_{n\to\infty}\frac{n^{3}+n}{3^{n}}=0$.
+
+2. $\displaystyle\lim_{n\to\infty}\frac{n^{10}+10^{n}}{n!}
+=\lim_{n\to\infty}\left(\frac{n^{10}}{n!}+\frac{10^{n}}{n!}\right)=0+0=0$.
+\end{solution}
+
+% ===================================================================
+\section{Az $\left(1+\frac{1}{n}\right)^{n}$ sorozat}
+
+% [p6]
+Legyen $a_{n}=\left(1+\dfrac{1}{n}\right)^{n}$. Tehát
+\[
+a_{1}=\left(1+\frac{1}{1}\right)^{1}=2,\qquad
+a_{2}=\left(1+\frac{1}{2}\right)^{2}=\frac{9}{4}=2,25,
+\]
+\[
+a_{3}=\left(1+\frac{1}{3}\right)^{3}=\left(\frac{4}{3}\right)^{3}=\frac{64}{27}=2,37,\ \dots,\qquad
+a_{10}=\left(1+\frac{1}{10}\right)^{10}=1,1^{10}=2,5937\ldots,
+\]
+\[
+a_{100}=1,01^{100}=2,7048\ldots,\qquad
+a_{1000}=1,001^{1000}=2,7169\ldots
+\]
+Megmutatható, hogy az $a_{n}=\left(1+\dfrac{1}{n}\right)^{n}$ sorozat monoton nő és konvergens:
+\begin{equation}\label{eq:e}
+\lim_{n\to\infty}\left(1+\frac{1}{n}\right)^{n}=2,71\ldots=e .
+\end{equation}
+
+\begin{thmbox}
+\begin{theorem}[Általános szabály]
+Ha $\displaystyle\lim_{n\to\infty}a_{n}=0$, $\displaystyle\lim_{n\to\infty}b_{n}=\pm\infty$ és $\displaystyle\lim_{n\to\infty}a_{n}b_{n}=c$, akkor
+\begin{equation}\label{eq:altalanos}
+\lim_{n\to\infty}\bigl(1+a_{n}\bigr)^{b_{n}}=e^{c}.
+\end{equation}
+\end{theorem}
+\end{thmbox}
+
+\begin{exbox}
+\begin{example}
+Számítsuk ki a következő határértékeket.
+\begin{enumerate}[label=\arabic*., itemsep=6pt]
+\item $\displaystyle\lim_{n\to\infty}\left(1+\frac{3}{n}\right)^{2n+5}$
+\item $\displaystyle\lim_{n\to\infty}\left(\frac{5n+3}{5n+7}\right)^{9n+3}$
+\item $\displaystyle\lim_{n\to\infty}\left(\frac{2^{n}+1}{2^{n}-3}\right)^{2^{n+5}+n^{2}}$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. Itt $a_{n}=\dfrac{3}{n}\to 0$ és $b_{n}=2n+5\to\infty$, továbbá
+\[
+\lim_{n\to\infty}\frac{3}{n}(2n+5)=\lim_{n\to\infty}\frac{6n+15}{n}=6,
+\]
+tehát \eqref{eq:altalanos} szerint
+\[
+\lim_{n\to\infty}\left(1+\frac{3}{n}\right)^{2n+5}=e^{6}.
+\]
+
+2. Alakítsuk a hatványalapot $1+a_{n}$ alakúra:
+\[
+\lim_{n\to\infty}\left(\frac{5n+3}{5n+7}\right)^{9n+3}
+=\lim_{n\to\infty}\left(\frac{5n+7-4}{5n+7}\right)^{9n+3}
+=\lim_{n\to\infty}\left(1+\frac{-4}{5n+7}\right)^{9n+3}.
+\]
+Itt $a_{n}=\dfrac{-4}{5n+7}$ és $b_{n}=9n+3$, továbbá
+\[
+\lim_{n\to\infty}\frac{-4}{5n+7}(9n+3)=\lim_{n\to\infty}\frac{-36n-12}{5n+7}=-\frac{36}{5},
+\]
+tehát a határérték $e^{-36/5}$.
+
+% [p7]
+3. Ugyanígy
+\[
+\lim_{n\to\infty}\left(\frac{2^{n}+1}{2^{n}-3}\right)^{2^{n+5}+n^{2}}
+=\lim_{n\to\infty}\left(\frac{2^{n}-3+4}{2^{n}-3}\right)^{2^{n+5}+n^{2}}
+=\lim_{n\to\infty}\left(1+\frac{4}{2^{n}-3}\right)^{2^{n+5}+n^{2}}.
+\]
+Itt $a_{n}=\dfrac{4}{2^{n}-3}$ és $b_{n}=2^{n+5}+n^{2}$, továbbá $2^{n+5}=32\cdot 2^{n}$ miatt
+\[
+\lim_{n\to\infty}\frac{4}{2^{n}-3}\bigl(2^{n+5}+n^{2}\bigr)
+=\lim_{n\to\infty}\frac{128\cdot 2^{n}+4n^{2}}{2^{n}-3}
+=\lim_{n\to\infty}\frac{\frac{128\cdot 2^{n}}{2^{n}}+\underset{\downarrow\,0}{\frac{4n^{2}}{2^{n}}}}
+{\frac{2^{n}}{2^{n}}-\underset{\downarrow\,0}{\frac{3}{2^{n}}}}=128,
+\]
+tehát a határérték $e^{128}$.
+\end{solution}
+
+\end{document}

@@ -1,0 +1,1450 @@
+% =====================================================================
+%  Függvények
+%
+%  JAVÍTOTT FORRÁSHIBÁK
+%   [p7] sh x = (e^x - e^x)/2  ->  (e^x - e^(-x))/2
+%   [p10] (R cos t)^2 + (R sin^2 t)  ->  (R cos t)^2 + (R sin t)^2
+%   [p13] az ekvivalens (sorozatos) definícióból hiányzott az x_n != x_0
+%        feltétel; nélküle az állítás hamis, ha f értelmezett x_0-ban és
+%        f(x_0) != A
+%   [p15] a törtrész példában lim_{x->0+} sgn(x) = 0, lim_{x->0-} sgn(x) = 1
+%        ->  {x} mindkét helyen
+%   [p19] a 2. következményben a polinom p(x), a bizonyításban f;
+%        egységesen f
+%
+%  KIEGÉSZÍTÉS
+%   [p6] a beszkennelt anyagból a (6) oldal hiányzik (a PDF 6. oldala az
+%        (5) oldal második fényképe). A felhasználó utasítására a
+%        környező definíciók stílusában pótolva: a tg megszorítása és az
+%        arctg (értelmezési tartomány, értékkészlet, két érték: arctg 1,
+%        arctg(-sqrt 3), két ábra), valamint a ch definíciója
+%        (értelmezési tartomány, értékkészlet, monotonitás, paritás,
+%        ábra). Ezek nem a jegyzet szövegei.
+%   [p1-p11] öt szakaszcím: Periodikus függvények; Kölcsönösen
+%        egyértelmű és szigorúan monoton függvények; Inverz függvény;
+%        Hiperbolikus függvények; Polárkoordináták. A forrás első címe a
+%        dokumentumcím, utána a szöveg cím nélkül folytatódik.
+%   [p1-p17] a "Pl." rövidítések feladatmondattá alakítva; matematikai
+%        tartalom nem változott
+%
+%  JELZETT, DE NEM MÓDOSÍTOTT HIÁNYOK
+%   [p16] a lim ln(1+1/x)^x = ln lim (1+1/x)^x lépés az ln
+%        folytonosságát használja, amit a jegyzet csak a [p17]-en vezet be;
+%        a y -> 0- eset "megmutatható" jelzéssel áll
+%   [p14] a területösszehasonlítás kimondatlanul 0 < x < pi/2-t
+%        feltételez; a cos x < sin x / x < 1 egyenlőtlenségből a
+%        határértékre "közel egyenlő" jelekkel következtet, a közrefogást
+%        és a cos folytonosságát nem nevezi meg
+%   [p17] a mu-s határértéknél az "x -> 0 akkor és csak akkor, ha y -> 0"
+%        és az y-nal való osztás mu = 0 esetén nem érvényes (ekkor
+%        y azonosan 0; az állítás ott triviálisan igaz)
+%   [p11] a ciklois levezetésében a pont középponthoz viszonyított
+%        helyzete, (-R sin t, -R cos t), csak az ábra feliratain szerepel
+%   [p1] a periodicitás definíciójából hiányzik a "minden x-re" és az
+%        x + l eleme D_f feltétel
+%   [p19] a bizonyítás a < b-t igényli, de nem biztosítja kifejezetten
+%   [p3,p17,p18] az f és f^(-1) grafikonjának szimmetriája, a felsorolt
+%        függvények folytonossága, a Weierstrass- és a Bolzano-tétel
+%        bizonyítás nélkül áll
+% =====================================================================
+
+\documentclass[11pt]{article}
+\input{preamble}
+\input{macros}
+
+\pgfplotsset{
+  wideplot/.style={funcplot, width=14cm, height=4.4cm},
+  thirdplot/.style={funcplot, width=4.9cm, height=4.0cm, xtick=\empty, ytick=\empty},
+  closeddot/.style={only marks, mark=*, mark size=1.5pt, accent},
+  opendot/.style={only marks, mark=*, mark size=1.5pt, accent, mark options={fill=white}},
+  asym/.style={rulec, dashed, thin},
+  symline/.style={thmaccent, dashed, thin},
+  restr/.style={very thick, thmaccent},
+}
+\tikzset{asym/.style={rulec, dashed, thin}}
+
+\begin{document}
+\titleblock{Függvények}
+
+% ===================================================================
+\section{Periodikus függvények}
+
+% [p1]
+Korábbi fogalmak: valós függvény, $\ET$, $\EK$, alsó és felső korlát, monotonitás.
+
+\begin{defbox}
+\begin{definition}[Periodikus függvény]
+Az $f(x)$ függvény \emph{periodikus}, ha létezik $l>0$, hogy
+\[
+f(x+l)=f(x),\qquad x\in D_{f}.
+\]
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+Vizsgáljuk meg a következő függvények periodicitását.
+\begin{enumerate}[label=\arabic*., itemsep=2pt]
+\item $f(x)=\sin x$
+\item $f(x)=\cos x$
+\item $f(x)=\tg x$
+\item $f(x)=\{x\}$, az $x$ törtrésze
+\item $f(x)=[x]$, az $x$ egészrésze
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. Az $f(x)=\sin x$ függvény $2\pi$ szerint periodikus.
+
+\begin{notefig}{Az $f(x)=\sin x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[wideplot, xmin=-6.9, xmax=13.3, ymin=-1.6, ymax=1.6,
+  xtick={-6.2832,-4.7124,-3.1416,-1.5708,1.5708,3.1416,4.7124,6.2832,7.8540,9.4248,10.9956,12.5664},
+  xticklabels={$-2\pi$,$-\frac{3\pi}{2}$,$-\pi$,$-\frac{\pi}{2}$,$\frac{\pi}{2}$,$\pi$,$\frac{3\pi}{2}$,$2\pi$,$\frac{5\pi}{2}$,$3\pi$,$\frac{7\pi}{2}$,$4\pi$},
+  ytick={-1,1}]
+\addplot[domain=-6.6:12.9, samples=300]{sin(deg(x))};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+2. Az $f(x)=\cos x$ függvény $2\pi$ szerint periodikus.
+
+\begin{notefig}{Az $f(x)=\cos x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[wideplot, xmin=-6.9, xmax=13.3, ymin=-1.6, ymax=1.6,
+  xtick={-6.2832,-4.7124,-3.1416,-1.5708,1.5708,3.1416,4.7124,6.2832,7.8540,9.4248,10.9956,12.5664},
+  xticklabels={$-2\pi$,$-\frac{3\pi}{2}$,$-\pi$,$-\frac{\pi}{2}$,$\frac{\pi}{2}$,$\pi$,$\frac{3\pi}{2}$,$2\pi$,$\frac{5\pi}{2}$,$3\pi$,$\frac{7\pi}{2}$,$4\pi$},
+  ytick={-1,1}]
+\addplot[domain=-6.6:12.9, samples=300]{cos(deg(x))};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+3. Az $f(x)=\tg x$ függvény $\pi$ szerint periodikus.
+
+\begin{notefig}{Az $f(x)=\tg x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=12cm, height=6cm,
+  xmin=-5.4, xmax=8.6, ymin=-4.4, ymax=4.4,
+  xtick={-4.7124,-3.1416,-1.5708,1.5708,3.1416,4.7124,6.2832,7.8540},
+  xticklabels={$-\frac{3\pi}{2}$,$-\pi$,$-\frac{\pi}{2}$,$\frac{\pi}{2}$,$\pi$,$\frac{3\pi}{2}$,$2\pi$,$\frac{5\pi}{2}$},
+  ytick=\empty, restrict y to domain=-4.3:4.3]
+\pgfplotsinvokeforeach{-1,0,1,2}{
+  \addplot[domain={-1.33+pi*#1}:{1.33+pi*#1}]{tan(deg(x))};
+  \draw[asym] ({1.5708+pi*#1},-4.3) -- ({1.5708+pi*#1},4.3);
+}
+\draw[asym] (-4.7124,-4.3) -- (-4.7124,4.3);
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% [p2]
+4. Az $f(x)=\{x\}$ függvény az $x$ törtrésze, például $\{7,2\}=0,2$ és $\{-2,6\}=0,4$. A függvény $1$ szerint periodikus.
+
+\begin{notefig}{Az $f(x)=\{x\}$ törtrész függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=10cm, height=4.2cm, axis equal image,
+  xmin=-3.6, xmax=4.6, ymin=-0.6, ymax=1.6,
+  xtick={-3,-2,-1,1,2,3,4}, ytick={1}]
+\pgfplotsinvokeforeach{-3,...,3}{
+  \addplot[domain=#1:#1+1, samples=2]{x-#1};
+}
+\addplot[closeddot] coordinates {(-3,0) (-2,0) (-1,0) (0,0) (1,0) (2,0) (3,0)};
+\addplot[opendot] coordinates {(-2,1) (-1,1) (0,1) (1,1) (2,1) (3,1) (4,1)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+5. Az $f(x)=[x]$ függvény az $x$ egészrésze. A függvény nem periodikus.
+
+\begin{notefig}{Az $f(x)=[x]$ egészrész függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=7.5cm, height=6.2cm, axis equal image,
+  xmin=-2.7, xmax=3.7, ymin=-2.7, ymax=2.9,
+  xtick={-2,-1,1,2,3}, ytick={-2,-1,1,2}]
+\pgfplotsinvokeforeach{-2,...,2}{
+  \addplot[domain=#1:#1+1, samples=2]{#1};
+}
+\addplot[closeddot] coordinates {(-2,-2) (-1,-1) (0,0) (1,1) (2,2)};
+\addplot[opendot] coordinates {(-1,-2) (0,-1) (1,0) (2,1) (3,2)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+% ===================================================================
+\section{Kölcsönösen egyértelmű és szigorúan monoton függvények}
+
+% [p2]
+\begin{defbox}
+\begin{definition}[Kölcsönösen egyértelmű függvény]
+Az $f(x)$ függvény \emph{kölcsönösen egyértelmű}, ha $x, x'\in D_{f}$, $x\neq x'$ esetén $f(x)\neq f(x')$, azaz különböző értékekhez különböző értékeket rendel.
+\end{definition}
+\end{defbox}
+
+\begin{defbox}
+\begin{definition}[Szigorúan monoton függvény]
+Az $f(x)$ függvény \emph{szigorúan monoton nő} (\emph{csökken}), ha $x_{1}<x_{2}$, $x_{1}, x_{2}\in D_{f}$ esetén
+\[
+f(x_{1})<f(x_{2})\qquad \bigl(f(x_{1})>f(x_{2})\bigr).
+\]
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+Az $f(x)=e^{x}$, $f(x)=x$ és $f(x)=x^{3}$ függvények szigorúan monoton nőnek.
+\end{example}
+\end{exbox}
+
+\begin{notefig}{Az $e^{x}$, az $x$ és az $x^{3}$ függvény: mindhárom szigorúan monoton nő.}
+\begin{tikzpicture}
+\begin{axis}[thirdplot, title={\footnotesize $f(x)=e^{x}$},
+  xmin=-2.4, xmax=1.8, ymin=-0.8, ymax=4.6, ytick={1}]
+\addplot[domain=-2.3:1.45]{exp(x)};
+\end{axis}
+\end{tikzpicture}\hspace{0.3em}
+\begin{tikzpicture}
+\begin{axis}[thirdplot, title={\footnotesize $f(x)=x$},
+  xmin=-2, xmax=2, ymin=-2, ymax=2]
+\addplot[domain=-1.7:1.7]{x};
+\end{axis}
+\end{tikzpicture}\hspace{0.3em}
+\begin{tikzpicture}
+\begin{axis}[thirdplot, title={\footnotesize $f(x)=x^{3}$},
+  xmin=-1.6, xmax=1.6, ymin=-2.6, ymax=2.6]
+\addplot[domain=-1.35:1.35]{x^3};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% ===================================================================
+\section{Inverz függvény}
+
+% [p3]
+Tegyük fel, hogy $f(x)$ kölcsönösen egyértelmű függvény.
+
+\begin{notefig}{Az $f$ függvény és az $f^{-1}$ inverz függvény.}
+\begin{tikzpicture}[>=Stealth]
+\draw[thick] (0,0) ellipse (1.25 and 0.85);
+\draw[thick] (4.2,0) ellipse (1.05 and 0.75);
+\node[above,font=\footnotesize] at (0,0.9) {$D_{f}=\ET$};
+\node[above,font=\footnotesize] at (4.2,0.8) {$R_{f}=\EK$};
+\fill (0.1,0) circle (1.3pt) node[below,font=\footnotesize] {$x$};
+\fill (4.1,0) circle (1.3pt) node[below,font=\footnotesize] {$y$};
+\draw[thick,accent,->] (0.2,0.12) to[out=40,in=140] node[above,font=\footnotesize] {$f$} (4.0,0.12);
+\draw[thick,thmaccent,->] (4.0,-0.15) to[out=-140,in=-40] node[below,font=\footnotesize] {$f^{-1}$} (0.2,-0.15);
+\end{tikzpicture}
+\end{notefig}
+
+\begin{defbox}
+\begin{definition}[Inverz függvény]
+Legyen $y=f(x)$, és jelölje $f^{-1}$ azt a függvényt, amire $f^{-1}(y)=x$. Tehát
+\[
+x=f^{-1}(y)=f^{-1}\bigl(f(x)\bigr),\qquad y=f(x)=f\bigl(f^{-1}(y)\bigr).
+\]
+Az $f^{-1}$ az $f$ \emph{inverz függvénye}.
+\end{definition}
+\end{defbox}
+
+Az $f(x)=a^{x}$ ($a>0$, $a\neq 1$) exponenciális függvény inverze az $f^{-1}(x)=\log_{a}x$ függvény, mert
+\[
+f\bigl(f^{-1}(x)\bigr)=a^{f^{-1}(x)}=a^{\log_{a}x}=x .
+\]
+Az $f(x)=e^{x}$ inverze az $f^{-1}(x)=\log_{e}x=\ln x$, amit \emph{természetes alapú logaritmusnak} hívunk.
+
+\begin{notefig}{Az $e^{x}$ és az $\ln x$ függvény, szaggatottan az $y=x$ egyenes.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=7cm, height=6.4cm, axis equal image,
+  xmin=-2.6, xmax=4.4, ymin=-2.6, ymax=4.4, xtick={1}, ytick={1}]
+\addplot[symline, domain=-2.4:4.2]{x};
+\addplot[domain=-2.5:1.45]{exp(x)};
+\addplot[domain=0.08:4.2]{ln(x)};
+\node[accent,font=\footnotesize] at (axis cs:0.75,3.3) {$e^{x}$};
+\node[accent,font=\footnotesize] at (axis cs:3.8,1.75) {$\ln x$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{thmbox}
+\begin{proposition}
+Az $f$ és az $f^{-1}$ grafikonja mindig a $45^{\circ}$-os meredekségű egyenesre szimmetrikus.
+\end{proposition}
+\end{thmbox}
+
+\begin{procbox}
+\begin{procedure}[Inverz függvény kiszámítása]
+Az $y=f(x)$ függvény inverz függvényét úgy számoljuk ki, hogy az $y=f(x)$ egyenletből $x$-et fejezzük ki.
+\end{procedure}
+\end{procbox}
+
+% [p4]
+\begin{exbox}
+\begin{example}
+Határozzuk meg a következő függvények inverzét.
+\begin{enumerate}[label=\arabic*., itemsep=6pt]
+\item $y=\dfrac{1}{x+3}=f(x)$, $x\neq -3$
+\item $y=e^{x}$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+\begin{align*}
+1.\quad (x+3)y&=1,\qquad xy+3y=1,\qquad xy=1-3y,\\
+x&=\frac{1-3y}{y}=\frac{1}{y}-3=f^{-1}(y),
+\end{align*}
+másképp $f^{-1}(x)=\dfrac{1}{x}-3$, $x\neq 0$.
+
+\begin{notefig}{Az $f(x)=\dfrac{1}{x+3}$ és az $f^{-1}(x)=\dfrac{1}{x}-3$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=8cm, height=7.4cm, axis equal image,
+  xmin=-6.4, xmax=3.4, ymin=-6.4, ymax=3.4,
+  xtick={-5,-4,-3,-2,-1,1,2,3}, ytick={-5,-4,-3,-2,-1,1,2,3},
+  restrict y to domain=-6.3:3.3]
+\draw[asym] (-3,-6.3) -- (-3,3.3);
+\draw[asym] (-6.3,-3) -- (3.3,-3);
+\addplot[domain=-2.7:3.3]{1/(x+3)};
+\addplot[domain=-6.3:-3.3]{1/(x+3)};
+\addplot[thmaccent, domain=0.15:3.3]{1/x-3};
+\addplot[thmaccent, domain=-6.3:-0.3]{1/x-3};
+\node[accent,font=\footnotesize] at (axis cs:-2.15,2.6) {$f(x)$};
+\node[accent,font=\footnotesize] at (axis cs:-4.9,-1.0) {$f(x)$};
+\node[thmaccent,font=\footnotesize] at (axis cs:1.6,-1.6) {$f^{-1}(x)$};
+\node[thmaccent,font=\footnotesize] at (axis cs:-1.9,-5.3) {$f^{-1}(x)$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+2. $y=e^{x}\ \Longrightarrow\ x=\ln y=f^{-1}(y)\ \Longrightarrow\ f^{-1}(x)=\ln x$.
+\end{solution}
+
+Vannak olyan függvények, amik nem kölcsönösen egyértelműek. Például $f(x)=x^{2}$ esetén $f(1)=1=f(-1)$.
+
+\begin{notefig}{Az $f(x)=x^{2}$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=6cm, height=4.6cm,
+  xmin=-2.2, xmax=2.2, ymin=-0.6, ymax=4.4, xtick={-1,1}, ytick={1}]
+\addplot[domain=-2:2]{x^2};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Az $f(x)=x^{2}$ esetén $\ET=\R$. Ha csak az $x\ge 0$ számokon tekintjük az $f(x)=x^{2}$ függvényt, akkor ott már kölcsönösen egyértelmű:
+\[
+x\ge 0:\quad y=x^{2}\ \Longrightarrow\ x=\sqrt{y}=f^{-1}(y),
+\]
+tehát $f^{-1}(x)=\sqrt{x}$.
+
+% ===================================================================
+\section{Trigonometrikus függvények inverze}
+
+% [p5]
+Az $f(x)=\sin x$ függvény értékkészlete $\EK=[-1, 1]$. A $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$ intervallumban szigorúan monoton nő, és ott minden $[-1, 1]$-beli értéket felvesz, ezért $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$-ben van inverze.
+
+\begin{notefig}{A $\sin x$ függvény, kiemelve a $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$ intervallumon.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=9cm, height=4.6cm,
+  xmin=-4.0, xmax=5.6, ymin=-1.7, ymax=1.7,
+  xtick={-1.5708,1.5708}, xticklabels={$-\frac{\pi}{2}$,$\frac{\pi}{2}$}, ytick={-1,1}]
+\addplot[symline, domain=-1.6:1.6]{x};
+\addplot[domain=-3.8:5.3]{sin(deg(x))};
+\addplot[restr, domain=-1.5708:1.5708]{sin(deg(x))};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{defbox}
+\begin{definition}[Arkuszszinusz függvény]
+Az inverz az \emph{arkuszszinusz függvény}:
+\[
+\arcsin x=\sin^{-1}x,
+\]
+ahol $\ET=[-1, 1]$ és $\EK=\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$.
+\end{definition}
+\end{defbox}
+Például
+\[
+\arcsin\frac{1}{2}=\frac{\pi}{6},\quad\text{mert}\quad \sin\frac{\pi}{6}=\frac{1}{2};\qquad
+\arcsin\left(-\frac{\sqrt{2}}{2}\right)=-\frac{\pi}{4},\quad\text{mert}\quad \sin\left(-\frac{\pi}{4}\right)=-\frac{\sqrt{2}}{2}.
+\]
+
+\begin{notefig}{Az $\arcsin x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=5.6cm, height=5.6cm,
+  xmin=-1.6, xmax=1.6, ymin=-1.9, ymax=1.9,
+  xtick={-1,1}, ytick={-1.5708,1.5708}, yticklabels={$-\frac{\pi}{2}$,$\frac{\pi}{2}$}]
+\addplot[domain=-1:1, samples=301]{rad(asin(x))};
+\addplot[closeddot] coordinates {(-1,-1.5708) (1,1.5708)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+Az $f(x)=\cos x$ függvény a $[0, \pi]$ intervallumban szigorúan monoton csökken, és ott minden $[-1, 1]$-beli értéket felvesz, ezért $[0, \pi]$-ben van az inverze.
+
+\begin{notefig}{A $\cos x$ függvény, kiemelve a $[0, \pi]$ intervallumon.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=9cm, height=4.6cm,
+  xmin=-4.0, xmax=5.6, ymin=-1.7, ymax=1.7,
+  xtick={-3.1416,-1.5708,1.5708,3.1416,4.7124},
+  xticklabels={$-\pi$,$-\frac{\pi}{2}$,$\frac{\pi}{2}$,$\pi$,$\frac{3\pi}{2}$}, ytick={-1,1}]
+\addplot[symline, domain=-1.6:1.6]{x};
+\addplot[domain=-3.8:5.3]{cos(deg(x))};
+\addplot[restr, domain=0:3.1416]{cos(deg(x))};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{defbox}
+\begin{definition}[Arkuszkoszinusz függvény]
+Az inverz az \emph{arkuszkoszinusz függvény}:
+\[
+\arccos x=\cos^{-1}x,
+\]
+ahol $\ET=[-1, 1]$ és $\EK=[0, \pi]$.
+\end{definition}
+\end{defbox}
+Például
+\[
+\arccos\frac{\sqrt{3}}{2}=\frac{\pi}{6},\quad\text{mert}\quad \cos\frac{\pi}{6}=\frac{\sqrt{3}}{2};\qquad
+\arccos(-1)=\pi,\quad\text{mert}\quad \cos\pi=-1 .
+\]
+
+\begin{notefig}{Az $\arccos x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=5.6cm, height=5.6cm,
+  xmin=-1.6, xmax=1.6, ymin=-0.6, ymax=3.6,
+  xtick={-1,1}, ytick={1.5708,3.1416}, yticklabels={$\frac{\pi}{2}$,$\pi$}]
+\addplot[domain=-1:1, samples=301]{rad(acos(x))};
+\addplot[closeddot] coordinates {(-1,3.1416) (1,0)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% [p6] -- a (6) oldal hiányzik a beszkennelt anyagból; a felhasználó
+% utasítására a környező definíciók stílusában pótolva.
+Az $f(x)=\tg x$ függvény a $\left]-\frac{\pi}{2}, \frac{\pi}{2}\right[$ intervallumban szigorúan monoton nő, és ott minden valós értéket felvesz, ezért $\left]-\frac{\pi}{2}, \frac{\pi}{2}\right[$-ben van inverze.
+
+\begin{notefig}{A $\tg x$ függvény, kiemelve a $\left]-\frac{\pi}{2}, \frac{\pi}{2}\right[$ intervallumon.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=9cm, height=5.6cm,
+  xmin=-4.9, xmax=4.9, ymin=-4.2, ymax=4.2,
+  xtick={-3.1416,-1.5708,1.5708,3.1416},
+  xticklabels={$-\pi$,$-\frac{\pi}{2}$,$\frac{\pi}{2}$,$\pi$}, ytick=\empty,
+  restrict y to domain=-4.1:4.1]
+\draw[asym] (-1.5708,-4.1) -- (-1.5708,4.1);
+\draw[asym] (1.5708,-4.1) -- (1.5708,4.1);
+\draw[asym] (-4.7124,-4.1) -- (-4.7124,4.1);
+\draw[asym] (4.7124,-4.1) -- (4.7124,4.1);
+\addplot[symline, domain=-4:4]{x};
+\addplot[domain=-4.55:-1.81]{tan(deg(x))};
+\addplot[domain=1.81:4.55]{tan(deg(x))};
+\addplot[restr, domain=-1.33:1.33]{tan(deg(x))};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{defbox}
+\begin{definition}[Arkusztangens függvény]
+Az inverz az \emph{arkusztangens függvény}:
+\[
+\arctg x=\tg^{-1}x,
+\]
+ahol $\ET=\R$ és $\EK=\left]-\frac{\pi}{2}, \frac{\pi}{2}\right[$.
+\end{definition}
+\end{defbox}
+Például
+\[
+\arctg 1=\frac{\pi}{4},\quad\text{mert}\quad \tg\frac{\pi}{4}=1;\qquad
+\arctg\bigl(-\sqrt{3}\bigr)=-\frac{\pi}{3},\quad\text{mert}\quad \tg\left(-\frac{\pi}{3}\right)=-\sqrt{3}.
+\]
+
+\begin{notefig}{Az $\arctg x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=9cm, height=4.6cm,
+  xmin=-6.4, xmax=6.4, ymin=-2.1, ymax=2.1,
+  xtick=\empty, ytick={-1.5708,1.5708}, yticklabels={$-\frac{\pi}{2}$,$\frac{\pi}{2}$}]
+\draw[asym] (-6.3,1.5708) -- (6.3,1.5708);
+\draw[asym] (-6.3,-1.5708) -- (6.3,-1.5708);
+\addplot[domain=-6.2:6.2]{rad(atan(x))};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% ===================================================================
+\section{Hiperbolikus függvények}
+
+% [p6] -- pótolva, lásd fent.
+\begin{defbox}
+\begin{definition}[Koszinuszhiperbolikusz függvény]
+\[
+\ch x=\cosh x=\frac{e^{x}+e^{-x}}{2},
+\]
+ahol $\ET=\R$ és $\EK=[1, +\infty[$. A $[0, +\infty[$ intervallumban szigorúan monoton nő, és páros függvény.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{A $\ch x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=6cm, height=5cm,
+  xmin=-2.6, xmax=2.6, ymin=-0.6, ymax=4.4, xtick=\empty, ytick={1}]
+\addplot[domain=-2.1:2.1]{cosh(x)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% [p7]
+\begin{defbox}
+\begin{definition}[Areakoszinuszhiperbolikusz függvény]
+\[
+\arch x=\cosh^{-1}x,
+\]
+ahol $\ET=[1, +\infty[$ és $\EK=[0, +\infty[$.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{Az $\arch x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=6cm, height=4.2cm,
+  xmin=-0.8, xmax=5.4, ymin=-0.6, ymax=2.8, xtick={1}, ytick=\empty]
+\addplot[domain=1:5, samples=301]{ln(x+sqrt(x^2-1))};
+\addplot[closeddot] coordinates {(1,0)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{defbox}
+\begin{definition}[Szinuszhiperbolikusz függvény]
+\[
+\sh x=\sinh x=\frac{e^{x}-e^{-x}}{2},
+\]
+ahol $\ET=\R$ és $\EK=\R$. Szigorúan monoton nő, és páratlan függvény.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{A $\sh x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=6cm, height=5.4cm,
+  xmin=-2.6, xmax=2.6, ymin=-4.4, ymax=4.4, xtick=\empty, ytick=\empty]
+\addplot[domain=-2.2:2.2]{sinh(x)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{defbox}
+\begin{definition}[Areaszinuszhiperbolikusz függvény]
+A $\sh$ inverze:
+\[
+\arsh x=\sinh^{-1}x,
+\]
+ahol $\ET=\R$ és $\EK=\R$. Szigorúan monoton nő, és páratlan függvény.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{Az $\arsh x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=7cm, height=4.6cm,
+  xmin=-5.4, xmax=5.4, ymin=-2.8, ymax=2.8, xtick=\empty, ytick=\empty]
+\addplot[domain=-5:5]{ln(x+sqrt(x^2+1))};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{defbox}
+\begin{definition}[Tangenshiperbolikusz függvény]
+\[
+\tgh x=\tanh x=\frac{\sh x}{\ch x}=\frac{e^{x}-e^{-x}}{e^{x}+e^{-x}},
+\]
+ahol $\ET=\R$ és $\EK=\left]-1, 1\right[$. Szigorúan monoton nő, és páratlan függvény.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{A $\tgh x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=8cm, height=4.2cm,
+  xmin=-4.4, xmax=4.4, ymin=-1.6, ymax=1.6, xtick=\empty, ytick={-1,1}]
+\draw[asym] (-4.3,1) -- (4.3,1);
+\draw[asym] (-4.3,-1) -- (4.3,-1);
+\addplot[domain=-4.2:4.2]{tanh(x)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% [p8]
+\begin{defbox}
+\begin{definition}[Areatangenshiperbolikusz függvény]
+A $\tgh$ inverze:
+\[
+\arth x=\tanh^{-1}x,
+\]
+ahol $\ET=\left]-1, 1\right[$ és $\EK=\R$.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{Az $\arth x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=5.4cm, height=5.6cm,
+  xmin=-1.6, xmax=1.6, ymin=-3.4, ymax=3.4, xtick={-1,1}, ytick=\empty,
+  restrict y to domain=-3.3:3.3]
+\draw[asym] (-1,-3.3) -- (-1,3.3);
+\draw[asym] (1,-3.3) -- (1,3.3);
+\addplot[domain=-0.997:0.997, samples=301]{0.5*ln((1+x)/(1-x))};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{thmbox}
+\begin{proposition}[Kapcsolatok]
+\[
+\ch^{2}x-\sh^{2}x=1,\qquad
+\ch^{2}x=\frac{1+\ch 2x}{2},\qquad
+\sh^{2}x=\frac{\ch 2x-1}{2}.
+\]
+\end{proposition}
+\end{thmbox}
+
+% ===================================================================
+\section{Görbék megadása síkon}
+
+\subsection{Explicit megadás}
+
+% [p8]
+\begin{defbox}
+\begin{definition}[Explicit megadás]
+$y=f(x)$, azaz a görbe az $\bigl\{\bigl(x, f(x)\bigr):\ x\in D_{f}\bigr\}$ halmaz.
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+$y=x^{2}$: parabola.
+\end{example}
+\end{exbox}
+
+\begin{notefig}{Az $y=x^{2}$ parabola.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=5.6cm, height=4.4cm,
+  xmin=-2.2, xmax=2.2, ymin=-0.6, ymax=4.4, xtick=\empty, ytick=\empty]
+\addplot[domain=-2:2]{x^2};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\subsection{Implicit megadás}
+
+\begin{defbox}
+\begin{definition}[Implicit megadás]
+$F(x, y)=0$, azaz a görbe az $\bigl\{(x, y):\ F(x, y)=0\bigr\}$ halmaz.
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+Ábrázoljuk a következő implicit módon megadott görbéket.
+\begin{enumerate}[label=\arabic*., itemsep=6pt]
+\item $x^{2}+y^{2}=R^{2}$ (vagy $x^{2}+y^{2}-R^{2}=0$)
+\item $\dfrac{x^{2}}{a^{2}}+\dfrac{y^{2}}{b^{2}}=1$
+\item $\dfrac{x^{2}}{a^{2}}-\dfrac{y^{2}}{b^{2}}=1$, illetve $-\dfrac{x^{2}}{a^{2}}+\dfrac{y^{2}}{b^{2}}=1$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. Kör.
+
+\begin{notefig}{Az $x^{2}+y^{2}=R^{2}$ kör.}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-1.9,0) -- (2.0,0);
+\draw[->] (0,-1.9) -- (0,2.0);
+\draw[thick,accent] (0,0) circle (1.4);
+\node[font=\footnotesize,below right] at (1.4,0) {$R$};
+\node[font=\footnotesize,below left] at (-1.4,0) {$-R$};
+\node[font=\footnotesize,above left] at (0,1.4) {$R$};
+\node[font=\footnotesize,below left] at (0,-1.4) {$-R$};
+\end{tikzpicture}
+\end{notefig}
+
+2. Ellipszis.
+
+\begin{notefig}{Az $\dfrac{x^{2}}{a^{2}}+\dfrac{y^{2}}{b^{2}}=1$ ellipszis.}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-2.5,0) -- (2.6,0);
+\draw[->] (0,-1.6) -- (0,1.7);
+\draw[thick,accent] (0,0) ellipse (2.0 and 1.1);
+\node[font=\footnotesize,below right] at (2.0,0) {$a$};
+\node[font=\footnotesize,below left] at (-2.0,0) {$-a$};
+\node[font=\footnotesize,above left] at (0,1.1) {$b$};
+\node[font=\footnotesize,below left] at (0,-1.1) {$-b$};
+\end{tikzpicture}
+\end{notefig}
+
+% [p9]
+3. Hiperbola.
+
+\begin{notefig}{Az $\dfrac{x^{2}}{a^{2}}-\dfrac{y^{2}}{b^{2}}=1$ és a $-\dfrac{x^{2}}{a^{2}}+\dfrac{y^{2}}{b^{2}}=1$ hiperbola.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=6.4cm, height=6.4cm, axis equal image,
+  xmin=-3.4, xmax=3.4, ymin=-3.4, ymax=3.4,
+  xtick={-1.4,1.4}, xticklabels={$-a$,$a$}, ytick=\empty]
+\addplot[asym, domain=-3.2:3.2]{x};
+\addplot[asym, domain=-3.2:3.2]{-x};
+\addplot[domain=-1.45:1.45, variable=t]({1.4*cosh(t)},{1.4*sinh(t)});
+\addplot[domain=-1.45:1.45, variable=t]({-1.4*cosh(t)},{1.4*sinh(t)});
+\node[thmaccent,font=\footnotesize] at (axis cs:2.6,3.1) {$y=\frac{b}{a}x$};
+\end{axis}
+\end{tikzpicture}\hspace{1em}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=6.4cm, height=6.4cm, axis equal image,
+  xmin=-3.4, xmax=3.4, ymin=-3.4, ymax=3.4,
+  xtick=\empty, ytick={-1.4,1.4}, yticklabels={$-b$,$b$}]
+\addplot[asym, domain=-3.2:3.2]{x};
+\addplot[asym, domain=-3.2:3.2]{-x};
+\addplot[domain=-1.45:1.45, variable=t]({1.4*sinh(t)},{1.4*cosh(t)});
+\addplot[domain=-1.45:1.45, variable=t]({1.4*sinh(t)},{-1.4*cosh(t)});
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+\subsection{Paraméteres megadás}
+
+\begin{defbox}
+\begin{definition}[Paraméteres megadás]
+Egy síkban mozgó pont pályáját úgy adjuk meg, hogy a $t$ időpontban az $\bigl(x(t), y(t)\bigr)$ pontban van a pont.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{A $t$ időpontban az $\bigl(x(t), y(t)\bigr)$ pontban lévő mozgó pont pályája.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=7cm, height=4.4cm,
+  xmin=-2.4, xmax=3.0, ymin=-0.4, ymax=2.6, xtick=\empty, ytick=\empty]
+\addplot[domain=-2.2:2.6]{1+0.6*sin(deg(1.5*x))+0.1*x^2};
+\addplot[closeddot] coordinates {(2.0,1.4847)};
+\node[font=\footnotesize,anchor=north west] at (axis cs:2.05,1.38) {$\bigl(x(t), y(t)\bigr)$};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{exbox}
+\begin{example}
+Ábrázoljuk a következő paraméteresen megadott görbéket.
+\begin{enumerate}[label=\arabic*., itemsep=2pt]
+\item $\bigl(x(t), y(t)\bigr)=(t, t)$, $t\in\R$
+\item $\bigl(x(t), y(t)\bigr)=(R\cos t, R\sin t)$, $0\le t\le 2\pi$
+\item $\bigl(x(t), y(t)\bigr)=(a\cos t, b\sin t)$, $0\le t\le 2\pi$, $a, b>0$
+\item $\bigl(x(t), y(t)\bigr)=(a\ch t, b\sh t)$, $t\in\R$, $a, b>0$
+\item ciklois
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. Az $y=x$ egyenes.
+
+\begin{notefig}{Az $\bigl(x(t), y(t)\bigr)=(t, t)$ görbe.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=4.8cm, height=4.2cm,
+  xmin=-1.8, xmax=2.2, ymin=-1.8, ymax=2.2, xtick=\empty, ytick=\empty]
+\addplot[domain=-1.5:1.9]{x};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% [p10]
+2. Mivel
+\[
+(R\cos t)^{2}+(R\sin t)^{2}=R^{2}\cos^{2}t+R^{2}\sin^{2}t=R^{2}\bigl(\cos^{2}t+\sin^{2}t\bigr)=R^{2},
+\]
+az $R$ sugarú, $O$ középpontú körön vagyunk. Néhány pont:
+\[
+\renewcommand{\arraystretch}{1.35}
+\begin{array}{r@{\quad}r@{\;=\;}l}
+t=0: & (R\cos 0, R\sin 0) & (R, 0),\\
+t=\frac{\pi}{2}: & \left(R\cos\frac{\pi}{2}, R\sin\frac{\pi}{2}\right) & (0, R),\\
+t=\pi: & (R\cos\pi, R\sin\pi) & (-R, 0),\\
+t=\frac{3\pi}{2}: & \left(R\cos\frac{3\pi}{2}, R\sin\frac{3\pi}{2}\right) & (0, -R),\\
+t=2\pi: & (R\cos 2\pi, R\sin 2\pi) & (R, 0).
+\end{array}
+\]
+
+\begin{notefig}{Az $(R\cos t, R\sin t)$ kör a paraméter néhány értékével.}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-2.1,0) -- (2.2,0);
+\draw[->] (0,-2.0) -- (0,2.1);
+\draw[thick,accent] (0,0) circle (1.4);
+\draw[thick,accent,->] (25:1.4) arc (25:55:1.4);
+\fill (1.4,0) circle (1.4pt); \fill (0,1.4) circle (1.4pt);
+\fill (-1.4,0) circle (1.4pt); \fill (0,-1.4) circle (1.4pt);
+\node[font=\scriptsize,above right] at (1.4,0) {$t=0$};
+\node[font=\scriptsize,below right] at (1.4,0) {$t=2\pi$};
+\node[font=\scriptsize,above left] at (0,1.4) {$t=\frac{\pi}{2}$};
+\node[font=\scriptsize,above left] at (-1.4,0) {$t=\pi$};
+\node[font=\scriptsize,below left] at (0,-1.4) {$t=\frac{3\pi}{2}$};
+\node[font=\scriptsize,above right] at (0,1.4) {$R$};
+\node[font=\scriptsize,below right] at (0,-1.4) {$-R$};
+\node[font=\scriptsize,below left] at (-1.4,0) {$-R$};
+\end{tikzpicture}
+\end{notefig}
+
+3. Mivel $x=a\cos t$ és $y=b\sin t$,
+\[
+\frac{x^{2}}{a^{2}}+\frac{y^{2}}{b^{2}}=\frac{a^{2}\cos^{2}t}{a^{2}}+\frac{b^{2}\sin^{2}t}{b^{2}}=\cos^{2}t+\sin^{2}t=1,
+\]
+tehát ellipszis.
+
+\begin{notefig}{Az $(a\cos t, b\sin t)$ ellipszis.}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-2.5,0) -- (2.6,0);
+\draw[->] (0,-1.6) -- (0,1.7);
+\draw[thick,accent] (0,0) ellipse (2.0 and 1.1);
+\node[font=\footnotesize,below right] at (2.0,0) {$a$};
+\node[font=\footnotesize,below left] at (-2.0,0) {$-a$};
+\node[font=\footnotesize,above left] at (0,1.1) {$b$};
+\node[font=\footnotesize,below left] at (0,-1.1) {$-b$};
+\end{tikzpicture}
+\end{notefig}
+
+4. Ekkor
+\[
+\frac{x^{2}}{a^{2}}-\frac{y^{2}}{b^{2}}=\frac{a^{2}\ch^{2}t}{a^{2}}-\frac{b^{2}\sh^{2}t}{b^{2}}=\ch^{2}t-\sh^{2}t=1 .
+\]
+Mivel $x=a\ch t>0$, a hiperbola jobboldali ágát kapjuk.
+
+\begin{notefig}{Az $(a\ch t, b\sh t)$ görbe: a hiperbola jobboldali ága.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=6.4cm, height=6.4cm, axis equal image,
+  xmin=-3.4, xmax=3.4, ymin=-3.4, ymax=3.4,
+  xtick={1.4}, xticklabels={$a$}, ytick=\empty]
+\addplot[asym, domain=-3.2:3.2]{x};
+\addplot[asym, domain=-3.2:3.2]{-x};
+\addplot[domain=-1.45:1.45, variable=t]({1.4*cosh(t)},{1.4*sinh(t)});
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% [p11]
+5. \emph{Ciklois.} Egy $R$ sugarú kerék egyenletesen gurul. Az eredetileg legalsó pont milyen pályát ír le, miközben a kerék gurul? A kerék középpontja egyenletes sebességgel halad előre.
+
+\begin{notefig}{Az $R$ sugarú kerék és eredetileg legalsó pontja.}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-1.0,0) -- (3.0,0);
+\draw[->] (0,-0.4) -- (0,2.6);
+\draw[thick,accent] (0,1) circle (1);
+\fill (0,1) circle (1.2pt);
+\node[font=\footnotesize,left] at (0,1) {$R$};
+\fill[thmaccent] (0,0) circle (2pt);
+\draw[thick,->] (0.3,2.25) -- (1.1,2.25);
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Ha egyet fordul, akkor $2\pi$-nyit fordult a kerék:
+
+\begin{notefig}{A kerék egy teljes fordulat után.}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-0.4,0) -- (8.0,0);
+\draw[->] (0,-0.4) -- (0,2.6);
+\draw[thick,accent] (6.2832,1) circle (1);
+\fill (6.2832,1) circle (1.2pt) node[above,font=\footnotesize] {$(2R\pi, R)$};
+\fill[thmaccent] (6.2832,0) circle (2pt) node[below,font=\footnotesize,black] {$2R\pi$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Ha $0\le t\le 2\pi$, akkor a középpont az $(Rt, R)$ pontban van, és az eredetileg alsó pont $t$-vel fordult el.
+
+\begin{notefig}{A kerék helyzete a $t$ paraméternél.}
+\begin{tikzpicture}[>=Stealth, scale=1.3]
+\draw[->] (-0.4,0) -- (3.6,0);
+\draw[->] (0,-0.4) -- (0,2.4);
+\coordinate (C) at (1.1,1);
+\coordinate (P) at ({1.1-sin(63)},{1-cos(63)});
+\draw[thick,accent] (C) circle (1);
+\draw[thmaccent, domain=0:1.1, samples=60, variable=\s]
+  plot ({\s-sin(\s r)},{1-cos(\s r)});
+\fill (C) circle (1.2pt) node[above right,font=\footnotesize] {$(Rt, R)$};
+\draw (C) -- (P);
+\draw[dashed] (P) -- ({1.1},{1-cos(63)});
+\draw[dashed] (C) -- (1.1,{1-cos(63)});
+\fill[thmaccent] (P) circle (1.8pt);
+\node[font=\scriptsize,above left] at ($(C)!0.5!(P)$) {$R$};
+\node[font=\scriptsize,below,fill=white,inner sep=1pt] at ($(P)!0.55!(1.1,{1-cos(63)})+(0.05,-0.05)$) {$R\sin t$};
+\node[font=\scriptsize,right] at (1.1,0.72) {$R\cos t$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent A pont helyzete $(Rt-R\sin t,\ R-R\cos t)$, tehát
+\[
+\bigl(x(t), y(t)\bigr)=(Rt-R\sin t,\ R-R\cos t),\qquad 0\le t\le 2\pi .
+\]
+\end{solution}
+
+% ===================================================================
+\section{Polárkoordináták}
+
+% [p11]
+\begin{defbox}
+\begin{definition}[Polárkoordináták]
+Egy adott $\varphi$ szög esetén megmondjuk, hogy milyen távol vagyunk az origótól:
+\[
+\varphi\mapsto r,\qquad r(\varphi).
+\]
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{A $\varphi$ szöghöz tartozó $r$ távolság.}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-0.6,0) -- (2.2,0);
+\draw[->] (0,-0.4) -- (0,1.9);
+\draw[thick,accent] (0,0) -- (62:1.7);
+\node[accent,font=\footnotesize,above left] at (62:1.0) {$r$};
+\draw (0.42,0) arc (0:62:0.42);
+\node[font=\footnotesize] at (31:0.62) {$\varphi$};
+\end{tikzpicture}
+\end{notefig}
+
+% [p12]
+\begin{exbox}
+\begin{example}
+Ábrázoljuk a következő polárkoordinátákkal megadott görbéket.
+\begin{enumerate}[label=\arabic*., itemsep=2pt]
+\item $r=a$, $0\le\varphi\le 2\pi$
+\item $r=a\varphi$, $a>0$, $\varphi\ge 0$
+\item $r=e^{a\varphi}$, $a>0$, $\varphi\ge 0$
+\item $r=a(1+\cos\varphi)$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. Az $a$ sugarú kör.
+
+\begin{notefig}{Az $r=a$ kör.}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-1.9,0) -- (2.0,0);
+\draw[->] (0,-1.9) -- (0,2.0);
+\draw[thick,accent] (0,0) circle (1.3);
+\node[font=\footnotesize,below right] at (1.3,0) {$a$};
+\node[font=\footnotesize,below left] at (-1.3,0) {$-a$};
+\node[font=\footnotesize,above left] at (0,1.3) {$a$};
+\node[font=\footnotesize,below left] at (0,-1.3) {$-a$};
+\end{tikzpicture}
+\end{notefig}
+
+2. Arkhimédeszi spirál.
+
+\begin{notefig}{Az $r=a\varphi$ arkhimédeszi spirál.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=6cm, height=6cm, axis equal image,
+  xmin=-2.6, xmax=2.6, ymin=-2.6, ymax=2.6, xtick=\empty, ytick=\empty,
+  xlabel={}, ylabel={}]
+\addplot[domain=0:6*pi, samples=500, variable=t]({0.12*t*cos(deg(t))},{0.12*t*sin(deg(t))});
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+3. Logaritmikus spirál.
+
+\begin{notefig}{Az $r=e^{a\varphi}$ logaritmikus spirál.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=7cm, height=7cm, axis equal image,
+  xmin=-6.4, xmax=6.4, ymin=-6.4, ymax=6.4, xtick=\empty, ytick=\empty,
+  xlabel={}, ylabel={}]
+\addplot[domain=0:3.6*pi, samples=500, variable=t]({exp(0.16*t)*cos(deg(t))},{exp(0.16*t)*sin(deg(t))});
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+4. Kardioid.
+
+\begin{notefig}{Az $r=a(1+\cos\varphi)$ kardioid.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=6cm, height=5cm, axis equal image,
+  xmin=-0.9, xmax=2.7, ymin=-1.6, ymax=1.6,
+  xtick={1,2}, xticklabels={$a$,$2a$}, ytick=\empty, xlabel={}, ylabel={}]
+\addplot[domain=0:2*pi, samples=400, variable=t]({(1+cos(deg(t)))*cos(deg(t))},{(1+cos(deg(t)))*sin(deg(t))});
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+% ===================================================================
+\section{Függvény határértéke}
+
+% [p13]
+\begin{defbox}
+\begin{definition}[Függvény határértéke]
+Az $f(x)$ függvény \emph{határértéke} az $x_{0}$ helyen az $A$ szám, ha minden $\varepsilon>0$ esetén létezik $\delta>0$, hogy
+\[
+\abs{f(x)-A}<\varepsilon,\quad\text{ha}\quad 0<\abs{x-x_{0}}<\delta .
+\]
+Jelölés: $\displaystyle\lim_{x\to x_{0}}f(x)=A$.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{A határérték definíciója: $0<\abs{x-x_{0}}<\delta$ esetén a grafikon az $A\pm\varepsilon$ sávban halad.}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-0.3,0) -- (4.0,0);
+\draw[->] (0,-0.3) -- (0,2.7);
+\draw[thmaccent] (1.2,1.0) rectangle (3.2,2.2);
+\draw[accent,thick] plot[smooth] coordinates {(1.2,1.4) (1.7,1.95) (2.2,1.6) (2.7,1.25) (3.2,1.8)};
+\fill[white] (2.2,1.6) circle (1.6pt); \draw[accent] (2.2,1.6) circle (1.6pt);
+\foreach \y/\l in {1.0/{A-\varepsilon},1.6/{A},2.2/{A+\varepsilon}}
+  {\draw (0.06,\y) -- (-0.06,\y); \node[font=\scriptsize,left] at (-0.06,\y) {$\l$};}
+\foreach \x/\l in {1.2/{x_{0}-\delta},2.2/{x_{0}},3.2/{x_{0}+\delta}}
+  {\draw (\x,0.06) -- (\x,-0.06); \node[font=\scriptsize,below] at (\x,-0.06) {$\l$};}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{remark}
+Az $x_{0}$-ban akkor is lehet határérték, ha ott nem értelmezett a függvény.
+\end{remark}
+
+\begin{defbox}
+\begin{definition}[Ekvivalens definíció]
+Az $f(x)$ függvény $x_{0}$ helyen vett határértéke az $A$ szám, ha minden olyan $x_{n}$ sorozatra, melyre $x_{n}\in D_{f}$, $x_{n}\neq x_{0}$ és $\displaystyle\lim_{n\to\infty}x_{n}=x_{0}$, teljesül, hogy $\displaystyle\lim_{n\to\infty}f(x_{n})=A$.
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+Számítsuk ki a következő határértékeket.
+\begin{enumerate}[label=\arabic*., itemsep=6pt]
+\item $\displaystyle\lim_{x\to 3}\frac{x^{2}-4}{x-2}$
+\item $\displaystyle\lim_{x\to 2}\frac{x^{2}-4}{x-2}$
+\item $\displaystyle\lim_{x\to 0}\frac{\sin x}{x}$
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+\begin{align*}
+1.\quad \lim_{x\to 3}\frac{x^{2}-4}{x-2}&=\frac{3^{2}-4}{3-2}=5,\\[0.4em]
+2.\quad \lim_{x\to 2}\frac{x^{2}-4}{x-2}&=\frac{2^{2}-4}{2-2}=\frac{0}{0}\ !!
+\end{align*}
+Ezért
+\[
+\lim_{x\to 2}\frac{x^{2}-4}{x-2}=\lim_{x\to 2}\frac{(x-2)(x+2)}{x-2}=\lim_{x\to 2}(x+2)=2+2=4 .
+\]
+
+\begin{notefig}{Az $\dfrac{x^{2}-4}{x-2}$ függvény: az $y=x+2$ egyenes, az $x=2$ helyen lyukkal.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=5.6cm, height=5cm,
+  xmin=-3.2, xmax=3.6, ymin=-1.4, ymax=5.8, xtick={2}, ytick={2,4}]
+\addplot[domain=-2.8:3.3, samples=2]{x+2};
+\addplot[opendot] coordinates {(2,4)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% [p14]
+3. Tegyük fel, hogy $x>0$.
+
+\begin{notefig}{Kis $x$ esetén az $x$ ívhossz és a $\sin x$ szakasz közel egyenlő.}
+\begin{tikzpicture}[>=Stealth, scale=1.3]
+\draw[->] (-1.5,0) -- (1.6,0);
+\draw[->] (0,-1.4) -- (0,1.5);
+\draw[thick] (0,0) circle (1);
+\coordinate (P) at (28:1);
+\draw[thmaccent,thick] ({cos(28)},0) -- (P);
+\draw[accent,very thick] (1,0) arc (0:28:1);
+\fill (P) circle (1.2pt) node[above right,font=\footnotesize] {$(\cos x, \sin x)$};
+\node[thmaccent,font=\scriptsize,left] at ({cos(28)},0.24) {$\sin x$};
+\node[accent,font=\scriptsize,right] at (14:1.02) {$x$};
+\node[font=\scriptsize,below right] at (1,0) {$1$};
+\node[font=\scriptsize,above left] at (0,1) {$1$};
+\node[font=\scriptsize,below left] at (-1,0) {$-1$};
+\node[font=\scriptsize,below left] at (0,-1) {$-1$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Ekkor $x\approx\sin x$, ha $x\approx 0$. Precízen:
+\[
+\text{ter}_{\triangle}<\text{ter}_{\text{körcikk}}<\text{ter}_{\triangle},
+\]
+azaz
+\[
+\frac{1\cdot\sin x}{2}<\frac{x}{2}<\frac{\tg x\cdot 1}{2},\qquad
+\sin x<x<\tg x=\frac{\sin x}{\cos x},
+\]
+ahonnan
+\[
+\underset{\substack{\downarrow\\ \cos 0=1}}{\cos x}<\frac{\sin x}{x}<1 ,
+\]
+tehát $\dfrac{\sin x}{x}\approx 1$, ha $x\approx 0$, $x>0$.
+
+\begin{notefig}{A kisebbik háromszög, a körcikk és a nagyobbik háromszög.}
+\begin{tikzpicture}[>=Stealth, scale=2.0]
+\draw[->] (-0.25,0) -- (1.5,0);
+\draw[->] (0,-0.25) -- (0,1.15);
+\draw (1,0) arc (0:90:1);
+\coordinate (O) at (0,0);
+\coordinate (A) at (1,0);
+\coordinate (P) at (35:1);
+\coordinate (T) at (1,{tan(35)});
+\fill[exbg] (O) -- (A) -- (T) -- cycle;
+\fill[defbg] (O) -- (A) arc (0:35:1) -- cycle;
+\fill[thmbg] (O) -- (A) -- (P) -- cycle;
+\draw[thick,accent] (O) -- (T) -- (A);
+\draw[thick,thmaccent] (P) -- ({cos(35)},0);
+\draw (O) -- (P) -- (A);
+\node[accent,font=\scriptsize,right] at (1,{tan(35)/2}) {$\tg x$};
+\node[thmaccent,font=\scriptsize,left] at ({cos(35)},0.22) {$\sin x$};
+\node[font=\scriptsize,below] at (1,0) {$1$};
+\node[font=\scriptsize] at (17:0.3) {$x$};
+\end{tikzpicture}
+\end{notefig}
+
+\noindent Ha $x<0$, $x\approx 0$, akkor $-x>0$, $-x\approx 0$, így $\dfrac{\sin(-x)}{-x}\approx 1$. Mivel $\sin(-x)=-\sin x$, ezért
+\[
+1\approx\frac{\sin(-x)}{-x}=\frac{-\sin x}{-x}=\frac{\sin x}{x},
+\]
+tehát $x<0$, $x\approx 0$ esetén is $\dfrac{\sin x}{x}\approx 1$. Így ha $x\approx 0$, akkor $\dfrac{\sin x}{x}\approx 1$, azaz
+\[
+\lim_{x\to 0}\frac{\sin x}{x}=1 .
+\]
+\end{solution}
+
+\begin{defbox}
+\begin{definition}[Jobboldali határérték]
+Az $f(x)$ függvény $x_{0}$-ban vett \emph{jobboldali határértéke} a $J$ szám, ha minden $\varepsilon>0$ esetén létezik $\delta>0$, hogy $x_{0}<x<x_{0}+\delta$ esetén $\abs{f(x)-J}<\varepsilon$. Jelölés: $\displaystyle\lim_{x\to x_{0}+}f(x)=J$.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{A jobboldali határérték.}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-0.3,0) -- (3.4,0);
+\draw[->] (0,-0.3) -- (0,2.7);
+\draw[thmaccent] (1.4,1.0) rectangle (2.6,2.2);
+\draw[accent,thick] plot[smooth] coordinates {(1.4,1.6) (1.75,1.95) (2.1,1.45) (2.6,1.3)};
+\foreach \y/\l in {1.0/{J-\varepsilon},1.6/{J},2.2/{J+\varepsilon}}
+  {\draw (0.06,\y) -- (-0.06,\y); \node[font=\scriptsize,left] at (-0.06,\y) {$\l$};}
+\foreach \x/\l in {1.4/{x_{0}},2.6/{x_{0}+\delta}}
+  {\draw (\x,0.06) -- (\x,-0.06); \node[font=\scriptsize,below] at (\x,-0.06) {$\l$};}
+\end{tikzpicture}
+\end{notefig}
+
+% [p15]
+\begin{defbox}
+\begin{definition}[Baloldali határérték]
+Az $f(x)$ függvény $x_{0}$-ban vett \emph{baloldali határértéke} a $B$ szám, ha minden $\varepsilon>0$ esetén létezik $\delta>0$, hogy $x_{0}-\delta<x<x_{0}$ esetén $\abs{f(x)-B}<\varepsilon$. Jelölés: $\displaystyle\lim_{x\to x_{0}-}f(x)=B$.
+\end{definition}
+\end{defbox}
+
+\begin{remark}
+Az $f(x)$ függvénynek $x_{0}$-ban pontosan akkor létezik határértéke, ha létezik bal- és jobboldali határértéke, és ezek megegyeznek.
+\end{remark}
+
+\begin{exbox}
+\begin{example}
+Határozzuk meg a következő függvények egyoldali határértékeit a $0$ helyen.
+\begin{enumerate}[label=\arabic*., itemsep=2pt]
+\item $\sgn(x)=\begin{cases}1, & \text{ha } x>0,\\ 0, & \text{ha } x=0,\\ -1, & \text{ha } x<0\end{cases}$
+\item $f(x)=\{x\}$, a törtrész függvény
+\end{enumerate}
+\end{example}
+\end{exbox}
+\begin{solution}
+1. $\displaystyle\lim_{x\to 0+}\sgn(x)=1$ és $\displaystyle\lim_{x\to 0-}\sgn(x)=-1$.
+
+\begin{notefig}{A $\sgn(x)$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=6.4cm, height=4.2cm,
+  xmin=-2.4, xmax=2.4, ymin=-1.6, ymax=1.6, xtick=\empty, ytick={-1,1}]
+\addplot[domain=0:2.2, samples=2]{1};
+\addplot[domain=-2.2:0, samples=2]{-1};
+\addplot[opendot] coordinates {(0,1) (0,-1)};
+\addplot[closeddot] coordinates {(0,0)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+2. Például $\{2,6\}=0,6$ és $\{-0,6\}=0,4$, továbbá
+\[
+\lim_{x\to 0+}\{x\}=0,\qquad \lim_{x\to 0-}\{x\}=1 .
+\]
+
+\begin{notefig}{Az $f(x)=\{x\}$ törtrész függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=9cm, height=4.2cm, axis equal image,
+  xmin=-2.6, xmax=3.6, ymin=-0.6, ymax=1.6,
+  xtick={-2,-1,1,2,3}, ytick={1}]
+\pgfplotsinvokeforeach{-2,...,2}{
+  \addplot[domain=#1:#1+1, samples=2]{x-#1};
+}
+\addplot[closeddot] coordinates {(-2,0) (-1,0) (0,0) (1,0) (2,0)};
+\addplot[opendot] coordinates {(-1,1) (0,1) (1,1) (2,1) (3,1)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+\end{solution}
+
+\begin{defbox}
+\begin{definition}[Végtelen határérték]
+Az $f(x)$ függvénynek az $x_{0}$ helyen $+\infty$ a határértéke, ha minden $K>0$ esetén létezik $\delta>0$, hogy $0<\abs{x-x_{0}}<\delta$ esetén $f(x)>K$. Jelölés: $\displaystyle\lim_{x\to x_{0}}f(x)=+\infty$.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{A $+\infty$ határérték az $x_{0}$ helyen.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=6cm, height=5cm,
+  xmin=-1.6, xmax=3.6, ymin=-0.4, ymax=6.4,
+  xtick={1}, xticklabels={$x_{0}$}, ytick=\empty, restrict y to domain=-0.3:6.3]
+\draw[asym] (1,-0.3) -- (1,6.3);
+\addplot[domain=-1.4:0.6]{1/(x-1)^2};
+\addplot[domain=1.4:3.4]{1/(x-1)^2};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{exbox}
+\begin{example}
+$\displaystyle\lim_{x\to 1}\frac{1}{(x-1)^{2}}=+\infty$.
+\end{example}
+\end{exbox}
+
+% [p16]
+\begin{defbox}
+\begin{definition}[Határérték a $+\infty$-ben]
+Az $f(x)$ függvény $+\infty$-ben vett határértéke az $A$ szám, ha minden $\varepsilon>0$ esetén létezik $M$, hogy $x>M$ esetén $\abs{f(x)-A}<\varepsilon$. Jelölés: $\displaystyle\lim_{x\to+\infty}f(x)=A$.
+\end{definition}
+\end{defbox}
+
+\begin{notefig}{A $+\infty$-ben vett határérték: $x>M$ esetén a grafikon az $A\pm\varepsilon$ sávban halad.}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-0.3,0) -- (6.6,0);
+\draw[->] (0,-0.3) -- (0,2.9);
+\foreach \y/\l in {1.1/{A-\varepsilon},1.6/{A},2.1/{A+\varepsilon}}
+  {\draw (0.06,\y) -- (-0.06,\y); \node[font=\scriptsize,left] at (-0.06,\y) {$\l$};}
+\draw[asym] (0,2.1) -- (6.3,2.1);
+\draw[asym] (0,1.1) -- (6.3,1.1);
+\draw[accent,thick,domain=0.4:6.3,samples=200,smooth,variable=\x]
+  plot (\x,{1.6+1.6*exp(-0.55*\x)*sin(deg(2.6*\x))});
+\draw (3.6,0.06) -- (3.6,-0.06) node[below,font=\scriptsize] {$M$};
+\end{tikzpicture}
+\end{notefig}
+
+\begin{exbox}
+\begin{example}
+Néhány határérték a $+\infty$-ben.
+\begin{enumerate}[label=\arabic*., itemsep=6pt]
+\item $\displaystyle\lim_{x\to+\infty}\arctg x=\frac{\pi}{2}$
+\item $\displaystyle\lim_{x\to\infty}\left(1+\frac{1}{x}\right)^{x}=e$
+\end{enumerate}
+\end{example}
+\end{exbox}
+
+\begin{notefig}{Az $\arctg x$ függvény.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=9cm, height=4.6cm,
+  xmin=-6.4, xmax=6.4, ymin=-2.1, ymax=2.1,
+  xtick=\empty, ytick={-1.5708,1.5708}, yticklabels={$-\frac{\pi}{2}$,$\frac{\pi}{2}$}]
+\draw[asym] (-6.3,1.5708) -- (6.3,1.5708);
+\draw[asym] (-6.3,-1.5708) -- (6.3,-1.5708);
+\addplot[domain=-6.2:6.2]{rad(atan(x))};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+% ===================================================================
+\section{Nevezetes határértékek}
+
+% [p16]
+\begin{thmbox}
+\begin{theorem}
+$\displaystyle\lim_{x\to 0}\frac{\ln(1+x)}{x}=1 .$
+\end{theorem}
+\end{thmbox}
+\begin{proof}
+Tudjuk, hogy $\displaystyle\lim_{x\to\infty}\left(1+\frac{1}{x}\right)^{x}=e$, ezért
+\[
+\lim_{x\to\infty}\ln\left(1+\frac{1}{x}\right)^{x}=\ln e=1 .
+\]
+De
+\[
+1=\lim_{x\to\infty}\ln\left(1+\frac{1}{x}\right)^{x}=\lim_{x\to\infty}x\ln\left(1+\frac{1}{x}\right)=\lim_{x\to\infty}\frac{\ln\left(1+\frac{1}{x}\right)}{\frac{1}{x}} .
+\]
+Itt $x\to\infty\iff\frac{1}{x}\to 0+$. Legyen $y=\frac{1}{x}$. Így
+\[
+\lim_{y\to 0+}\frac{\ln(1+y)}{y}=1 .
+\]
+Megmutatható, hogy $\displaystyle\lim_{y\to 0-}\frac{\ln(1+y)}{y}=1$, ezért
+\[
+\lim_{y\to 0}\frac{\ln(1+y)}{y}=1 .
+\]
+\end{proof}
+
+% [p17]
+\begin{thmbox}
+\begin{theorem}
+$\displaystyle\lim_{x\to 0}\frac{e^{x}-1}{x}=1 .$
+\end{theorem}
+\end{thmbox}
+\begin{proof}
+Legyen $y=e^{x}-1$. Ha $x\approx 0$, akkor $y=e^{x}-1\approx e^{0}-1=0$. Továbbá $e^{x}=1+y\Longrightarrow x=\ln(1+y)$. Így
+\[
+\lim_{x\to 0}\frac{e^{x}-1}{x}=\lim_{y\to 0}\frac{y}{\ln(1+y)}=\lim_{y\to 0}\frac{1}{\frac{\ln(1+y)}{y}}=\frac{1}{1}=1 .
+\]
+\end{proof}
+
+\begin{thmbox}
+\begin{theorem}
+Legyen $\mu\in\R$. Ekkor
+\[
+\lim_{x\to 0}\frac{(1+x)^{\mu}-1}{x}=\mu .
+\]
+\end{theorem}
+\end{thmbox}
+\begin{proof}
+Legyen $y=(1+x)^{\mu}-1$. Ekkor $x\to 0\iff y\to 0$, továbbá
+\[
+y+1=(1+x)^{\mu}\ \Longrightarrow\ \ln(y+1)=\ln(1+x)^{\mu}=\mu\ln(1+x).
+\]
+Így
+\[
+\lim_{x\to 0}\frac{(1+x)^{\mu}-1}{x}
+=\lim_{\substack{x\to 0\\ y\to 0}}\frac{y}{x}
+=\lim_{\substack{x\to 0\\ y\to 0}}\frac{y\cdot\mu\ln(1+x)}{x\ln(1+y)}
+=\lim_{\substack{x\to 0\\ y\to 0}}\mu\cdot
+\frac{\overset{\approx 1}{\overbrace{\left(\frac{\ln(1+x)}{x}\right)}}}{\underset{\approx 1}{\underbrace{\left(\frac{\ln(1+y)}{y}\right)}}}
+=\mu .
+\]
+\end{proof}
+
+% ===================================================================
+\section{Folytonosság}
+
+% [p17]
+\begin{defbox}
+\begin{definition}[Folytonosság egy pontban]
+Az $f(x)$ függvény \emph{folytonos} az $x_{0}$ helyen, ha
+\begin{enumerate}[label=\arabic*.]
+\item létezik $f(x_{0})$,
+\item létezik $\displaystyle\lim_{x\to x_{0}}f(x)$,
+\item $\displaystyle\lim_{x\to x_{0}}f(x)=f(x_{0})$.
+\end{enumerate}
+\end{definition}
+\end{defbox}
+
+\needspace{5\baselineskip}
+\begin{defbox}
+\begin{definition}[Folytonos függvény]
+Az $f(x)$ függvény \emph{folytonos}, ha az értelmezési tartománya minden pontjában folytonos.
+\end{definition}
+\end{defbox}
+
+\begin{exbox}
+\begin{example}
+Folytonos függvények: $x$; $x^{2}$; $x^{3}$; $x^{n}$, $n\in\Z^{+}$; $\sin x$; $\cos x$; $e^{x}$; $\tg x$, ha $x\neq\frac{\pi}{2}+k\pi$; $\ln x$, ha $x>0$; $\sqrt{2x-1}$, ha $x>\frac{1}{2}$.
+\end{example}
+\end{exbox}
+
+% [p18]
+\begin{thmbox}
+\begin{theorem}[Weierstrass]
+Zárt intervallumban folytonos függvény korlátos, és a függvény itt felveszi a legkisebb és a legnagyobb értékét.
+\end{theorem}
+\end{thmbox}
+
+\begin{notefig}{Zárt intervallumon folytonos függvény legnagyobb és legkisebb értéke.}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-0.3,0) -- (4.6,0);
+\draw[->] (0,-0.3) -- (0,2.8);
+\draw[accent,thick] plot[smooth] coordinates {(0.6,1.2) (1.5,2.3) (2.5,1.3) (3.1,0.85) (3.8,1.35)};
+\fill[accent] (0.6,1.2) circle (1.5pt);
+\fill[accent] (3.8,1.35) circle (1.5pt);
+\draw[asym] (1.5,0) -- (1.5,2.3);
+\draw[asym] (3.08,0) -- (3.08,0.84);
+\foreach \x/\l in {0.6/{a},1.5/{x_{\max}},3.08/{x_{\min}},3.8/{b}}
+  {\draw (\x,0.06) -- (\x,-0.06); \node[font=\scriptsize,below] at (\x,-0.06) {$\l$};}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{remark}
+Ez nyílt intervallumban nem igaz: $f(x)=\dfrac{1}{x}$, $0<x<1$.
+\end{remark}
+
+\begin{notefig}{Az $f(x)=\dfrac{1}{x}$ függvény a $]0, 1[$ intervallumon.}
+\begin{tikzpicture}
+\begin{axis}[funcplot, width=5.4cm, height=5cm,
+  xmin=-0.4, xmax=1.6, ymin=-0.6, ymax=6.4, xtick={1}, ytick={1},
+  restrict y to domain=-0.5:6.3]
+\addplot[domain=0.16:1]{1/x};
+\addplot[opendot] coordinates {(1,1)};
+\end{axis}
+\end{tikzpicture}
+\end{notefig}
+
+\begin{thmbox}
+\begin{theorem}[Bolzano]
+Ha $f(x)$ folytonos $[a, b]$-ben, akkor $f(x)$ minden $f(a)$ és $f(b)$ közti értéket felvesz $[a, b]$-ben.
+\end{theorem}
+\end{thmbox}
+
+\begin{notefig}{A Bolzano-tétel: az $f(a)$ és $f(b)$ közé eső $y_{0}$ értéket a függvény az $x_{0}$ helyen felveszi.}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-0.3,0) -- (4.6,0);
+\draw[->] (0,-0.3) -- (0,2.9);
+\draw[accent,thick] plot[smooth] coordinates {(0.8,0.8) (1.0,1.6) (1.45,2.45) (2.4,1.85) (3.1,1.65) (3.8,2.0)};
+\fill[accent] (0.8,0.8) circle (1.5pt);
+\fill[accent] (3.8,2.0) circle (1.5pt);
+\draw[asym] (0,2.0) -- (3.8,2.0);
+\draw[asym] (0,1.3) -- (0.93,1.3);
+\draw[asym] (0,0.8) -- (0.8,0.8);
+\draw[asym] (0.93,0) -- (0.93,1.3);
+\node[font=\scriptsize,left] at (0,2.0) {$f(b)$};
+\node[font=\scriptsize,left] at (0,1.3) {$y_{0}$};
+\node[font=\scriptsize,left] at (0,0.8) {$f(a)$};
+\foreach \x/\l in {0.75/{a},3.8/{b}}
+  {\draw (\x,0.06) -- (\x,-0.06); \node[font=\scriptsize,below] at (\x,-0.06) {$\l$};}
+\node[font=\scriptsize,below right] at (0.93,0) {$x_{0}$};
+\node[font=\scriptsize] at (1.35,-0.6) {$f(x_{0})=y_{0}$};
+\end{tikzpicture}
+\end{notefig}
+
+% [p19]
+\begin{thmbox}
+\begin{corollary}
+Ha $f(a)$ és $f(b)$ előjele különböző, akkor a folytonos $f(x)$-nek van gyöke $[a, b]$-ben.
+\end{corollary}
+\end{thmbox}
+
+\begin{notefig}{Előjelváltás esetén a folytonos függvénynek van gyöke: $f(x_{0})=0$.}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-0.3,0) -- (3.8,0);
+\draw[->] (0,-1.2) -- (0,1.6);
+\draw[accent,thick] plot[smooth] coordinates {(0.7,-0.75) (1.3,-0.35) (1.8,0) (2.4,0.9) (2.9,1.1) (3.2,0.85)};
+\fill[accent] (0.7,-0.75) circle (1.5pt); \fill[accent] (3.2,0.85) circle (1.5pt);
+\foreach \x/\l in {0.7/{a},3.2/{b}}
+  {\draw (\x,0.06) -- (\x,-0.06); \node[font=\scriptsize,above] at (\x,0.06) {$\l$};}
+\node[font=\scriptsize,below right] at (1.8,0) {$x_{0}$};
+\end{tikzpicture}\hspace{2em}
+\begin{tikzpicture}[>=Stealth]
+\draw[->] (-0.3,0) -- (3.8,0);
+\draw[->] (0,-1.4) -- (0,1.6);
+\draw[accent,thick] plot[smooth] coordinates {(0.6,1.0) (1.2,0.55) (1.6,0) (2.0,-0.6) (2.6,-0.75) (3.0,-1.2)};
+\fill[accent] (0.6,1.0) circle (1.5pt); \fill[accent] (3.0,-1.2) circle (1.5pt);
+\foreach \x/\l in {0.6/{a},3.0/{b}}
+  {\draw (\x,0.06) -- (\x,-0.06); \node[font=\scriptsize,below] at (\x,-0.06) {$\l$};}
+\node[font=\scriptsize,above right] at (1.6,0) {$x_{0}$};
+\end{tikzpicture}
+\end{notefig}
+
+\begin{thmbox}
+\begin{corollary}
+Ha $f(x)=a_{2n+1}x^{2n+1}+a_{2n}x^{2n}+\dots+a_{1}x+a_{0}$, $a_{2n+1}>0$, akkor $f(x)$-nek van gyöke.
+\end{corollary}
+\end{thmbox}
+\begin{proof}
+Egyrészt
+\[
+\lim_{x\to\infty}\bigl(a_{2n+1}x^{2n+1}+a_{2n}x^{2n}+\dots+a_{0}\bigr)
+=\lim_{x\to\infty}\underset{\substack{\downarrow\\ +\infty}}{x^{2n+1}}
+\Bigl(\underset{>0}{a_{2n+1}}+\underset{\substack{\downarrow\\ 0}}{\frac{a_{2n}}{x}}
++\underset{\substack{\downarrow\\ 0}}{\frac{a_{2n-1}}{x^{2}}}+\dots
++\underset{\substack{\downarrow\\ 0}}{\frac{a_{0}}{x^{2n+1}}}\Bigr)=+\infty,
+\]
+tehát létezik $b$, hogy $f(b)>0$. Másrészt
+\[
+\lim_{x\to-\infty}\underset{\substack{\downarrow\\ -\infty}}{x^{2n+1}}
+\Bigl(\underset{>0}{a_{2n+1}}+\underset{\substack{\downarrow\\ 0}}{\frac{a_{2n}}{x}}
++\underset{\substack{\downarrow\\ 0}}{\frac{a_{2n-1}}{x^{2}}}+\dots
++\underset{\substack{\downarrow\\ 0}}{\frac{a_{0}}{x^{2n+1}}}\Bigr)=-\infty,
+\]
+tehát létezik $a$, hogy $f(a)<0$. Mivel $f(a)<0$, $f(b)>0$ és $f(x)$ folytonos, létezik $x_{0}$, hogy $f(x_{0})=0$.
+\end{proof}
+
+\end{document}
