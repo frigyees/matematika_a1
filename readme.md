@@ -5,6 +5,14 @@ tárgyakhoz, Sándor Csaba előadásjegyzetei alapján.
 
 ## Fordítás
 
+Compiler: XeLaTeX
+
+Szükségletek:
+- `TeX Gyre Pagella`
+- `TeX Gyre Heros.`
+- Arch Linuxon a `texlive-langeuropean` package, más distron ennek a megfelelője.
+- `pgfplots`, `tikz`, `mdframed`, `polyglossia`, `icomma`.
+
 ```sh
 latexmk                                # minden téma
 latexmk src/02-komplex-szamok.tex      # egyetlen téma
@@ -13,12 +21,11 @@ latexmk -c                             # segédfájlok törlése
 latexmk -C                             # segédfájlok és PDF-ek törlése
 ```
 
-### Előkövetelmények
+## Elrendezés
 
-- Compiler: XeLaTeX
-- Betűtípusok: TeX Gyre Pagella, TeX Gyre Heros.
-- Arch Linuxon a `texlive-langeuropean` package, más distron ennek a megfelelője.
-- `pgfplots`, `tikz`, `mdframed`, `polyglossia`, `icomma`.
+- `lib/macros.tex`: makrók, jelölések, stb...
+- `lib/preamble.tex`: package-ek, környezetek, stb...
+- `src/NN-cím.tex`: forrásfájlok témánként
 
 ## Digitalizálás pontossága
 
